@@ -1,0 +1,5 @@
+ssl/*.crt
+ssl/*.key
+ssl/*.srl
+ssl/*.csr
+signalmaster

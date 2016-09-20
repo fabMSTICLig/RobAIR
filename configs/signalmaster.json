@@ -1,0 +1,27 @@
+{
+    "isDev": true, 
+    "rooms": {
+        "maxClients": 0
+    }, 
+    "server": {
+        "cert": null, 
+        "key": null, 
+        "password": null, 
+        "port": 8888, 
+        "secure": true
+    }, 
+    "stunservers": [
+        {
+            "url": "stun:localhost:3478"
+        }
+    ], 
+    "turnservers": [
+        {
+            "expiry": 86400, 
+            "secret": "fabmstic", 
+            "urls": [
+                "turn:localhost"
+            ]
+        }
+    ]
+}
