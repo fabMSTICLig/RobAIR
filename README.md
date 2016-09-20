@@ -23,7 +23,7 @@ install.sh
 
 SSL/TLS
 Création de l'autorité de certification
-Si vous avez déjà généré une autorité de certification sur un autre ordinateur par exemple, veuillez copier les fichiers rootCA.crt  rootCA.key  rootCA.srl dans $ROBAIR_HOME/ssl
+Si vous avez déjà généré une autorité de certification sur un autre ordinateur par exemple, veuillez copier les fichiers rootCA.crt  rootCA.key  rootCA.srl dans `$ROBAIR_HOME/ssl`
 Sinon exécutez 
 
 ```bash
