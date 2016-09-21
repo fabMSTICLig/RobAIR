@@ -3,3 +3,10 @@ ssl/*.key
 ssl/*.srl
 ssl/*.csr
 signalmaster
+
+catkin_ws/install
+catkin_ws/build
+catkin_ws/devel
+catkin_ws/src/rosserial
+
+arduino/libraries/ros_lib
