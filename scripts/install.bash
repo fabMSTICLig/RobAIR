@@ -7,18 +7,13 @@ fi
 
 export ROBAIR_HOME=`pwd`
 
-
-read -r -p "Configurer ~/bashrc ? [O/n] " response
-case $response in
-	[nN]) 
-	;;
-	*)
+read -r -p "Configurer ~/bashrc ? [O/n] "
+if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 	echo "" >> ~/.bashrc
 	echo "#ROBAIR SETTINGS" >> ~/.bashrc
 	echo "export ROBAIR_HOME=$ROBAIR_HOME" >> ~/.bashrc
 	echo "source \$ROBAIR_HOME/scripts/env.bash"  >> ~/.bashrc
-	;;
-esac
+fi
 
 
 export ROBAIR_IP=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
@@ -43,18 +38,14 @@ sudo -E apt-get install git make coturn
 
 
 
-read -r -p "Installation signalmaster ? [O/n] " response
-case $response in
-	[nN]) 
-	;;
-	*)
-
+read -r -p "Installation signalmaster ? [O/n] "
+if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 	git clone https://github.com/andyet/signalmaster.git
 	cp $ROBAIR_HOME/configs/signalmaster.json $ROBAIR_HOME/signalmaster/config/development.json
 	python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:key $ROBAIR_HOME/ssl/device.key
 	python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
-	;;
-esac
+	
+fi
 
 read -r -p "Voulez vous générer une autorité de certification ? [O/n] " response
 case $response in
@@ -67,48 +58,48 @@ case $response in
 esac
 
 
-read -r -p "Voulez vous générer un certificat ssl ? [O/n] " response
-case $response in
-	[nN]) 
-	;;
-	*)
+read -r -p "Voulez vous générer un certificat ssl ? [O/n] "
+
+if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 	./scripts/createDeviceCRT.bash
-	;;
-esac
+fi
+
+
+read -r -p "Installation ros kinetic ? [O/n] "
+
+if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
+
+	echo "$(tput setaf 1)Installation $(tput setab 7)ros kinetic$(tput sgr0)"
+
+	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+
+	sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116
+
+
+	sudo -E apt-get update
+
+	sudo apt-get install ros-kinetic-ros-base
+
+	source /opt/ros/kinetic/setup.bash
+
+	sudo rosdep init
+	rosdep update
+
+	sudo apt-get install ros-kinetic-rosbridge-suite
+
+fi
 
 
 
-echo "$(tput setaf 1)Installation $(tput setab 7)ros kinetic$(tput sgr0)"
 
-sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+read -r -p "Installation rosserial ? [O/n] "
 
-sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116
-
-
-sudo -E apt-get update
-
-sudo apt-get install ros-kinetic-ros-base
-
-source /opt/ros/kinetic/setup.bash
-
-sudo rosdep init
-rosdep update
-
-sudo apt-get install ros-kinetic-rosbridge-suite
+if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 
 
+	sudo apt-get install ros-kinetic-rosserial-arduino
 
-sudo apt-get install ros-kinetic-rosserial-arduino
-
-sudo apt-get install ros-kinetic-rosserial
-
-
-
-read -r -p "Installation rosserial ? [O/n] " response
-case $response in
-	[nN]) 
-	;;
-	*)
+	sudo apt-get install ros-kinetic-rosserial
 
 	cd $ROBAIR_HOME/catkin_ws/src
 	git clone https://github.com/ros-drivers/rosserial.git
@@ -117,8 +108,7 @@ case $response in
 	catkin_make install
 	source $ROBAIR_HOME/catkin_ws/devel/setup.bash
 
-	;;
-esac
+fi
 
 echo "$(tput setaf 1)Installation $(tput setab 7) Arduino$(tput sgr0)"
 
@@ -133,6 +123,11 @@ sed -i -e 's#\(.*sketchbook.path=\).*#\1'"$ROBAIR_HOME/arduino"'#' ~/.arduino/pr
 
 
 echo "$(tput setaf 1)Genère $ROBAIR_HOME/arduino/libraries/ros_lib$(tput sgr0)"
+mkdir -p $ROBAIR_HOME/arduino/libraries
 cd $ROBAIR_HOME/arduino/libraries
 rm -rf ros_lib
 rosrun rosserial_arduino make_libraries.py .
+
+
+
+echo "$(tput setaf 1)Instalation terminé$(tput sgr0)"
