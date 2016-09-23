@@ -38,7 +38,7 @@ sudo -E apt-get update
 
 
 
-echo "$(tput setaf 1)Installation $(tput setab 7)coturn git make $(tput sgr0)"
+echo "$(tput setaf 1)Installation $(tput setab 7)coturn nodejs npm $(tput sgr0)"
 sudo -E apt-get install git make coturn
 
 
