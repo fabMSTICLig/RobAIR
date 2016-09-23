@@ -21,9 +21,6 @@ if [ ! -f "$ROBAIR_HOME/ssl/rootCA.key" ]; then
 fi
 
 openssl genrsa -out $ROBAIR_HOME/ssl/device.key 2048
-echo "===================================================================================="
-echo "$(tput setaf 1)Dans le champs Common Name veuillez indiquer votre adresse IP $ROBAIR_IP$(tput sgr0)"
-echo "===================================================================================="
-openssl req -new -key $ROBAIR_HOME/ssl/device.key -out $ROBAIR_HOME/ssl/device.csr
+openssl req -new -key $ROBAIR_HOME/ssl/device.key -out $ROBAIR_HOME/ssl/device.csr -subj '/C=FR/ST=Is\xC3\x83\xC2\xA8re/L=Grenoble/O=LIG/OU=FabMSTIC/CN='"$ROBAIR_IP"'/emailAddress=fabmstic.lig@gmail.com'
 openssl x509 -req -in $ROBAIR_HOME/ssl/device.csr -CA $ROBAIR_HOME/ssl/rootCA.crt -CAkey $ROBAIR_HOME/ssl/rootCA.key -CAcreateserial -out $ROBAIR_HOME/ssl/device.crt -days 500 -sha256
 

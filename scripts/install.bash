@@ -16,11 +16,13 @@ export ROBAIR_IP=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
 export PATH="$PATH:$ROBAIR_HOME/scripts/"
 
 
-read -r -p "Veuillez entrer votre proxy ou tapez entrée si vous n'en avez pas" response
+read -r -p "Veuillez entrer votre proxy ou tapez entrée si vous n'en avez pas:" response
 if [ ! -z $reponse ]; then
 	export http_proxy=$reponse
 	git config --global http.proxy $http_proxy
 fi
+
+echo "Veuillez entrer votre mot de passe pour installer les packages (sudo)"
 
 sudo -E apt-get update
 
@@ -62,6 +64,9 @@ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main
 
 sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116
 
+
+sudo -E apt-get update
+
 sudo apt-get install ros-kinetic-ros-base
 
 source /opt/ros/kinetic/setup.bash
@@ -88,6 +93,9 @@ source $ROBAIR_HOME/catkin_ws/devel/setup.bash
 echo "$(tput setaf 1)Installation $(tput setab 7) Arduino$(tput sgr0)"
 
 sudo apt-get install arduino
+
+
+echo "$(tput setaf 1)Arduino va être lancer veuillez accepter de rajouté dialout en rentrant votre mot de passe, puis fermer la fenêtre de Arduino$(tput sgr0)"
 
 sed -i -e 's#\(.*sketchbook.path=\).*#\1'"$ROBAIR_HOME/arduino"'#' ~/.arduino/preferences.txt
 
