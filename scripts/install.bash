@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 if [ ! -f .robair ]; then
 	echo "Vous devez être dans le répertoire root du dépot"
@@ -15,12 +15,20 @@ echo "source \$ROBAIR_HOME/scripts/env.bash"  >> ~/.bashrc
 export ROBAIR_IP=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
 export PATH="$PATH:$ROBAIR_HOME/scripts/"
 
-sudo apt-get update
 
-echo "$(tput setaf 1)Installation $(tput setab 7)coturn"
-sudo apt-get install coturn
+read -r -p "Veuillez entrer votre proxy ou tapez entrée si vous n'en avez pas" response
+if [ ! -z $reponse ]; then
+	export http_proxy=$reponse
+	git config --global http.proxy $http_proxy
+fi
 
-echo "$(tput setaf 1)Installation $(tput setab 7)signalmaster"
+sudo -E apt-get update
+
+echo "$(tput setaf 1)Installation $(tput setab 7)coturn git make $(tput sgr0)"
+sudo -E apt-get install git make coturn
+
+
+echo "$(tput setaf 1)Installation $(tput setab 7)signalmaster$(tput sgr0)"
 git clone https://github.com/andyet/signalmaster.git
 
 
@@ -48,7 +56,7 @@ esac
 
 
 
-echo "$(tput setaf 1)Installation $(tput setab 7)ros kinetic"
+echo "$(tput setaf 1)Installation $(tput setab 7)ros kinetic$(tput sgr0)"
 
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 
@@ -77,14 +85,14 @@ catkin_make install
 source $ROBAIR_HOME/catkin_ws/devel/setup.bash
 
 
-echo "$(tput setaf 1)Installation $(tput setab 7) Arduino"
+echo "$(tput setaf 1)Installation $(tput setab 7) Arduino$(tput sgr0)"
 
 sudo apt-get install arduino
 
 sed -i -e 's#\(.*sketchbook.path=\).*#\1'"$ROBAIR_HOME/arduino"'#' ~/.arduino/preferences.txt
 
 
-echo "$(tput setaf 1)Genère $ROBAIR_HOME/arduino/libraries/ros_lib"
+echo "$(tput setaf 1)Genère $ROBAIR_HOME/arduino/libraries/ros_lib$(tput sgr0)"
 cd $ROBAIR_HOME/arduino/libraries
 rm -rf ros_lib
 rosrun rosserial_arduino make_libraries.py .
