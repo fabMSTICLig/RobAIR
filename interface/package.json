@@ -1,0 +1,16 @@
+{
+  "name": "interface",
+  "version": "1.0.0",
+  "description": "Robair interface",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "FabMSTIC",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "express-session": "^1.14.1",
+    "https": "^1.0.0"
+  }
+}

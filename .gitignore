@@ -10,3 +10,4 @@ catkin_ws/devel
 catkin_ws/src/rosserial
 
 arduino/libraries/ros_lib
+interface/node_modules
