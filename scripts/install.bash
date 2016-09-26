@@ -24,12 +24,21 @@ fi
 export ROBAIR_IP=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
 export PATH="$PATH:$ROBAIR_HOME/scripts/"
 
-
-read -r -p "Veuillez entrer votre proxy ou tapez entrée si vous n'en avez pas:" response
-if [ ! -z $reponse ]; then
-	export http_proxy=$reponse
-	git config --global http.proxy $http_proxy
+if [ -z $http_proxy ]; then
+	read -r -p "Veuillez entrer votre proxy ou tapez entrée si vous n'en avez pas:" response
+	if [ ! -z "$response" ]; then
+		export http_proxy=$response
+		git config --global http.proxy $http_proxy
+	fi
 fi
+
+if [ -z $https_proxy -o ! -z $http_proxy ]; then
+	read -r -p "Votre proxy https est identique au proxy http ? [O/n] "
+	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
+        	export https_proxy=$http_proxy
+	fi
+fi
+
 
 echo "Veuillez entrer votre mot de passe pour installer les packages (sudo)"
 
@@ -76,13 +85,13 @@ if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 	echo "$(tput setaf 1)Installation $(tput setab 7)ros kinetic$(tput sgr0)"
 
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-	sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116
+	sudo -E apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116
 	sudo -E apt-get update
-	sudo apt-get install ros-kinetic-ros-base
+	sudo -E apt-get install ros-kinetic-ros-base
 	source /opt/ros/kinetic/setup.bash
-	sudo rosdep init
+	sudo -E rosdep init
 	rosdep update
-	sudo apt-get install ros-kinetic-rosbridge-suite
+	sudo -E apt-get install ros-kinetic-rosbridge-suite
 
 fi
 
@@ -93,8 +102,8 @@ read -r -p "Installation rosserial ? [O/n] "
 if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 
 
-	sudo apt-get install ros-kinetic-rosserial-arduino
-	sudo apt-get install ros-kinetic-rosserial
+	sudo -E apt-get install ros-kinetic-rosserial-arduino
+	sudo -E apt-get install ros-kinetic-rosserial
 	cd $ROBAIR_HOME/catkin_ws/src
 	git clone https://github.com/ros-drivers/rosserial.git
 	cd $ROBAIR_HOME/catkin_ws
@@ -106,7 +115,7 @@ fi
 
 echo "$(tput setaf 1)Installation $(tput setab 7) Arduino$(tput sgr0)"
 
-sudo apt-get install arduino
+sudo -E apt-get install arduino
 echo "$(tput setaf 1)Arduino va être lancer veuillez accepter de rajouté dialout en rentrant votre mot de passe, puis fermer la fenêtre de Arduino$(tput sgr0)"
 arduino
 sed -i -e 's#\(.*sketchbook.path=\).*#\1'"$ROBAIR_HOME/arduino"'#' ~/.arduino/preferences.txt
