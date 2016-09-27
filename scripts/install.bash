@@ -32,7 +32,7 @@ if [ -z $http_proxy ]; then
 	fi
 fi
 
-if [ -z $https_proxy -o ! -z $http_proxy ]; then
+if [ -z $https_proxy] || [ ! -z $http_proxy ]; then
 	read -r -p "Votre proxy https est identique au proxy http ? [O/n] "
 	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
         	export https_proxy=$http_proxy
@@ -48,7 +48,7 @@ sudo -E apt-get update
 
 
 echo "$(tput setaf 1)Installation $(tput setab 7)coturn nodejs npm $(tput sgr0)"
-sudo -E apt-get install git make coturn
+sudo -E apt-get install coturn nodejs-legacy npm
 
 
 
@@ -59,8 +59,14 @@ if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 	cp $ROBAIR_HOME/configs/signalmaster.json $ROBAIR_HOME/signalmaster/config/development.json
 	python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:key $ROBAIR_HOME/ssl/device.key
 	python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
-	
+	cd $ROBAIR_HOME/signalmaster
+	npm install
 fi
+
+cd $ROBAIR_HOME/interface
+npm install
+
+cd $ROBAIR_HOME
 
 read -r -p "Voulez vous générer une autorité de certification ? [O/n] " response
 case $response in
