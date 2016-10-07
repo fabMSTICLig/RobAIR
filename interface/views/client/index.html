@@ -1,21 +1,111 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Robair Client</title>
-        <script src="common/js/latest-v2.js"></script>
-        <script src="common/js/config.js"></script>
-        <script src="common/js/webrtc.js"></script>
-        <style>
-            #remoteVideos video {
-                width: 1024px;
-            }
-            #localVideo {
-                width: 300px;
-            }
-        </style>
-    </head>
-    <body>
-        <video id="localVideo"></video>
-        <div id="remoteVideos"></div>
-    </body>
+
+<head>
+    <title>Robair Client</title>
+
+    <script type="text/javascript" src="common/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="common/js/latest-v2.js"></script>
+    <script type="text/javascript" src="common/js/eventemitter2.js"></script>
+    <script type="text/javascript" src="common/js/roslib.min.js"></script>
+    <script type="text/javascript" src="common/js/config.js"></script>
+    <script type="text/javascript" src="common/js/robairrtc.js"></script>
+    <script type="text/javascript" src="common/js/robairros.js"></script>
+    <script type="text/javascript" src="common/js/robair.js"></script>
+    <link rel="stylesheet" href="common/css/bootstrap.min.css">
+    <link rel="stylesheet" href="common/css/font-awesome.min.css">
+    <link rel="stylesheet" href="client/index.css">
+</head>
+
+<body>
+    <div class="">
+        <div class="" id="remoteVideos"></div>
+        <video class="img-responsive" id="localVideo"></video>
+        <div class="commands container">
+            <div class="panel panel-default">
+                <div class="panel-heading">Status</div>
+                <div class="panel-body">
+                    <table class="table table-bordered text-center status">
+                        <tbody>
+                            <tr>
+                                <td>
+                                        <span class="glyphicon glyphicon-signal"></span>
+                                </td>
+                                <td>
+                                        <span class="fa fa-battery-4"></span>
+                                </td>
+                                <td>
+                                        <span class="glyphicon glyphicon-heart"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="button" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-arrow-left"></span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-arrow-down"></span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-arrow-right"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Contrôles</div>
+                    <div class="panel-body">
+                        <table class="table table-bordered text-center controles">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <button type="button" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-hand-left"></span>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-arrow-up"></span>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-hand-right"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button type="button" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-arrow-left"></span>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-arrow-down"></span>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-arrow-right"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+</body>
+
 </html>

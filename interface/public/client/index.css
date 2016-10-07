@@ -1,0 +1,45 @@
+body{
+ background-color: gray;
+}
+
+.videos {
+/*position: relative;
+  /*  width: 100vw;
+    height: 100vh;*/
+}
+#remoteVideos video {
+    margin: auto;
+    width: 70vw;
+    height: 52.5vw;
+    background: pink;
+    max-height: 100vh;
+    max-width: 133.33vh;
+    top: 0;bottom: 0;
+    left: 0;/*right: 0;*/
+    position: absolute;
+}
+#localVideo {
+    width: 15%;
+    min-width: 12em;
+    position: absolute;
+    bottom: 25px;
+    left: 30px
+}
+
+.commands{
+background-color: blue;
+    margin: auto;
+    width: 30vw;
+    background: #222;
+    max-height: 100vh;
+    max-width: 133.33vh;
+    top: 0;bottom: 0;
+    right: 0;/*right: 0;*/
+    position: absolute;
+}
+.controles span {
+font-size:1.5em
+}
+.status span {
+font-size:2em
+}

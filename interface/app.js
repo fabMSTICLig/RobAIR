@@ -35,7 +35,7 @@ app.use(session({
     }
 }))
 
-app.use('/common', express.static('public/common'));
+app.use('/', express.static('public/'));
 
 app.get('/', function(req, res) {
     res.header('Content-type', 'text/html');
