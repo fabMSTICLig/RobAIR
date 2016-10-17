@@ -4,16 +4,8 @@
 <head>
     <title>Robair Client</title>
 
-    <script type="text/javascript" src="common/js/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="common/js/latest-v2.js"></script>
-    <script type="text/javascript" src="common/js/eventemitter2.js"></script>
-    <script type="text/javascript" src="common/js/roslib.min.js"></script>
-    <script type="text/javascript" src="common/js/config.js"></script>
-    <script type="text/javascript" src="common/js/robairrtc.js"></script>
-    <script type="text/javascript" src="common/js/robairros.js"></script>
-    <script type="text/javascript" src="common/js/robair.js"></script>
-    <link rel="stylesheet" href="common/css/bootstrap.min.css">
-    <link rel="stylesheet" href="common/css/font-awesome.min.css">
+    <link rel="stylesheet" href="common/libs/bootstrap.min.css">
+    <link rel="stylesheet" href="common/libs/font-awesome.min.css">
     <link rel="stylesheet" href="client/index.css">
 </head>
 
@@ -29,30 +21,13 @@
                         <tbody>
                             <tr>
                                 <td>
-                                        <span class="glyphicon glyphicon-signal"></span>
+                                        <span class="glyphicon glyphicon-signal" id="wifistrenth"></span>
                                 </td>
                                 <td>
-                                        <span class="fa fa-battery-4"></span>
+                                        <span class="fa fa-battery-4" id="battery"></span>
                                 </td>
                                 <td>
-                                        <span class="glyphicon glyphicon-heart"></span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <button type="button" class="btn btn-default">
-                                        <span class="glyphicon glyphicon-arrow-left"></span>
-                                    </button>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-default">
-                                        <span class="glyphicon glyphicon-arrow-down"></span>
-                                    </button>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-default">
-                                        <span class="glyphicon glyphicon-arrow-right"></span>
-                                    </button>
+                                        <span class="glyphicon glyphicon-heart" id="socialtouch"></span>
                                 </td>
                             </tr>
                         </tbody>
@@ -67,36 +42,44 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-default">
+                                        <button type="button" class="btn btn-default" id="hleft">
                                             <span class="glyphicon glyphicon-hand-left"></span>
                                         </button>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-default">
+                                        <button type="button" class="btn btn-default" id="foward">
                                             <span class="glyphicon glyphicon-arrow-up"></span>
                                         </button>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-default">
+                                        <button type="button" class="btn btn-default" id="hright">
                                             <span class="glyphicon glyphicon-hand-right"></span>
                                         </button>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-default">
+                                        <button type="button" class="btn btn-default" id="left">
                                             <span class="glyphicon glyphicon-arrow-left"></span>
                                         </button>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-default">
+                                        <button type="button" class="btn btn-default" id="backward">
                                             <span class="glyphicon glyphicon-arrow-down"></span>
                                         </button>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-default">
+                                        <button type="button" class="btn btn-default" id="right">
                                             <span class="glyphicon glyphicon-arrow-right"></span>
                                         </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Vitesse :
+                                    </td>
+                                    <td colspan="2">
+                                        <input id="speed" type="range" value="64" max="100" min="0" step="5" />
                                     </td>
                                 </tr>
                             </tbody>
@@ -106,6 +89,16 @@
 
         </div>
     </div>
+
+
+        <script type="text/javascript" src="common/libs/jquery-3.1.1.min.js"></script>
+        <script type="text/javascript" src="common/libs/latest-v2.js"></script>
+        <script type="text/javascript" src="common/libs/eventemitter2.js"></script>
+        <script type="text/javascript" src="common/libs/roslib.min.js"></script>
+        <script type="text/javascript" src="common/js/config.js"></script>
+        <script type="text/javascript" src="common/js/robairrtc.js"></script>
+        <script type="text/javascript" src="common/js/robairros.js"></script>
+        <script type="text/javascript" src="common/js/robair.js"></script>
 </body>
 
 </html>
