@@ -1,4 +1,6 @@
 {
+  "httpPort":6081,
+  "httpsPort":6080,
   "ssl":{
     "key":"/home/robair/Rob-AIR/ssl/device.key",
     "crt":"/home/robair/Rob-AIR/ssl/device.crt",

@@ -5,6 +5,9 @@ var fs = require('fs'),
     app = express();
 var session = require('express-session')
 
+//Config file
+var data = fs.readFileSync("config.json");
+var config = JSON.parse(data);
 
 ///////Mini Serveur pour téléchargé l'autorité de certification////////////
 apphttp = express();
@@ -13,15 +16,12 @@ apphttp.get('/', function(req, res) {
     res.header('Content-type', 'text/html');
     return res.end('<h1>Installer le certificat en tant qu\'autorité racine de confiance. Puis redémarez votre navigateur.</h1> <a href="common/rootCA.crt">CA</a>');
 });
-http.createServer(apphttp).listen(8081);
+http.createServer(apphttp).listen(config.httpPort);
 
 //Local interface
 var ifs = require('os').networkInterfaces();
 localAdress = "::ffff:" + Object.keys(ifs).map(x => ifs[x].filter(x => x.family === 'IPv4' && !x.internal)[0]).filter(x => x)[0].address;
 
-//Config file
-var data = fs.readFileSync("config.json");
-var config = JSON.parse(data);
 
 //Session initialisation
 app.set('trust proxy', 1) // trust first proxy
@@ -49,4 +49,4 @@ app.get('/', function(req, res) {
 https.createServer({
     key: fs.readFileSync(config.ssl.key),
     cert: fs.readFileSync(config.ssl.crt)
-}, app).listen(8080);
+}, app).listen(config.httpsPort,"192.168.0.58");

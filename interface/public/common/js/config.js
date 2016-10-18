@@ -1,6 +1,6 @@
 var config =
 {
-  serverurl : "192.168.1.34",
-  rtcport : "8888",
-  rosport : "7777"
+  serverurl : "192.168.0.58",
+  rtcport : "6060",
+  rosport : "6777"
 }

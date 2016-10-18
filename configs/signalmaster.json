@@ -7,12 +7,12 @@
         "cert": null, 
         "key": null, 
         "password": null, 
-        "port": 8888, 
+        "port": 6060, 
         "secure": true
     }, 
     "stunservers": [
         {
-            "url": "stun:localhost:3478"
+            "url": "stun:localhost:6478"
         }
     ], 
     "turnservers": [

@@ -78,7 +78,7 @@ robairros.stop = function() {
 robairros.setSpeed = function(speed) {
         if (speed < 0) speed = 0;
         else if (speed > 100) speed = 100;
-        robairros.speed = speed;
+        robairros.speed = parseInt(speed);
     }
     ////Subscribers
 
@@ -87,9 +87,20 @@ robairros.setSpeed = function(speed) {
 var topic_battery_level = new ROSLIB.Topic({
     ros: ros,
     name: '/battery_level',
-    messageType: 'std_msgs/Byte'
+    messageType: 'std_msgs/Int32'
 });
 
 topic_battery_level.subscribe(function(message) {
     robairros.batteryChange(parseInt(message.data));
+});
+//Topic for battery_level
+var topic_social_touch = new ROSLIB.Topic({
+    ros: ros,
+    name: '/social_touch',
+    messageType: 'std_msgs/Bool'
+});
+
+topic_social_touch.subscribe(function(message) {
+    robairros.socialChange(message.data);
+
 });
