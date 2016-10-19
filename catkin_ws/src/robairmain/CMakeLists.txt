@@ -136,7 +136,10 @@ include_directories(
 # add_dependencies(robairmain ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(robairmain_node src/robairmain_node.cpp)
+add_executable(proxy src/proxy.cpp)
+
+target_link_libraries(proxy ${catkin_LIBRARIES})
+add_dependencies(proxy robairmain_generate_messages_cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above

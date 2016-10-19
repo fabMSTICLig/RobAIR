@@ -126,3 +126,12 @@ robairros.socialChange = function(touch) {
 
     }
 }
+robairros.pingChange = function(ping) {
+    if (ping>500)
+        $("#ping").css('color', 'red');
+    else if(ping>200) 
+        $("#ping").css('color', 'orange');
+    else {
+        $("#ping").css('color', 'black');
+    }
+}

@@ -79,8 +79,40 @@ robairros.setSpeed = function(speed) {
         if (speed < 0) speed = 0;
         else if (speed > 100) speed = 100;
         robairros.speed = parseInt(speed);
-    }
-    ////Subscribers
+}
+
+////PING
+var topic_ping = new ROSLIB.Topic({
+    ros: ros,
+    name: '/ping',
+    messageType: 'std_msgs/UInt64'
+});
+var topic_pong = new ROSLIB.Topic({
+    ros: ros,
+    name: '/pong',
+    messageType: 'std_msgs/UInt64'
+});
+setInterval(function() {
+    var msg = new ROSLIB.Message({
+        data: $.now()
+    });
+  
+  robairros.ping=$.now();  
+  topic_ping.publish(msg);
+}, 1000);
+topic_pong.subscribe(function(message) {
+  console.log($.now()-robairros.ping);
+  robairros.pingChange($.now()-robairros.ping);
+});
+
+
+
+
+
+
+
+
+////Subscribers
 
 
 //Topic for battery_level

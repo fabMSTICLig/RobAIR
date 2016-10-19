@@ -4,6 +4,8 @@
   </node>
   <node pkg="robairmain" type="webserver.sh" name="webserver">
   </node>
+  <node pkg="robairmain" type="proxy" name="proxy">
+  </node>
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" > 
      <arg name="port" value="6777"/>
      <arg name="ssl" value="true"/>
