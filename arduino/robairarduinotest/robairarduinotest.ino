@@ -13,8 +13,6 @@
 ros::NodeHandle nh;
 std_msgs::Int32 battery_msg;
 ros::Publisher battery_pub("battery_level",&battery_msg);
-std_msgs::Bool social_msg;
-ros::Publisher social_pub("social_touch",&social_msg);
 
 //MOTORS
 int cmd_speedL = 0;  //current_speed used by motors
@@ -69,18 +67,7 @@ void check_battery(unsigned int delay_check) {
   }
 }
 
-bool social= false;
-bool now= false;
 
-void check_social() {
-  now = digitalRead(2);
-  if( social != now) {
-    social_msg.data = !now;
-    digitalWrite(13,now);
-    social_pub.publish( &social_msg );
-    social = now;
-  }
-}
 
 
 
@@ -96,7 +83,6 @@ void setup() {
   nh.initNode();
   nh.subscribe(sub_cmdmotor);
   nh.advertise(battery_pub);
-  nh.advertise(social_pub);
   nh.spinOnce();
 
   
@@ -108,15 +94,12 @@ void setup() {
   servoR.write(0);
   
   pinMode(13,OUTPUT);
-  pinMode(2,INPUT);
-  digitalWrite(2,HIGH);
 }
 
 void loop() {
   // ROBOT MOVEMENT
   check_battery(5000);
   speed_control(0.8);
-  check_social();
   nh.spinOnce();
   delay(100);
 }

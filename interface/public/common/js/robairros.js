@@ -125,14 +125,3 @@ var topic_battery_level = new ROSLIB.Topic({
 topic_battery_level.subscribe(function(message) {
     robairros.batteryChange(parseInt(message.data));
 });
-//Topic for battery_level
-var topic_social_touch = new ROSLIB.Topic({
-    ros: ros,
-    name: '/social_touch',
-    messageType: 'std_msgs/Bool'
-});
-
-topic_social_touch.subscribe(function(message) {
-    robairros.socialChange(message.data);
-
-});

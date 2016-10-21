@@ -118,14 +118,7 @@ robairros.batteryChange = function(battery) {
     $("#battery").removeClass();
     $("#battery").addClass("fa fa-battery-" + (battery - 21));
 }
-robairros.socialChange = function(touch) {
-    if (touch)
-        $("#socialtouch").css('color', 'red');
-    else {
-        $("#socialtouch").css('color', 'black');
 
-    }
-}
 robairros.pingChange = function(ping) {
     if (ping>500)
         $("#ping").css('color', 'red');
