@@ -49,4 +49,4 @@ app.get('/', function(req, res) {
 https.createServer({
     key: fs.readFileSync(config.ssl.key),
     cert: fs.readFileSync(config.ssl.crt)
-}, app).listen(config.httpsPort,"192.168.0.58");
+}, app).listen(config.httpsPort);
