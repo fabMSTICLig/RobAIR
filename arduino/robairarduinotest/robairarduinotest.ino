@@ -1,13 +1,18 @@
+
+
 // ROS INCLUDE
 #include <ros.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/UInt8.h>
 #include <std_msgs/Byte.h> 
 #include <std_msgs/Bool.h>
 #include <robairmain/MotorsCmd.h>
 //ARDUINO InCUDE
 #include <Servo.h> 
+#include <Adafruit_NeoPixel.h>
+#include <Eyes.h>
 
-
+Eyes eyes(7);
 
 //ROS VARIABLE
 ros::NodeHandle nh;
@@ -67,12 +72,23 @@ void check_battery(unsigned int delay_check) {
   }
 }
 
+////////////EYES/////////////
 
+std_msgs::UInt8 eyes_msg;
+ros::Publisher eyes_pub("eyes",&eyes_msg);
 
+void setEyes(int id)
+{
+  eyes.setMatrice(id);
+  eyes_msg.data = 24;
+  eyes_pub.publish( &eyes_msg );
+}
 
+void cmdEyesCb(const std_msgs::UInt8& eyes_msg) {  //CALLBACK FUNCTION
+  setEyes(eyes_msg.data);
+}
 
-
-
+ros::Subscriber<std_msgs::UInt8> sub_cmdeyes("cmdeyes", &cmdEyesCb);
 
 //////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////ARDUINO SETUP////////////////////////////////////
@@ -83,9 +99,11 @@ void setup() {
   nh.initNode();
   nh.subscribe(sub_cmdmotor);
   nh.advertise(battery_pub);
+  nh.advertise(eyes_pub);
+  nh.subscribe(sub_cmdeyes);
   nh.spinOnce();
 
-  
+  eyes.begin();
   
   servoL.attach(6);
   servoR.attach(5);
@@ -94,6 +112,7 @@ void setup() {
   servoR.write(0);
   
   pinMode(13,OUTPUT);
+  eyes.setMatrice(EYESSTRAIGHT);
 }
 
 void loop() {

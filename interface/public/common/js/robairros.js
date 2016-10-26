@@ -96,8 +96,8 @@ setInterval(function() {
     var msg = new ROSLIB.Message({
         data: $.now()
     });
-  
-  robairros.ping=$.now();  
+
+  robairros.ping=$.now();
   topic_ping.publish(msg);
 }, 1000);
 topic_pong.subscribe(function(message) {
@@ -125,3 +125,27 @@ var topic_battery_level = new ROSLIB.Topic({
 topic_battery_level.subscribe(function(message) {
     robairros.batteryChange(parseInt(message.data));
 });
+
+///////////EYES/////////////
+var topic_cmdeyes = new ROSLIB.Topic({
+    ros: ros,
+    name: '/cmdeyes',
+    messageType: 'std_msgs/UInt8'
+});
+var topic_eyes = new ROSLIB.Topic({
+    ros: ros,
+    name: '/eyes',
+    messageType: 'std_msgs/UInt8'
+});
+
+topic_eyes.subscribe(function(message) {
+    robairros.eyesChange(parseInt(message.data));
+});
+
+robairros.setEyes = function(id){
+
+    var msg = new ROSLIB.Message({
+        data: id
+    });
+    topic_cmdeyes.publish(msg);
+}
