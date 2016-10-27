@@ -4,11 +4,12 @@
 #include <ros.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/UInt8.h>
-#include <std_msgs/Byte.h> 
+#include <std_msgs/Int8.h>
+#include <std_msgs/Byte.h>
 #include <std_msgs/Bool.h>
 #include <robairmain/MotorsCmd.h>
 //ARDUINO InCUDE
-#include <Servo.h> 
+#include <Servo.h>
 #include <Adafruit_NeoPixel.h>
 #include <Eyes.h>
 
@@ -30,13 +31,13 @@ Servo servoR;
 
 void cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK FUNCTION
   digitalWrite(13, HIGH-digitalRead(13));
-  
+
   cmd_msg_speedL = command_msg.speedL;
   cmd_msg_speedR = command_msg.speedR;
-  
+
   //digitalWrite(13,val);
   //val =!val;
-  
+
     battery_msg.data = 24;
     battery_pub.publish( &battery_msg );
 }
@@ -52,10 +53,10 @@ void speed_control(float coef_smoothness){
   //low filter for smooth acceleration
   cmd_speedL = cmd_speedL*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedL;
   cmd_speedR = cmd_speedR*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedR;
-  
+
   servoL.write(map(cmd_speedL, -100, 100, 0, 179));
   servoR.write(map(cmd_speedR, -100, 100, 0, 179));
-  
+
 }
 
 ros::Subscriber<robairmain::MotorsCmd> sub_cmdmotor("cmdmotors", &cmdmotorsCb);
@@ -90,27 +91,52 @@ void cmdEyesCb(const std_msgs::UInt8& eyes_msg) {  //CALLBACK FUNCTION
 
 ros::Subscriber<std_msgs::UInt8> sub_cmdeyes("cmdeyes", &cmdEyesCb);
 
+//////////////////HEAD/////////////////////////////////
+
+
+Servo servoHead;
+
+std_msgs::Int8 head_msg;
+ros::Publisher head_pub("head",&head_msg);
+
+void setHead(int degree)
+{
+  servoHead.write(map(degree,-127,127,0,180));
+  head_msg.data=degree;
+  head_pub.publish( &head_msg );
+}
+
+void cmdHeadCb(const std_msgs::Int8& head_msg) {  //CALLBACK FUNCTION
+  setHead(head_msg.data);
+}
+
+ros::Subscriber<std_msgs::Int8> sub_cmdhead("cmdhead", &cmdHeadCb);
+
 //////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////ARDUINO SETUP////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////// 
-void setup() {   
-  while(!Serial);    
+//////////////////////////////////////////////////////////////////////////////////////
+void setup() {
+  while(!Serial);
   nh.getHardware()->setBaud(57600);
   nh.initNode();
   nh.subscribe(sub_cmdmotor);
   nh.advertise(battery_pub);
   nh.advertise(eyes_pub);
   nh.subscribe(sub_cmdeyes);
+  nh.advertise(head_pub);
+  nh.subscribe(sub_cmdhead);
   nh.spinOnce();
 
   eyes.begin();
-  
+
   servoL.attach(6);
   servoR.attach(5);
-  
+  servoHead.attach(9);
+
   servoL.write(0);
   servoR.write(0);
-  
+  servoHead.write(90);
+
   pinMode(13,OUTPUT);
   eyes.setMatrice(EYESSTRAIGHT);
 }
