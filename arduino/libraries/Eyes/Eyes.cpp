@@ -1,314 +1,195 @@
 #include "Arduino.h"
 #include "Eyes.h"
 
-static byte leftleft[] =
-{
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
-    0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, //
-    0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, //
-    0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0 //
-}; 
 
-static byte left[] =
-{
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
-    0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, //
-    0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, //
-    0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0 //
-}; 
+char vide[]={
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0
+};
 
-static byte middle[] =
-{
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
-    0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, //
-    0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, //
-    0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0 //
-}; 
+char eyesstraight[]={
+    0,0,7,7,7,0,0,0,0,7,7,7,0,0,
+    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
+    0,7,0,2,0,7,0,0,7,0,2,0,7,0,
+    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
+    0,0,7,7,7,0,0,0,0,7,7,7,0,0
+};
 
-static byte right[] =
-{
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
-    0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, //
-    0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, //
-    0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0 //
-}; 
+char eyesright[]={
+    0,0,7,7,7,0,0,0,0,7,7,7,0,0,
+    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
+    0,7,0,0,2,7,0,0,7,0,0,2,7,0,
+    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
+    0,0,7,7,7,0,0,0,0,7,7,7,0,0
+};
 
-
-static byte rightright[] =
-{
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
-    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, //
-    0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, //
-    0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1 //
-}; 
-
-static byte panic[] =
-{
-    1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, //
-    0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, //
-    0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, //
-    0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, //
-    1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1 //
+char eyesleft[]={
+    0,0,7,7,7,0,0,0,0,7,7,7,0,0,
+    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
+    0,7,2,0,0,7,0,0,7,2,0,0,7,0,
+    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
+    0,0,7,7,7,0,0,0,0,7,7,7,0,0
 };
 
 
-static byte wifi[] =
-{
-    0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, //
-    0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, //
-    0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, //
-    0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, //
-    0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0 //
+char eyestop[]={
+    0,0,7,7,7,0,0,0,0,7,7,7,0,0,
+    0,7,0,2,0,7,0,0,7,0,2,0,7,0,
+    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
+    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
+    0,0,7,7,7,0,0,0,0,7,7,7,0,0
 };
 
-static byte collision[] =
-{
-    0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, //
-    0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, //
-    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, //
-    0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, //
-    0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0 //
+char eyesbottom[]={
+    0,0,7,7,7,0,0,0,0,7,7,7,0,0,
+    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
+    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
+    0,7,0,2,0,7,0,0,7,0,2,0,7,0,
+    0,0,7,7,7,0,0,0,0,7,7,7,0,0
 };
 
-static byte obstacle[] =
-{
-    0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, //
-    0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, //
-    0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, //
-    0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, //
-    0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0 //
+char exclamations[]={
+    0,0,1,0,1,0,1,0,1,0,1,0,0,0,
+    0,0,1,0,1,0,1,0,1,0,1,0,0,0,
+    0,0,1,0,1,0,1,0,1,0,1,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,1,0,1,0,1,0,1,0,1,0,0,0
+};
+
+char interogations[]={
+    0,4,4,4,0,4,4,4,0,4,4,4,0,0,
+    0,4,0,4,0,4,0,4,0,4,0,4,0,0,
+    0,0,4,4,0,0,4,4,0,0,4,4,0,0,
+    0,0,4,0,0,0,4,0,0,0,4,0,0,0,
+    0,0,2,0,0,0,2,0,0,0,2,0,0,0
+};
+
+char stop[]={
+    1,1,1,0,1,1,1,0,1,1,1,0,1,1,
+    1,0,0,0,0,1,0,0,1,0,1,0,1,1,
+    1,1,1,0,0,1,0,0,1,0,1,0,1,0,
+    0,0,1,0,0,1,0,0,1,0,1,0,1,0,
+    1,1,1,0,0,1,0,0,1,1,1,0,1,0
+};
+
+char hello[]={
+    7,0,7,0,2,2,0,1,0,1,0,5,5,5,
+    7,0,7,0,2,0,0,1,0,1,0,5,0,5,
+    7,7,7,0,2,2,0,1,0,1,0,5,0,5,
+    7,0,7,0,2,0,0,1,0,1,0,5,0,5,
+    7,0,7,0,2,2,0,1,1,1,1,5,5,5
+
 };
 
 
-Eyes::Eyes(){
-	_nbLine = 0;
-	_nbColumn = 0;
+
+char error[]={
+    1,1,3,3,3,1,1,1,3,3,3,1,1,1,
+    1,0,3,0,3,1,0,1,3,0,3,1,0,1,
+    1,1,3,3,3,1,1,1,3,0,3,1,1,1,
+    1,0,3,3,0,1,1,0,3,0,3,1,1,0,
+    1,1,3,0,3,1,0,1,3,3,3,1,0,1
+};
+
+
+char * tabeyes[] = {
+        vide,
+        eyesstraight,
+        eyesright,
+        eyesleft,
+        eyestop,
+        eyesbottom,
+        exclamations,
+        interogations,
+        stop,
+        hello,
+        error
+};
+
+Eyes::Eyes(int pin){
+    pixels = new Adafruit_NeoPixel(NUMPIXELS, pin, NEO_GRB + NEO_KHZ800);
 }
 
-Eyes::Eyes(int lines, int column){
-	_nbLine = lines;
-	_nbColumn = column;
-
-	matrix = new Adafruit_NeoPixel*[_nbColumn];
-	//PIN 1,2,3,4,5,etc.
-	for(int i=0; i < _nbLine; i++)
-	{
-		matrix[i] = new Adafruit_NeoPixel(_nbColumn, i+2, NEO_GRB + NEO_KHZ800);	
-	}
+Eyes::~Eyes(){
+    delete pixels;
 }
 
-void Eyes::print()
-{
-
-}
-
-void Eyes::show()
-{
-	// matrix[0]->setPixelColor(0, matrix[0]->Color(0,100,100));
-	for(int i=0; i < _nbLine; i++)
-	{
-		for(int j=0; j<_nbColumn; j++)
-		{
-			//matrix[i]->setPixelColor(j, matrix[i]->Color(100,0,0));
-			//delay(100);
-			matrix[i]->setPixelColor(j, matrix[i]->Color(0,0,101));
-		}
-		matrix[i]->show();
-	}
-}
 
 void Eyes::begin()
 {
-	for(int i=0; i < _nbLine; i++)
-	{
-		matrix[i]->begin();
-	}
-
+    pixels->begin();
 }
 
-void Eyes::display_void()
+int Eyes::display_void()
 {
-        for(int i=0; i < _nbLine; i++)
-        {
-                for(int j=0; j<_nbColumn; j++)
-                {
-                        matrix[i]->setPixelColor(j, matrix[i]->Color(0,0,0));
-                }
-                matrix[i]->show();
-        }
+    for(int i=0; i < NUMPIXELS; i++)
+    {
+        pixels->setPixelColor(i, pixels->Color(0,0,0));
+        pixels->show();
+    }
+    return EYESVIDE;
 }
 
-void Eyes::display_panic()
+int Eyes::setMatrice(char * mat)
 {
-        for(int i=0; i < _nbLine; i++)
+
+    int ligne = 0;
+    int id = 0;
+    int mir = 0;
+    for(int i=0; i<NUMPIXELS; i++) {
+        ligne = i /LINEWIDTH;
+        if(ligne % 2 == 1)
         {
-                for(int j=_nbColumn-1; j>=0; j--)
-                {
-                   if(panic[_nbColumn*i+j] == 1) {
-		        matrix[i]->setPixelColor(j, matrix[i]->Color(255,0,0));
-		   } else {
-		        matrix[i]->setPixelColor(j, matrix[i]->Color(0,0,0));
-		   }	
-                }
-                matrix[i]->show();
+            id=i;
         }
+        else
+        {
+            id = ligne*LINEWIDTH+(LINEWIDTH-(i%LINEWIDTH))-1;
+        }
+        pixels->setPixelColor(id, pixels->Color(((mat[i] & 1) == 1 ? 100 : 0),((mat[i] & 2) == 2 ? 100 : 0),((mat[i] & 4) == 4 ? 100 : 0)));
+    }
+
+    pixels->show();
+
 }
 
-void Eyes::display_wifi()
+int Eyes::setMatrice(int id)
 {
-        for(int i=0; i < _nbLine; i++)
-        {
-                for(int j=_nbColumn; j>=0; j--)
-                {
-                   if(wifi[_nbColumn*i+j] == 1) {
-                        matrix[i]->setPixelColor(j, matrix[i]->Color(255,0,0));
-                   } else {
-                        matrix[i]->setPixelColor(j, matrix[i]->Color(0,0,0));  
-                   }
-                }
-                matrix[i]->show();
-        }
+    setMatrice(tabeyes[id]);
+
+    return id;
 }
 
-void Eyes::display_collision()
+
+int Eyes::display_stop()
 {
-        for(int i=0; i < _nbLine; i++)
-        {
-                for(int j=0; j<_nbColumn; j++)
-                {
-                   if(obstacle[_nbColumn*i+j] == 1) {
-                        matrix[i]->setPixelColor(j, matrix[i]->Color(255,0,0));
-                   } else {
-                        matrix[i]->setPixelColor(j, matrix[i]->Color(0,0,0));
-                   }
-                }
-                matrix[i]->show();
-        }
-}
-
-void Eyes::display_obstacle()
-{
-        for(int i=0; i < _nbLine; i++)
-        {
-                for(int j=0; j<_nbColumn; j++)
-                {
-                   if(obstacle[_nbColumn*i+j] == 1) {
-                        matrix[i]->setPixelColor(j, matrix[i]->Color(255,0,0));
-                   } else {
-                        matrix[i]->setPixelColor(j, matrix[i]->Color(0,0,0));
-                   }
-                }
-                matrix[i]->show();
-        }
+    setMatrice(stop);
+    return EYESSTOP;
 }
 
 
-Eyes::~Eyes(){
-	for(int i=0; i < _nbLine; i++)
-	{
-		delete[] matrix[i];
-	}	
-	delete[] matrix;
+int Eyes::gaze_direction(byte value){
+    switch (value) {
+    case EYESSTRAIGHT:
+        setMatrice(eyesleft);
+        break;
+    case EYESLEFT:
+        setMatrice(eyesleft);
+        break;
+    case EYESRIGHT:
+        setMatrice(eyesright);
+        break;
+
+    case EYESTOP:
+        setMatrice(eyestop);
+        break;
+
+    case EYESBOTTOM:
+        setMatrice(eyesbottom);
+        break;
+    }
+    return value;
 }
-
-void Eyes::gaze_direction(byte value){
-	
-	for(int i=0; i < _nbLine; i++)
-	{
-		for(int j=0; j<_nbColumn; j++)
-		{
-			if(value > 0 && value < 55) {
-				if(leftleft[_nbColumn*i+j] == 1)
-				{
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(100,0,100));
-				}
-    				else
-				{
-                                    if(leftleft[_nbColumn*i+j] == 2) {
-				//	matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(100,100,100));                      
-				    }
-                                    else 
-                                     {
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(0,0,0));
-                                     }
-				}
-				matrix[i]->show();
-			}
-			if(value >= 56 && value < 100) {
-				if(left[_nbColumn*i+j] == 1)
-				{
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(100,0,100));
-				}
-				else
-				{
-				    if(leftleft[_nbColumn*i+j] == 2) {
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(100,100,100));                      
-				    }
-                                    else 
-                                     {
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(0,0,0));
-                                     }
-				}
-				matrix[i]->show();
-			}
-			if(value >= 101 && value < 155) {
-				if(middle[_nbColumn*i+j] == 1)
-				{
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(100,0,100));
-				}
-				else
-				{
-			            if(leftleft[_nbColumn*i+j] == 2) {
-				//	matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(100,100,100));                      
-				    }
-                                    else 
-                                     {
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(0,0,0));
-                                     }
-				}
-				matrix[i]->show();
-			}
-			if(value >= 156 && value < 200) {
-				if(right[_nbColumn*i+j] == 1)
-				{
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(100,0,100));
-				}
-				else
-				{
-				    if(leftleft[_nbColumn*i+j] == 2) {
-				//	matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(100,100,100));                      
-				    }
-                                    else 
-                                     {
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(0,0,0));
-                                     }
-				}
-				matrix[i]->show();
-			}
-			if(value >= 201 && value < 256) {
-				if(rightright[_nbColumn*i+j] == 1)
-				{
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(100,0,100));
-				}
-				else
-				{
-				    if(leftleft[_nbColumn*i+j] == 2) {
-				//	matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(100,100,100));                      
-				    }
-                                    else 
-                                     {
-					matrix[i]->setPixelColor(_nbColumn - j - 1, matrix[i]->Color(0,0,0));
-                                     }
-				}
-				matrix[i]->show();
-			}		
-		}
-	}		
-}
-
-
