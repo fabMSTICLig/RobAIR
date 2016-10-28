@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="D">
+  <design>
+    <source>D:/Users/Germain/projets/fablab/Rob-AIR/docs/elec/robair.sch</source>
+    <date>24/10/2016 23:48:54</date>
+    <tool>Eeschema 4.0.4-stable</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>robair.sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="P5">
+      <value>Batt</value>
+      <libsource lib="conn" part="CONN_01X02"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E7176</tstamp>
+    </comp>
+    <comp ref="P3">
+      <value>Servo</value>
+      <libsource lib="conn" part="CONN_01X02"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E71DF</tstamp>
+    </comp>
+    <comp ref="P2">
+      <value>Yeux</value>
+      <libsource lib="conn" part="CONN_01X02"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E727A</tstamp>
+    </comp>
+    <comp ref="P1">
+      <value>HUB</value>
+      <libsource lib="conn" part="CONN_01X02"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E729E</tstamp>
+    </comp>
+    <comp ref="SW1">
+      <value>SPST</value>
+      <libsource lib="device" part="SPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E8376</tstamp>
+    </comp>
+    <comp ref="P4">
+      <value>Chargeur</value>
+      <libsource lib="conn" part="CONN_01X02"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E83AB</tstamp>
+    </comp>
+    <comp ref="U1">
+      <value>UEI30-050-Q12P-C</value>
+      <libsource lib="robair" part="UEI30-050-Q12P-C"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E8F18</tstamp>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="conn" part="CONN_01X02">
+      <description>Connector, single row, 01x02</description>
+      <footprints>
+        <fp>Pin_Header_Straight_1X02</fp>
+        <fp>Pin_Header_Angled_1X02</fp>
+        <fp>Socket_Strip_Straight_1X02</fp>
+        <fp>Socket_Strip_Angled_1X02</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">P</field>
+        <field name="Value">CONN_01X02</field>
+      </fields>
+      <pins>
+        <pin num="1" name="P1" type="passive"/>
+        <pin num="2" name="P2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="SPST">
+      <description>Interrupteur simple</description>
+      <fields>
+        <field name="Reference">SW</field>
+        <field name="Value">SPST</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="input"/>
+        <pin num="2" name="2" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="robair" part="UEI30-050-Q12P-C">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">UEI30-050-Q12P-C</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Vin+" type="input"/>
+        <pin num="2" name="Vin-" type="input"/>
+        <pin num="3" name="Remote_ON/OFF" type="input"/>
+        <pin num="4" name="Vout+" type="output"/>
+        <pin num="5" name="Vout-" type="output"/>
+        <pin num="6" name="Trim" type="input"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="robair">
+      <uri>D:\Users\Germain\projets\fablab\Rob-AIR\docs\elec\robair.lib</uri>
+    </library>
+    <library logical="device">
+      <uri>D:\Program Files\KiCad\share\kicad\library\device.lib</uri>
+    </library>
+    <library logical="conn">
+      <uri>D:\Program Files\KiCad\share\kicad\library\conn.lib</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="Net-(SW1-Pad2)">
+      <node ref="SW1" pin="2"/>
+      <node ref="U1" pin="1"/>
+    </net>
+    <net code="2" name="Net-(P4-Pad2)">
+      <node ref="P5" pin="2"/>
+      <node ref="P4" pin="2"/>
+      <node ref="SW1" pin="1"/>
+    </net>
+    <net code="3" name="Net-(U1-Pad3)">
+      <node ref="U1" pin="3"/>
+    </net>
+    <net code="4" name="Net-(U1-Pad6)">
+      <node ref="U1" pin="6"/>
+    </net>
+    <net code="5" name="Net-(P4-Pad1)">
+      <node ref="U1" pin="2"/>
+      <node ref="P4" pin="1"/>
+      <node ref="P5" pin="1"/>
+    </net>
+    <net code="6" name="Net-(P1-Pad1)">
+      <node ref="U1" pin="4"/>
+      <node ref="P1" pin="1"/>
+      <node ref="P2" pin="1"/>
+      <node ref="P3" pin="1"/>
+    </net>
+    <net code="7" name="Net-(P1-Pad2)">
+      <node ref="P1" pin="2"/>
+      <node ref="P2" pin="2"/>
+      <node ref="P3" pin="2"/>
+      <node ref="U1" pin="5"/>
+    </net>
+  </nets>
+</export>
