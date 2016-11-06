@@ -57,19 +57,19 @@ $(document).keydown(function(e) {
         switch (e.which) {
             case 37: // left
                 left();
-                lastkeydown=e.which;
+                lastkeydown = e.which;
                 break;
             case 38: // up
                 foward();
-                lastkeydown=e.which;
+                lastkeydown = e.which;
                 break;
             case 39: // right
                 right();
-                lastkeydown=e.which;
+                lastkeydown = e.which;
                 break;
             case 40: // down
                 backward();
-                lastkeydown=e.which;
+                lastkeydown = e.which;
                 break;
             case 107: // down
                 setSpeed(robairros.speed + 5);
@@ -92,7 +92,7 @@ $(document).keyup(function(e) {
         case 38: // up
         case 39: // right
         case 40: // down
-            lastkeydown=0;
+            lastkeydown = 0;
             stop();
             e.preventDefault(); // prevent the default action (scroll / move caret)
             break;
@@ -107,7 +107,7 @@ $('#right').mousedown(right).mouseup(stop);
 $('#foward').mousedown(foward).mouseup(stop);
 $('#backward').mousedown(backward).mouseup(stop);
 $('#hleft').mousedown(turnheadleft).mouseup(stop);
-$('#hright').mousedown(turnheadright).mouseup(stop);
+$('#refresh').click(robairros.reboot);
 
 
 
@@ -124,47 +124,39 @@ robairros.batteryChange = function(battery) {
 }
 
 robairros.pingChange = function(ping) {
-    if (ping>500)
-        $("#ping").css('color', 'red');
-    else if(ping>200)
-        $("#ping").css('color', 'orange');
-    else {
-        $("#ping").css('color', 'black');
-    }
+        if (ping > 500)
+            $("#ping").css('color', 'red');
+        else if (ping > 200)
+            $("#ping").css('color', 'orange');
+        else {
+            $("#ping").css('color', 'black');
+        }
 
-}
-/////////////////////////////YEUX//////////////////////////////
+    }
+    /////////////////////////////YEUX//////////////////////////////
 
 robairros.eyesChange = function(id) {
     Eyes.drawEyes(id);
 }
 
 var eyesCanvas = $("#eyesCanvas");
-eyesCanvas.on("click" , function (e){
-    var posX = (e.pageX - $(this).offset().left)/eyesCanvas.width(),posY = (e.pageY - $(this).offset().top)/eyesCanvas.height();
-    console.log(posX+" "+posY);
+eyesCanvas.on("click", function(e) {
+    var posX = (e.pageX - $(this).offset().left) / $(this).width(),
+        posY = (e.pageY - $(this).offset().top) / $(this).height();
 
-    if(posX<0.25)
-    {
+    if (posX < 0.25) {
         Eyes.drawEyes(Eyes.EYESLEFT);
         robairros.setEyes(Eyes.EYESLEFT);
-    }
-    else if(posX>0.75)
-    {
+    } else if (posX > 0.75) {
         Eyes.drawEyes(Eyes.EYESRIGHT);
         robairros.setEyes(Eyes.EYESRIGHT);
-    }
-    else if(posY<0.25)
-    {
+    } else if (posY < 0.25) {
         Eyes.drawEyes(Eyes.EYESTOP);
         robairros.setEyes(Eyes.EYESTOP);
-    }
-    else if(posY>0.75)
-    {
+    } else if (posY > 0.75) {
         Eyes.drawEyes(Eyes.EYESBOTTOM);
         robairros.setEyes(Eyes.EYESBOTTOM);
-    }
-    else {
+    } else {
         Eyes.drawEyes(Eyes.EYESSTRAIGHT);
         robairros.setEyes(Eyes.EYESSTRAIGHT);
     }
@@ -174,36 +166,58 @@ eyesCanvas.on("click" , function (e){
 //////////////////////HEAD////////////////
 
 
-function setHeadTheta(val)
-{
+
+robairros.headChange = function(deg) {
+    setHeadTheta(deg);
+}
+
+function setHeadTheta(val) {
     var srotate = "rotate(" + val + "deg)";
     $("#head").css({
-      "-webkit-transform" : srotate,
-      "transform" : srotate,
-      "-webkit-transform-origin" : "50% 50%",
-      "transform-origin" : "50% 50%"
+        "-webkit-transform": srotate,
+        "transform": srotate,
+        "-webkit-transform-origin": "50% 100%",
+        "transform-origin": "50% 100%"
     });
 
 }
-var turnheadright = function(){
-    setHeadTheta(60);
+var turnheadright = function() {
+  robairros.reboot();
 }
-var turnheadleft = function(){
+var turnheadleft = function() {
     setHeadTheta(-60);
 }
 
 
 Math.degrees = function(radians) {
-  return radians * 180 / Math.PI;
+    return radians * 180 / Math.PI;
 };
 
-var eyesCanvas = $("#headCanvas");
-eyesCanvas.on("mousedown" , function (e){
-    var posX = (e.pageX - $(this).offset().left)/eyesCanvas.width(),posY = (e.pageY - $(this).offset().top)/eyesCanvas.height();
+var headCanvas = $("#headCanvas");
 
+headMouseDown = false;
 
-        posX=posX*2-1;
-        setHeadTheta(-(Math.degrees(Math.acos(posX))-90));
+headCanvas.on("mouseup touchend mouseleave", function(e) {
+    headMouseDown = false;
+});
+headCanvas.on("mousedown touchstart", function(e) {
+    headMouseDown = true;
+        var posX = (e.pageX - $(this).offset().left) / headCanvas.width(),
+            posY = (e.pageY - $(this).offset().top) / headCanvas.height();
+        posX = posX * 2 - 1;
+        degree=Math.degrees(Math.acos(posX)) - 90;
+    //    setHeadTheta(-degree);
+        robairros.setHead(-parseInt(degree));
+});
+headCanvas.on("mousemove touchmove", function(e) {
+    if (headMouseDown) {
+        var posX = (e.pageX - $(this).offset().left) / headCanvas.width(),
+            posY = (e.pageY - $(this).offset().top) / headCanvas.height();
+        posX = posX * 2 - 1;
+        degree=Math.degrees(Math.acos(posX)) - 90;
+    //    setHeadTheta(-degree);
+        robairros.setHead(-parseInt(degree));
+    }
     e.preventDefault();
     e.stopPropagation();
 });
