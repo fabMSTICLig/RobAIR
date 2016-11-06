@@ -3,6 +3,7 @@
 if [ ! -f .robair ]; then
 	echo "Vous devez être dans le répertoire root du dépot"
 	echo "Et exécuter scripts/install.sh"
+	exit
 fi
 
 export ROBAIR_HOME=`pwd`
@@ -12,12 +13,15 @@ export ROBAIR_HOME=`pwd`
 # et création des variables d'environement correspondantes
 ##########################################
 
-read -r -p "Configurer ~/bashrc ? [O/n] "
-if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-	echo "" >> ~/.bashrc
-	echo "#ROBAIR SETTINGS" >> ~/.bashrc
-	echo "export ROBAIR_HOME=$ROBAIR_HOME" >> ~/.bashrc
-	echo "source \$ROBAIR_HOME/scripts/env.bash"  >> ~/.bashrc
+testbash=`cat ~/.bashrc | grep ROBAIR`
+if [[ -z $testbash ]]; then
+	read -r -p "Configurer ~/bashrc ? [O/n] "
+	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
+		echo "" >> ~/.bashrc
+		echo "#ROBAIR SETTINGS" >> ~/.bashrc
+		echo "export ROBAIR_HOME=$ROBAIR_HOME" >> ~/.bashrc
+		echo "source \$ROBAIR_HOME/scripts/env.bash"  >> ~/.bashrc
+	fi
 fi
 
 # Récupère l'IP actuel du Robair
