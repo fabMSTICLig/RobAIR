@@ -32,7 +32,7 @@ if [ -z $http_proxy ]; then
 	fi
 fi
 
-if [ -z $https_proxy] || [ ! -z $http_proxy ]; then
+if [ -z $https_proxy] && [ ! -z $http_proxy ]; then
 	read -r -p "Votre proxy https est identique au proxy http ? [O/n] "
 	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
         	export https_proxy=$http_proxy
@@ -98,6 +98,7 @@ if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 	sudo -E rosdep init
 	rosdep update
 	sudo -E apt-get install ros-kinetic-rosbridge-suite
+	source /opt/ros/kinetic/setup.bash
 
 fi
 
