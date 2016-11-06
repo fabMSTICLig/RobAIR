@@ -48,19 +48,19 @@ sudo -E apt-get update
 
 
 echo "$(tput setaf 1)Installation $(tput setab 7)coturn nodejs npm $(tput sgr0)"
-sudo -E apt-get install coturn nodejs-legacy npm
+sudo -E apt-get install coturn nodejs-legacy npm chromium-brower
 
-
-
-read -r -p "Installation signalmaster ? [O/n] "
-if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-	git clone https://github.com/andyet/signalmaster.git
-	#Copie et edition de la configuration de signalmaster
-	cp $ROBAIR_HOME/configs/signalmaster.json $ROBAIR_HOME/signalmaster/config/development.json
-	python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:key $ROBAIR_HOME/ssl/device.key
-	python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
-	cd $ROBAIR_HOME/signalmaster
-	npm install
+if [[ ! -d signalmaster ]]; then
+	read -r -p "Installation signalmaster ? [O/n] "
+	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
+		git clone https://github.com/andyet/signalmaster.git
+		#Copie et edition de la configuration de signalmaster
+		cp $ROBAIR_HOME/configs/signalmaster.json $ROBAIR_HOME/signalmaster/config/development.json
+		python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:key $ROBAIR_HOME/ssl/device.key
+		python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
+		cd $ROBAIR_HOME/signalmaster
+		npm install
+	fi
 fi
 
 cd $ROBAIR_HOME/interface
