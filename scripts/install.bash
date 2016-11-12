@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 if [ ! -f .robair ]; then
 	echo "Vous devez être dans le répertoire root du dépot"
@@ -52,7 +52,7 @@ sudo -E apt-get update
 
 
 echo "$(tput setaf 1)Installation $(tput setab 7)coturn nodejs npm $(tput sgr0)"
-sudo -E apt-get install coturn nodejs-legacy npm chromium-brower
+sudo -E apt-get install coturn nodejs-legacy npm chromium-browser
 
 if [[ ! -d signalmaster ]]; then
 	read -r -p "Installation signalmaster ? [O/n] "
