@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "std_msgs/UInt64.h"
+#include "std_msgs/Int8.h"
 #include "std_msgs/Empty.h"
 
 #include <sstream>
@@ -15,17 +16,17 @@ void pingCallback(const std_msgs::UInt64::ConstPtr& msg)
         msgout.data=msg->data;
         pong_pub.publish(msgout);
 }
-void rebootCallback(const std_msgs::Empty::ConstPtr& msg)
+void rebootCallback(const std_msgs::Int8::ConstPtr& msg)
 {
 
   pid_t child_pid;
   child_pid = fork ();
   if (child_pid == 0)
   {
+        //ros::Duration(2.0).sleep();
         system("robairreboot.bash");
         ros::shutdown();
   }
-   //execl("/home/robair/Rob-AIR/scripts/robairreboot.bash","robairreboot.bash",NULL);*/
 
 }
 

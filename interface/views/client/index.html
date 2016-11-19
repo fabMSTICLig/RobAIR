@@ -105,10 +105,27 @@
     </div>
 
 
+    <div class="modal fade" id="rebootModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">Redémarrage</h4>
+          </div>
+          <div class="modal-body">
+            <p>L'interface va redémarrer dans <span id="rebootCount" >5</span></p>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
         <script type="text/javascript" src="common/libs/jquery-3.1.1.min.js"></script>
         <script type="text/javascript" src="common/libs/latest-v2.js"></script>
         <script type="text/javascript" src="common/libs/eventemitter2.js"></script>
         <script type="text/javascript" src="common/libs/roslib.min.js"></script>
+        <script type="text/javascript" src="common/libs/bootstrap.min.js"></script>
         <script type="text/javascript" src="client/eyes.js"></script>
         <script type="text/javascript" src="common/js/config.js"></script>
         <script type="text/javascript" src="common/js/robairrtc.js"></script>

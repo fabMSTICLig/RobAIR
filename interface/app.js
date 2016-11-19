@@ -45,6 +45,10 @@ app.get('/', function(req, res) {
         return res.sendFile(__dirname+'/views/client/index.html');
     }
 });
+app.get('/local', function(req, res) {
+    res.header('Content-type', 'text/html');
+        return res.sendFile(__dirname+'/views/client/index.html');
+});
 
 https.createServer({
     key: fs.readFileSync(config.ssl.key),

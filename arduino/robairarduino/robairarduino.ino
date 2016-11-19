@@ -12,6 +12,7 @@
 #include <std_msgs/Int8.h>
 #include <std_msgs/Byte.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/String.h>
 #include <robairmain/MotorsCmd.h>
 //ARDUINO InCUDE
 #include <Servo.h>
@@ -31,6 +32,14 @@ int cmd_speedR = 0;
 int cmd_msg_speedL = 0; //current command send by user
 int cmd_msg_speedR = 0;
 
+int cmd_msg_head = 0;
+int cmd_head=0;
+
+
+
+std_msgs::String log_msg;
+ros::Publisher log_pub("log",&log_msg);
+
 #ifdef USESERVO
 Servo servoL;
 Servo servoR;
@@ -38,7 +47,7 @@ Servo servoR;
 MD49 md49(Serial1);
 #define RML 2
 #define RMR 3
-#define RTRESH 1
+#define RTRESH 0
 
 #endif
 
@@ -60,8 +69,10 @@ void stop_motors(){
   cmd_msg_speedL = 0;
   cmd_msg_speedR = 0;
   
+#ifndef USESERVO
   digitalWrite(RML,LOW);
   digitalWrite(RMR,LOW);
+#endif
   
 }
 
@@ -71,6 +82,15 @@ void speed_control(float coef_smoothness){
   //low filter for smooth acceleration
   cmd_speedL = cmd_speedL*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedL;
   cmd_speedR = cmd_speedR*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedR;
+  
+  val=cmd_msg_head - cmd_head ;
+  
+  
+  if(abs(val)>1)
+  {
+    val= 1 * ((val < 0) ? -1 :1);
+  }
+    setHead(cmd_head+val);
 
   
 #ifdef USESERVO
@@ -96,7 +116,7 @@ void check_battery(unsigned int delay_check) {
 #ifdef USESERVO
 battery_msg.data = 24;
 #else
-    //battery_msg.data = md49.getVolt();
+    battery_msg.data = md49.getVolt();
 #endif
     battery_pub.publish( &battery_msg );
     last_timestamp_battery = millis() + delay_check;
@@ -104,8 +124,8 @@ battery_msg.data = 24;
 }
 
 ////////////EYES/////////////
-/*
-Eyes eyes(7);
+
+Eyes eyes(6);
 std_msgs::UInt8 eyes_msg;
 ros::Publisher eyes_pub("eyes",&eyes_msg);
 
@@ -121,7 +141,7 @@ void cmdEyesCb(const std_msgs::UInt8& eyes_msg) {  //CALLBACK FUNCTION
 }
 
 ros::Subscriber<std_msgs::UInt8> sub_cmdeyes("cmdeyes", &cmdEyesCb);
-*/
+
 //////////////////HEAD/////////////////////////////////
 
 
@@ -132,13 +152,21 @@ ros::Publisher head_pub("head",&head_msg);
 
 void setHead(int degree)
 {
-  servoHead.write(map(degree,-90,90,0,180));
-  head_msg.data=degree;
+  
+  if(degree!=cmd_head)
+  {
+    cmd_head=degree;
+  String msg= String("Val ")+String(degree);
+  log_msg.data = msg.c_str();
+  log_pub.publish(&log_msg);
+  head_msg.data=cmd_head;
   head_pub.publish( &head_msg );
+  }
+  servoHead.write(map(cmd_head,-90,90,0,180));
 }
 
 void cmdHeadCb(const std_msgs::Int8& head_msg) {  //CALLBACK FUNCTION
-  setHead(head_msg.data);
+  cmd_msg_head=head_msg.data;
 }
 
 ros::Subscriber<std_msgs::Int8> sub_cmdhead("cmdhead", &cmdHeadCb);
@@ -151,18 +179,19 @@ void setup() {
   nh.getHardware()->setBaud(57600);
   nh.initNode();
   nh.subscribe(sub_cmdmotor);
+  nh.advertise(log_pub);
   nh.advertise(battery_pub);
-  /*nh.advertise(eyes_pub);
-  nh.subscribe(sub_cmdeyes);*/
+  nh.advertise(eyes_pub);
+  nh.subscribe(sub_cmdeyes);
   nh.advertise(head_pub);
   nh.subscribe(sub_cmdhead);
   nh.spinOnce();
 
-  //eyes.begin();
+  eyes.begin();
 
   
 #ifdef USESERVO
-  servoL.attach(6);
+  servoL.attach(3);
   servoR.attach(5);
   servoL.write(0);
   servoR.write(0);
@@ -174,18 +203,18 @@ void setup() {
   md49.setAccel(3);
 #endif
   
-  servoHead.attach(9);
+  servoHead.attach(7);
   servoHead.write(90);
 
 
   pinMode(13,OUTPUT);
-  //eyes.setMatrice(EYESSTRAIGHT);
+  eyes.setMatrice(EYESSTRAIGHT);
 }
 
 void loop() {
   // ROBOT MOVEMENT
   check_battery(5000);
-  speed_control(0.8);
+  speed_control(0.08);
   nh.spinOnce();
-  delay(100);
+  delay(10);
 }

@@ -107,8 +107,16 @@ $('#right').mousedown(right).mouseup(stop);
 $('#foward').mousedown(foward).mouseup(stop);
 $('#backward').mousedown(backward).mouseup(stop);
 $('#hleft').mousedown(turnheadleft).mouseup(stop);
-$('#refresh').click(robairros.reboot);
-
+$('#refresh').click(function()
+{
+  robairros.reboot();
+  $('#rebootModal').modal();
+  var count =5;
+  setInterval(function(){
+    count--;
+    $('#rebootCount').html(""+count);
+  },1000)
+});
 
 
 

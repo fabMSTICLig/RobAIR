@@ -18,7 +18,7 @@ var webrtc = new SimpleWebRTC({
 		min: 600
             },
             frameRate: {
-                max: 24
+                max: 15
             },
         }
     }
