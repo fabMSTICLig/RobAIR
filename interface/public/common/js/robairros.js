@@ -100,8 +100,10 @@ setInterval(function() {
   robairros.ping=$.now();
   topic_ping.publish(msg);
 }, 1000);
+
+robairros.pingChange =function (val){}
 topic_pong.subscribe(function(message) {
-  console.log($.now()-robairros.ping);
+  //console.log($.now()-robairros.ping);
   robairros.pingChange($.now()-robairros.ping);
 });
 
@@ -122,6 +124,7 @@ var topic_battery_level = new ROSLIB.Topic({
     messageType: 'std_msgs/Int32'
 });
 
+robairros.batteryChange =function (val){}
 topic_battery_level.subscribe(function(message) {
     robairros.batteryChange(parseInt(message.data));
 });
@@ -138,6 +141,7 @@ var topic_eyes = new ROSLIB.Topic({
     messageType: 'std_msgs/UInt8'
 });
 
+robairros.eyesChanges =function (val){}
 topic_eyes.subscribe(function(message) {
     robairros.eyesChange(parseInt(message.data));
 });
@@ -148,4 +152,53 @@ robairros.setEyes = function(id){
         data: id
     });
     topic_cmdeyes.publish(msg);
+}
+
+///////////head/////////////
+var topic_cmdhead = new ROSLIB.Topic({
+    ros: ros,
+    name: '/cmdhead',
+    messageType: 'std_msgs/Int8'
+});
+var topic_head = new ROSLIB.Topic({
+    ros: ros,
+    name: '/head',
+    messageType: 'std_msgs/Int8'
+});
+
+robairros.headChange =function (val){}
+topic_head.subscribe(function(message) {
+    robairros.headChange(parseInt(message.data));
+    console.log("head "+parseInt(message.data));
+});
+
+robairros.setHead = function(degree){
+
+    var msg = new ROSLIB.Message({
+        data: degree
+    });
+    topic_cmdhead.publish(msg);
+}
+
+
+
+///////////reboot/////////////
+var topic_reboot = new ROSLIB.Topic({
+    ros: ros,
+    name: '/reboot',
+    messageType: 'std_msgs/Int8'
+})
+robairros.rebooting =function (){}
+
+topic_reboot.subscribe(function(message) {
+
+    console.log("reboot");
+    setTimeout(function(){location.reload();},5000);
+    robairros.rebooting();
+});
+
+robairros.reboot = function()
+{
+  topic_reboot.publish(new ROSLIB.Message({data:0}));
+
 }

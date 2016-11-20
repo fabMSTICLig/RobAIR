@@ -13,7 +13,6 @@
 #include <Adafruit_NeoPixel.h>
 #include <Eyes.h>
 
-Eyes eyes(7);
 
 //ROS VARIABLE
 ros::NodeHandle nh;
@@ -74,7 +73,8 @@ void check_battery(unsigned int delay_check) {
 }
 
 ////////////EYES/////////////
-
+/*
+Eyes eyes(7);
 std_msgs::UInt8 eyes_msg;
 ros::Publisher eyes_pub("eyes",&eyes_msg);
 
@@ -90,7 +90,7 @@ void cmdEyesCb(const std_msgs::UInt8& eyes_msg) {  //CALLBACK FUNCTION
 }
 
 ros::Subscriber<std_msgs::UInt8> sub_cmdeyes("cmdeyes", &cmdEyesCb);
-
+*/
 //////////////////HEAD/////////////////////////////////
 
 
@@ -101,7 +101,7 @@ ros::Publisher head_pub("head",&head_msg);
 
 void setHead(int degree)
 {
-  servoHead.write(map(degree,-127,127,0,180));
+  servoHead.write(map(degree,-90,90,0,180));
   head_msg.data=degree;
   head_pub.publish( &head_msg );
 }
@@ -121,13 +121,13 @@ void setup() {
   nh.initNode();
   nh.subscribe(sub_cmdmotor);
   nh.advertise(battery_pub);
-  nh.advertise(eyes_pub);
-  nh.subscribe(sub_cmdeyes);
+  /*nh.advertise(eyes_pub);
+  nh.subscribe(sub_cmdeyes);*/
   nh.advertise(head_pub);
   nh.subscribe(sub_cmdhead);
   nh.spinOnce();
 
-  eyes.begin();
+  //eyes.begin();
 
   servoL.attach(6);
   servoR.attach(5);
@@ -138,7 +138,7 @@ void setup() {
   servoHead.write(90);
 
   pinMode(13,OUTPUT);
-  eyes.setMatrice(EYESSTRAIGHT);
+  //eyes.setMatrice(EYESSTRAIGHT);
 }
 
 void loop() {

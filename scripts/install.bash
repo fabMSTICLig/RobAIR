@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 
 if [ ! -f .robair ]; then
 	echo "Vous devez être dans le répertoire root du dépot"
 	echo "Et exécuter scripts/install.sh"
+	exit
 fi
 
 export ROBAIR_HOME=`pwd`
@@ -12,12 +13,15 @@ export ROBAIR_HOME=`pwd`
 # et création des variables d'environement correspondantes
 ##########################################
 
-read -r -p "Configurer ~/bashrc ? [O/n] "
-if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-	echo "" >> ~/.bashrc
-	echo "#ROBAIR SETTINGS" >> ~/.bashrc
-	echo "export ROBAIR_HOME=$ROBAIR_HOME" >> ~/.bashrc
-	echo "source \$ROBAIR_HOME/scripts/env.bash"  >> ~/.bashrc
+testbash=`cat ~/.bashrc | grep ROBAIR`
+if [[ -z $testbash ]]; then
+	read -r -p "Configurer ~/bashrc ? [O/n] "
+	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
+		echo "" >> ~/.bashrc
+		echo "#ROBAIR SETTINGS" >> ~/.bashrc
+		echo "export ROBAIR_HOME=$ROBAIR_HOME" >> ~/.bashrc
+		echo "source \$ROBAIR_HOME/scripts/env.bash"  >> ~/.bashrc
+	fi
 fi
 
 # Récupère l'IP actuel du Robair
@@ -32,7 +36,7 @@ if [ -z $http_proxy ]; then
 	fi
 fi
 
-if [ -z $https_proxy] || [ ! -z $http_proxy ]; then
+if [ -z $https_proxy] && [ ! -z $http_proxy ]; then
 	read -r -p "Votre proxy https est identique au proxy http ? [O/n] "
 	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
         	export https_proxy=$http_proxy
@@ -48,19 +52,19 @@ sudo -E apt-get update
 
 
 echo "$(tput setaf 1)Installation $(tput setab 7)coturn nodejs npm $(tput sgr0)"
-sudo -E apt-get install coturn nodejs-legacy npm
+sudo -E apt-get install coturn nodejs-legacy npm chromium-browser
 
-
-
-read -r -p "Installation signalmaster ? [O/n] "
-if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-	git clone https://github.com/andyet/signalmaster.git
-	#Copie et edition de la configuration de signalmaster
-	cp $ROBAIR_HOME/configs/signalmaster.json $ROBAIR_HOME/signalmaster/config/development.json
-	python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:key $ROBAIR_HOME/ssl/device.key
-	python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
-	cd $ROBAIR_HOME/signalmaster
-	npm install
+if [[ ! -d signalmaster ]]; then
+	read -r -p "Installation signalmaster ? [O/n] "
+	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
+		git clone https://github.com/andyet/signalmaster.git
+		#Copie et edition de la configuration de signalmaster
+		cp $ROBAIR_HOME/configs/signalmaster.json $ROBAIR_HOME/signalmaster/config/development.json
+		python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:key $ROBAIR_HOME/ssl/device.key
+		python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
+		cd $ROBAIR_HOME/signalmaster
+		npm install
+	fi
 fi
 
 cd $ROBAIR_HOME/interface
@@ -98,6 +102,7 @@ if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 	sudo -E rosdep init
 	rosdep update
 	sudo -E apt-get install ros-kinetic-rosbridge-suite
+	source /opt/ros/kinetic/setup.bash
 
 fi
 
