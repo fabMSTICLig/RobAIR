@@ -1,0 +1,331 @@
+EESchema Schematic File Version 2
+LIBS:robair-rescue
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:robair
+LIBS:robair-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L CONN_01X02 P5
+U 1 1 580E7176
+P 6450 3450
+F 0 "P5" H 6450 3600 50  0000 C CNN
+F 1 "Batt" V 6550 3450 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 6450 3450 50  0001 C CNN
+F 3 "" H 6450 3450 50  0000 C CNN
+	1    6450 3450
+	0    1    1    0   
+$EndComp
+$Comp
+L CONN_01X02 P3
+U 1 1 580E71DF
+P 2000 3300
+F 0 "P3" H 2000 3450 50  0000 C CNN
+F 1 "5V haut" V 2100 3300 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 2000 3300 50  0001 C CNN
+F 3 "" H 2000 3300 50  0000 C CNN
+	1    2000 3300
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	2200 3350 3400 3350
+Wire Wire Line
+	2200 3250 3400 3250
+Connection ~ 2600 3350
+Connection ~ 2550 3250
+NoConn ~ 3400 3150
+$Comp
+L SPST SW1
+U 1 1 580E8376
+P 5800 3350
+F 0 "SW1" H 5800 3450 50  0000 C CNN
+F 1 "SPST" H 5800 3250 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 5800 3350 50  0001 C CNN
+F 3 "" H 5800 3350 50  0000 C CNN
+	1    5800 3350
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_01X02 P4
+U 1 1 580E83AB
+P 6750 3450
+F 0 "P4" H 6750 3600 50  0000 C CNN
+F 1 "Chargeur" V 6850 3450 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 6750 3450 50  0001 C CNN
+F 3 "" H 6750 3450 50  0000 C CNN
+	1    6750 3450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6300 3250 6400 3250
+Connection ~ 6300 3250
+NoConn ~ 4800 3150
+$Comp
+L UEI30-050-Q12P-C U1
+U 1 1 580E8F18
+P 4050 3250
+F 0 "U1" H 4050 3150 60  0000 C CNN
+F 1 "UEI30-050-Q12P-C" H 4100 3450 60  0000 C CNN
+F 2 "robair:UEI30-050-Q12P-C" H 4100 3200 60  0001 C CNN
+F 3 "" H 4100 3200 60  0001 C CNN
+	1    4050 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_01X01 P6
+U 1 1 580E9830
+P 3150 2350
+F 0 "P6" H 3150 2450 50  0000 C CNN
+F 1 "Arduino GND" V 3250 2350 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x01" H 3150 2350 50  0001 C CNN
+F 3 "" H 3150 2350 50  0000 C CNN
+	1    3150 2350
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	6300 3150 6300 3350
+Wire Wire Line
+	4800 3250 4950 3250
+Wire Wire Line
+	4800 3350 5300 3350
+$Comp
+L CONN_01X02 P9
+U 1 1 5812FBFC
+P 5150 2600
+F 0 "P9" H 5150 2750 50  0000 C CNN
+F 1 "MD49" V 5250 2600 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 5150 2600 50  0001 C CNN
+F 3 "" H 5150 2600 50  0000 C CNN
+	1    5150 2600
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6800 3050 6800 3250
+Wire Wire Line
+	6500 3250 6500 3050
+Connection ~ 6500 3050
+Wire Wire Line
+	6700 3250 6700 3150
+Wire Wire Line
+	6700 3150 6300 3150
+$Comp
+L CONN_01X02 P7
+U 1 1 58132636
+P 2000 2900
+F 0 "P7" H 2000 3050 50  0000 C CNN
+F 1 "PWM/Yeux" V 2100 2900 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 2000 2900 50  0001 C CNN
+F 3 "" H 2000 2900 50  0000 C CNN
+	1    2000 2900
+	-1   0    0    -1  
+$EndComp
+$Comp
+L CONN_01X02 P11
+U 1 1 58132684
+P 2700 2900
+F 0 "P11" H 2700 3050 50  0000 C CNN
+F 1 "Arduino S/Y" V 2800 2900 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 2700 2900 50  0001 C CNN
+F 3 "" H 2700 2900 50  0000 C CNN
+	1    2700 2900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3150 2550 3150 3250
+Connection ~ 3150 3250
+Wire Wire Line
+	2200 2850 2500 2850
+Wire Wire Line
+	2200 2950 2500 2950
+Wire Wire Line
+	4950 3250 4950 3050
+Wire Wire Line
+	4950 3050 6800 3050
+Wire Wire Line
+	5200 3050 5200 2800
+Connection ~ 5200 3050
+Wire Wire Line
+	5100 2800 5100 3350
+Connection ~ 5100 3350
+$Comp
+L CONN_01X02 P15
+U 1 1 58132C46
+P 7550 3450
+F 0 "P15" H 7550 3600 50  0000 C CNN
+F 1 "MOT1" V 7650 3450 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 7550 3450 50  0001 C CNN
+F 3 "" H 7550 3450 50  0000 C CNN
+	1    7550 3450
+	0    -1   1    0   
+$EndComp
+$Comp
+L CONN_01X02 P13
+U 1 1 58132DA5
+P 7200 3450
+F 0 "P13" H 7200 3600 50  0000 C CNN
+F 1 "MOT2" V 7300 3450 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 7200 3450 50  0001 C CNN
+F 3 "" H 7200 3450 50  0000 C CNN
+	1    7200 3450
+	0    -1   1    0   
+$EndComp
+$Comp
+L CONN_01X02 P12
+U 1 1 58132EB3
+P 7200 2750
+F 0 "P12" H 7200 2900 50  0000 C CNN
+F 1 "MOT2" V 7300 2750 50  0000 C CNN
+F 2 "robair:BornierMoteur" H 7200 2750 50  0001 C CNN
+F 3 "" H 7200 2750 50  0000 C CNN
+	1    7200 2750
+	0    -1   -1   0   
+$EndComp
+$Comp
+L CONN_01X02 P14
+U 1 1 58132F6F
+P 7550 2750
+F 0 "P14" H 7550 2900 50  0000 C CNN
+F 1 "MOT1" V 7650 2750 50  0000 C CNN
+F 2 "robair:BornierMoteur" H 7550 2750 50  0001 C CNN
+F 3 "" H 7550 2750 50  0000 C CNN
+	1    7550 2750
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	7150 2950 7150 3250
+Wire Wire Line
+	7250 3250 7250 2950
+Wire Wire Line
+	7600 2950 7600 3250
+Wire Wire Line
+	7500 2950 7500 3250
+$Comp
+L CONN_01X07 P2
+U 1 1 581330BF
+P 1950 2250
+F 0 "P2" H 1950 2650 50  0000 C CNN
+F 1 "5VArduino" V 2050 2250 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x07" H 1950 2250 50  0001 C CNN
+F 3 "" H 1950 2250 50  0000 C CNN
+	1    1950 2250
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_01X07 P1
+U 1 1 58133148
+P 1950 1450
+F 0 "P1" H 1950 1850 50  0000 C CNN
+F 1 "AnArduinoOut" V 2050 1450 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x07" H 1950 1450 50  0001 C CNN
+F 3 "" H 1950 1450 50  0000 C CNN
+	1    1950 1450
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_01X07 P8
+U 1 1 581331A1
+P 2600 1450
+F 0 "P8" H 2600 1850 50  0000 C CNN
+F 1 "AnArduinoIn" V 2700 1450 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x07" H 2600 1450 50  0001 C CNN
+F 3 "" H 2600 1450 50  0000 C CNN
+	1    2600 1450
+	1    0    0    1   
+$EndComp
+$Comp
+L CONN_01X01 P10
+U 1 1 58133235
+P 2600 2250
+F 0 "P10" H 2600 2350 50  0000 C CNN
+F 1 "Arduino 5V" V 2700 2250 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x01" H 2600 2250 50  0001 C CNN
+F 3 "" H 2600 2250 50  0000 C CNN
+	1    2600 2250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2150 2250 2400 2250
+Wire Wire Line
+	2250 1950 2250 2550
+Wire Wire Line
+	2250 1950 2150 1950
+Wire Wire Line
+	2250 2550 2150 2550
+Connection ~ 2250 2250
+Wire Wire Line
+	2150 2450 2250 2450
+Connection ~ 2250 2450
+Wire Wire Line
+	2150 2350 2250 2350
+Connection ~ 2250 2350
+Wire Wire Line
+	2150 2150 2250 2150
+Connection ~ 2250 2150
+Wire Wire Line
+	2150 2050 2250 2050
+Connection ~ 2250 2050
+Wire Wire Line
+	2150 1150 2400 1150
+Wire Wire Line
+	2150 1250 2400 1250
+Wire Wire Line
+	2150 1350 2400 1350
+Wire Wire Line
+	2150 1450 2400 1450
+Wire Wire Line
+	2150 1550 2400 1550
+Wire Wire Line
+	2150 1650 2400 1650
+Wire Wire Line
+	2150 1750 2400 1750
+Text Label 5700 3050 0    60   ~ 0
+Batt-
+Text Label 6600 3150 0    60   ~ 0
+Batt+
+Text Label 5150 3350 0    60   ~ 0
+Vin+
+Text Label 2800 3250 0    60   ~ 0
+Vout-
+Text Label 2800 3350 0    60   ~ 0
+Vout+
+$EndSCHEMATC
