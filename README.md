@@ -1,14 +1,14 @@
 # Rob-AIR
 
-#INSTALL
+##INSTALL
 
-## Prérequis
+### Prérequis
 
 OS : Ubuntu 16.04 LTS
 
-Vous devez installer `git`
+Vous devez préalablement installer l'utilitaire `git`.
 
-##Installation
+###Installation
 
 Clone du repository
 ```bash
@@ -27,15 +27,22 @@ Le script rajoute deux variable d'environnement à votre `.bashrc`. `ROBAIR_HOME
 
 A la fin de l'installation veuillez exécuter `source ~/.bashrc`afin de prendre en compte ces modifications.
 
+##SCRIPTS
+Différents scripts permettent de faciliter l'utilisation de Robair.
 
-##SSL/TLS
+### Changement d'IP
+
+Lorsque Robair change de réseau, son IP change. Il est nécessaire de mettre à jour différents fichiers de configuration. Ceci est effectué par le script `changeip.bash`. Il met à jour les fichiers de configuration de l'interface web et génère le certificat SSL correspondant. 
+
+
+###SSL/TLS
 Robair est piloté par une interface web. Afin de sécuriser la connexion et d'être compatible avec les navigateurs, les différentes connexions utilisent un certificat SSL.
 
 Le certificat dois être accepté par une autorité de certification. Ces autorités de certification sont généralement payantes. La solution adotpée est de créer soient même cette autorité. Cette autorité devra être importée dans le ou les navigateur(s) pilotant Robair.
 A partir de cette autorité, vous pouvez générer des certificats SSL qui seront accepté par votre navigateur.
 Une autorité peut donc être utilisé par plusieurs Robair.
 
-###Création de l'autorité de certification
+####Création de l'autorité de certification
 
 Si vous avez déjà généré une autorité de certification sur un autre ordinateur par exemple, veuillez copier les fichiers rootCA.crt  rootCA.key  rootCA.srl dans $ROBAIR_HOME/ssl
 
