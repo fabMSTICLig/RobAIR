@@ -20,15 +20,13 @@ Papierlogik::~Papierlogik(){
 void Papierlogik::init(float sensor_value){
 	_last_sensorValue  = sensor_value;
 }
-	
+
 
 bool Papierlogik::detect_contact(float sensor_value, float thershold){
 	_last_sensorValue = _last_sensorValue*_alpha  + (1.0-_alpha)*sensor_value;
-	float diff  = _last_sensorValue - sensor_value;
+	//float diff  = _last_sensorValue - sensor_value;
 
-	if (diff < thershold ){ return 1;}
-	
+	if (_last_sensorValue < thershold ){ return 1;}
+
 	return 0;
 }
-
-

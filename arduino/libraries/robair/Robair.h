@@ -9,6 +9,7 @@
 #include <std_msgs/Int8.h>
 #include <std_msgs/Byte.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
 #include <robairmain/MotorsCmd.h>
 //ARDUINO InCUDE
@@ -16,6 +17,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <Eyes.h>
 #include <md49.h>
+#include "Papierlogik.h"
 
 class Robair{
 private:
@@ -72,6 +74,8 @@ private:
   Servo servoHead;
   int cmd_msg_head = 0;
   int cmd_head=0;
+
+  int head_inc=1;
   std_msgs::Int8 head_msg;
   ros::Publisher head_pub;
 
@@ -81,12 +85,54 @@ private:
   void cmdHeadCb(const std_msgs::Int8& head_msg);
 
 
+  /////////////////////BUMPER/////////////////////////////////
+
+
+  std_msgs::Bool bumperFront_msg;
+  ros::Publisher bumperFront_pub;
+  std_msgs::Bool bumperRear_msg;
+  ros::Publisher bumperRear_pub;
+
+  Papierlogik papBumperFront;
+  Papierlogik papBumperRear;
+
+  const uint8_t PIN_BUMPER_FRONT=A2;
+  const uint8_t PIN_BUMPER_REAR=A0;
+
+  float bumperFTresh=0.15;
+  float bumperRTresh=0.20;
+
+  boolean bumperFront;
+  boolean bumperRear;
+
+  void checkStop();
+
+///////////////////////REBOOT//////////////////////////////////
+
+  ros::Subscriber<std_msgs::UInt8,Robair> sub_reboot;
+  void rebootCb(const std_msgs::UInt8& reboot_msg);
+
+  //////////////////ARU/////////////////
+
+  std_msgs::Bool aru_msg;
+  ros::Publisher aru_pub;
+  const uint8_t PIN_ARU = A6; //14 + 6
+
+  uint32_t timeoutARU = 0;
+  uint32_t timeoutARUDelay = 5000;
+
+  boolean aru = false;
+
+  //////////////PARAMS////////////
+  ros::Subscriber<std_msgs::Empty,Robair> sub_loadParams;
+  void loadParamsCb(const std_msgs::Empty&);
+
 
 public:
 Robair(ros::NodeHandle & nh);
 
 void begin();
-void spin();
+void spinOnce();
 
 };
 

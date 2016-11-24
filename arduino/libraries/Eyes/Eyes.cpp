@@ -149,7 +149,8 @@ int Eyes::setMatrice(char * mat)
         {
             id = ligne*LINEWIDTH+(LINEWIDTH-(i%LINEWIDTH))-1;
         }
-        pixels->setPixelColor(id, pixels->Color(((mat[i] & 1) == 1 ? 80 : 0),((mat[i] & 2) == 2 ? 80 : 0),((mat[i] & 4) == 4 ? 80 : 0)));
+        int puiss=100;
+        pixels->setPixelColor(id, pixels->Color(((mat[i] & 1) == 1 ? puiss : 0),((mat[i] & 2) == 2 ? puiss : 0),((mat[i] & 4) == 4 ? puiss : 0)));
     }
 
     pixels->show();

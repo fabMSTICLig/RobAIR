@@ -1,6 +1,6 @@
 #include "Robair.h"
 
-
+#define ONEK 1024
 
 Robair::Robair(ros::NodeHandle & nh):nh(nh),
 battery_pub("battery_level",&battery_msg),
@@ -11,7 +11,12 @@ eyes_pub("eyes",&eyes_msg),
 eyes(6),
 sub_cmdeyes("cmdeyes", &Robair::cmdEyesCb, this),
 head_pub("head",&head_msg),
-sub_cmdhead("cmdhead", &Robair::cmdHeadCb, this)
+sub_cmdhead("cmdhead", &Robair::cmdHeadCb, this),
+sub_reboot("reboot", &Robair::rebootCb, this),
+aru_pub("aru", &aru_msg),
+bumperRear_pub("bumper_rear", &bumperRear_msg),
+bumperFront_pub("bumper_front", &bumperFront_msg),
+sub_loadParams("load_params", &Robair::loadParamsCb, this)
 {
 
 }
@@ -33,18 +38,21 @@ void Robair::stop_motors(){
 }
 
 void Robair::speed_control(float coef_smoothness){
-	int val=0;
+	if(aru)
+	{
+		cmd_speedL=0;
+		cmd_speedR=0;
+	}
+	else
+	{
+
   //low filter for smooth acceleration
   cmd_speedL = cmd_speedL*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedL;
   cmd_speedR = cmd_speedR*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedR;
-  val=cmd_msg_head - cmd_head ;
 
-  if(abs(val)>1)
-  {
-    val= 1 * ((val < 0) ? -1 :1);
-  }
-  setHead(cmd_head+val);
 
+
+	}
 #ifdef USESERVO
   servoL.write(map(cmd_speedL, -100, 100, 0, 179));
   servoR.write(map(cmd_speedR, -100, 100, 0, 179));
@@ -90,9 +98,6 @@ void Robair::setHead(int degree)
   if(degree!=cmd_head)
   {
     cmd_head=degree;
-	  String msg= String("Val ")+String(degree);
-	  log_msg.data = msg.c_str();
-	  log_pub.publish(&log_msg);
 	  head_msg.data=cmd_head;
 	  head_pub.publish( &head_msg );
   }
@@ -103,6 +108,64 @@ void Robair::cmdHeadCb(const std_msgs::Int8& head_msg) {  //CALLBACK FUNCTION
   cmd_msg_head=head_msg.data;
 }
 
+void Robair::rebootCb(const std_msgs::UInt8& reboot_msg)
+{
+	eyes.setMatrice(EYESSTRAIGHT);
+	setHead(0);
+	stop_motors();
+}
+
+
+void Robair::checkStop(){
+
+  boolean oldbf,oldbr,oldaru;
+
+  oldbf=bumperFront;
+  oldbr=bumperRear;
+  oldaru=aru;
+  bumperFront = papBumperFront.detect_contact((float)(analogRead(PIN_BUMPER_FRONT))/ONEK,bumperFTresh);
+  bumperRear = papBumperRear.detect_contact((float)(analogRead(PIN_BUMPER_REAR))/ONEK,bumperRTresh);
+
+  if(oldbf!=bumperFront)
+  {
+    bumperFront_msg.data = bumperFront;
+    bumperFront_pub.publish( &bumperFront_msg );
+  }
+  if(oldbr!=bumperRear)
+  {
+    bumperRear_msg.data = bumperRear;
+    bumperRear_pub.publish( &bumperRear_msg );
+  }
+
+	if(digitalRead(PIN_ARU)==HIGH)
+	{
+		aru=true;
+		timeoutARU=millis()+timeoutARUDelay;
+	}
+	else if(aru && timeoutARU<millis())
+	{
+		aru=false;
+	}
+
+  if(oldaru!=aru)
+  {
+    aru_msg.data = aru;
+    aru_pub.publish( &aru_msg );
+  }
+
+}
+
+void Robair::loadParamsCb(const std_msgs::Empty& msgemp){
+    int ibuff;
+    nh.getParam("/bumpFTresh", &bumperFTresh);
+    nh.getParam("/bumpRTresh", &bumperRTresh);
+    nh.getParam("/aruDelay", &ibuff);
+    timeoutARUDelay=ibuff;
+
+	  String msg= String("Val ")+String((int)(bumperFTresh*1000));
+	  log_msg.data = msg.c_str();
+	  log_pub.publish(&log_msg);
+}
 
 void Robair::begin()
 {
@@ -113,6 +176,10 @@ void Robair::begin()
 	nh.subscribe(sub_cmdeyes);
 	nh.advertise(head_pub);
 	nh.subscribe(sub_cmdhead);
+	nh.advertise(bumperRear_pub);
+	nh.advertise(bumperFront_pub);
+	nh.advertise(aru_pub);
+	nh.subscribe(sub_loadParams);
 	nh.spinOnce();
 
 	eyes.begin();
@@ -133,11 +200,27 @@ void Robair::begin()
 	servoHead.attach(7);
 	servoHead.write(90);
 
-	pinMode(13,OUTPUT);
+	pinMode(PIN_ARU,INPUT);
+
 	eyes.setMatrice(EYESSTRAIGHT);
+
+  bumperFront=false;
+  bumperRear=false;
+  papBumperFront.init(float(analogRead(PIN_BUMPER_FRONT))/ONEK);
+  papBumperRear.init(float(analogRead(PIN_BUMPER_REAR))/ONEK);
 }
-void Robair::spin()
+void Robair::spinOnce()
 {
+  checkStop();
+
+	int val=0;
+	val=cmd_msg_head - cmd_head ;
+	if(abs(val)>head_inc)
+	{
+		val= head_inc * ((val < 0) ? -1 :1);
+	}
+	setHead(cmd_head+val);
+
 	check_battery(5000);
 	speed_control(0.08);
 }
