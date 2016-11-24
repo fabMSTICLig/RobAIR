@@ -1,4 +1,4 @@
-(module Bornier9mm (layer F.Cu) (tedit 580F7B86)
+(module Bornier9mm (layer F.Cu) (tedit 5812E9E4)
   (fp_text reference REF** (at 0.22 -1.21) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
@@ -10,6 +10,6 @@
   (fp_line (start 9.5 5) (end 9.5 -8) (layer F.SilkS) (width 0.15))
   (fp_line (start 9.5 -8) (end -9.5 -8) (layer F.SilkS) (width 0.15))
   (fp_line (start -9.5 -8) (end -9.5 0) (layer F.SilkS) (width 0.15))
-  (pad 1 thru_hole circle (at -4.5 0) (size 4 4) (drill 1) (layers *.Cu *.Mask))
+  (pad 1 thru_hole rect (at -4.5 0) (size 4 4) (drill 1) (layers *.Cu *.Mask))
   (pad 2 thru_hole circle (at 4.5 0) (size 4 4) (drill 1) (layers *.Cu *.Mask))
 )

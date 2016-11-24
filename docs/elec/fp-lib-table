@@ -1,3 +1,0 @@
-(fp_lib_table
-  (lib (name robair)(type KiCad)(uri "$(KIPRJMOD)\\robair.pretty")(options "")(descr ""))
-)

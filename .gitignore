@@ -4,6 +4,10 @@ ssl/*.srl
 ssl/*.csr
 signalmaster
 
+*.gbr
+*.drl
+*bak
+
 catkin_ws/install
 catkin_ws/build
 catkin_ws/devel
