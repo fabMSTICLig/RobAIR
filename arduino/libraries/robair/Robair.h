@@ -96,11 +96,11 @@ private:
   Papierlogik papBumperFront;
   Papierlogik papBumperRear;
 
-  const uint8_t PIN_BUMPER_FRONT=A2;
-  const uint8_t PIN_BUMPER_REAR=A0;
+  const uint8_t PIN_BUMPER_FRONT=A0;
+  const uint8_t PIN_BUMPER_REAR=A2;
 
-  float bumperFTresh=0.15;
-  float bumperRTresh=0.20;
+  float bumperFTresh=0.20;
+  float bumperRTresh=0.08;
 
   boolean bumperFront;
   boolean bumperRear;

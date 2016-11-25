@@ -99,7 +99,7 @@ setInterval(function() {
 
   robairros.ping=$.now();
   topic_ping.publish(msg);
-}, 1000);
+}, 2000);
 
 robairros.pingChange =function (val){}
 topic_pong.subscribe(function(message) {

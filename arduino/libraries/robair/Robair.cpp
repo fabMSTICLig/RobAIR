@@ -38,29 +38,28 @@ void Robair::stop_motors(){
 }
 
 void Robair::speed_control(float coef_smoothness){
-	if(aru)
+	if(aru ||
+  (cmd_msg_speedR > 0 && cmd_msg_speedL > 0 && bumperFront) ||
+  (cmd_msg_speedR < 0 && cmd_msg_speedL < 0 && bumperRear) )
 	{
 		cmd_speedL=0;
 		cmd_speedR=0;
 	}
 	else
 	{
-
-  //low filter for smooth acceleration
-  cmd_speedL = cmd_speedL*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedL;
-  cmd_speedR = cmd_speedR*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedR;
-
-
-
+    //low filter for smooth acceleration
+    cmd_speedL = cmd_speedL*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedL;
+    cmd_speedR = cmd_speedR*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedR;
 	}
 #ifdef USESERVO
   servoL.write(map(cmd_speedL, -100, 100, 0, 179));
   servoR.write(map(cmd_speedR, -100, 100, 0, 179));
 #else
-  digitalWrite(RML, (abs(cmd_speedL)<RTRESH) ? LOW : HIGH);
-  digitalWrite(RMR, (abs(cmd_speedR)<RTRESH) ? LOW : HIGH);
-  md49.setSpeed1(map(cmd_speedL, -100, 100, -127, 127));
-  md49.setSpeed2(map(cmd_speedR, -100, 100, -127, 127));
+  md49.setSpeed1(map(cmd_speedR, -100, 100, -127, 127));
+  md49.setSpeed2(map(cmd_speedL, -100, 100, -127, 127));
+  digitalWrite(RML, (abs(cmd_speedL)<RTRESH || aru) ? LOW : HIGH);
+  digitalWrite(RMR, (abs(cmd_speedR)<RTRESH || aru) ? LOW : HIGH);
+
 #endif
 }
 
@@ -123,8 +122,8 @@ void Robair::checkStop(){
   oldbf=bumperFront;
   oldbr=bumperRear;
   oldaru=aru;
-  bumperFront = papBumperFront.detect_contact((float)(analogRead(PIN_BUMPER_FRONT))/ONEK,bumperFTresh);
-  bumperRear = papBumperRear.detect_contact((float)(analogRead(PIN_BUMPER_REAR))/ONEK,bumperRTresh);
+  bumperFront = !papBumperFront.detect_contact((float)(analogRead(PIN_BUMPER_FRONT))/ONEK,bumperFTresh);
+  bumperRear = !papBumperRear.detect_contact((float)(analogRead(PIN_BUMPER_REAR))/ONEK,bumperRTresh);
 
   if(oldbf!=bumperFront)
   {
@@ -141,10 +140,12 @@ void Robair::checkStop(){
 	{
 		aru=true;
 		timeoutARU=millis()+timeoutARUDelay;
+    setEyes(EYESSTOP);
 	}
 	else if(aru && timeoutARU<millis())
 	{
 		aru=false;
+    setEyes(EYESSTRAIGHT);
 	}
 
   if(oldaru!=aru)

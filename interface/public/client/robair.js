@@ -139,6 +139,7 @@ robairros.pingChange = function(ping) {
         else {
             $("#ping").css('color', 'black');
         }
+        $("#pingtxt").text(ping);
 
     }
     /////////////////////////////YEUX//////////////////////////////
