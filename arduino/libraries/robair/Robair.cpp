@@ -16,6 +16,8 @@ sub_reboot("reboot", &Robair::rebootCb, this),
 aru_pub("aru", &aru_msg),
 bumperRear_pub("bumper_rear", &bumperRear_msg),
 bumperFront_pub("bumper_front", &bumperFront_msg),
+touchLeft_pub("touch_left", &touchLeft_msg),
+touchRight_pub("touch_right", &touchRight_msg),
 sub_loadParams("load_params", &Robair::loadParamsCb, this)
 {
 
@@ -155,7 +157,7 @@ void Robair::checkStop(){
   }
 
 }
-
+//////////////PARAMS//////////////////////////////////
 void Robair::loadParamsCb(const std_msgs::Empty& msgemp){
     int ibuff;
     nh.getParam("/bumpFTresh", &bumperFTresh);
@@ -163,11 +165,44 @@ void Robair::loadParamsCb(const std_msgs::Empty& msgemp){
     nh.getParam("/aruDelay", &ibuff);
     timeoutARUDelay=ibuff;
 
-	  String msg= String("Val ")+String((int)(bumperFTresh*1000));
-	  log_msg.data = msg.c_str();
-	  log_pub.publish(&log_msg);
 }
 
+////////////////////////////////////////////////TOUCH///////////////////////////////
+
+void Robair::checkTouch()
+{
+    if( millis() > last_timestamp_touch) {
+      boolean oldtl,oldtr;
+
+      oldtl=touchLeft;
+      oldtr=touchRight;
+      touchLeft = !papTouchLeft.detect_contact((float)(analogRead(PIN_TOUCH_LEFT))/ONEK,touchLeftTresh);
+      touchRight = !papTouchRight.detect_contact((float)(analogRead(PIN_TOUCH_RIGHT))/ONEK,touchRightTresh);
+
+      if(oldtl!=touchLeft)
+      {
+        touchLeft_msg.data = touchLeft;
+        touchLeft_pub.publish( &touchLeft_msg );
+      }
+      if(oldtr!=touchRight)
+      {
+        touchRight_msg.data = touchRight;
+        touchRight_pub.publish( &touchRight_msg );
+      }
+      last_timestamp_touch = millis() + touchDelay;
+    }
+}
+
+////////////////////////////LOG/////////////////////
+
+void Robair::log(String str)
+{
+
+    log_msg.data = str.c_str();
+    log_pub.publish(&log_msg);
+}
+
+//////////////////////////////ARDUINO////////////////
 void Robair::begin()
 {
 	nh.subscribe(sub_cmdmotor);
@@ -179,6 +214,8 @@ void Robair::begin()
 	nh.subscribe(sub_cmdhead);
 	nh.advertise(bumperRear_pub);
 	nh.advertise(bumperFront_pub);
+	nh.advertise(touchLeft_pub);
+	nh.advertise(touchRight_pub);
 	nh.advertise(aru_pub);
 	nh.subscribe(sub_loadParams);
 	nh.spinOnce();
@@ -209,11 +246,18 @@ void Robair::begin()
   bumperRear=false;
   papBumperFront.init(float(analogRead(PIN_BUMPER_FRONT))/ONEK);
   papBumperRear.init(float(analogRead(PIN_BUMPER_REAR))/ONEK);
+
+
+  touchLeft=false;
+  touchLeft=false;
+  papTouchLeft.init(float(analogRead(PIN_TOUCH_LEFT))/ONEK);
+  papTouchRight.init(float(analogRead(PIN_TOUCH_RIGHT))/ONEK);
 }
 void Robair::spinOnce()
 {
-  checkStop();
 
+  checkStop();
+  checkTouch();
 	int val=0;
 	val=cmd_msg_head - cmd_head ;
 	if(abs(val)>head_inc)
@@ -224,4 +268,6 @@ void Robair::spinOnce()
 
 	check_battery(5000);
 	speed_control(0.08);
+
+
 }

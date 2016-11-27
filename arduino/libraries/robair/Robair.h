@@ -85,27 +85,53 @@ private:
   void cmdHeadCb(const std_msgs::Int8& head_msg);
 
 
-  /////////////////////BUMPER/////////////////////////////////
+    /////////////////////BUMPER/////////////////////////////////
 
 
-  std_msgs::Bool bumperFront_msg;
-  ros::Publisher bumperFront_pub;
-  std_msgs::Bool bumperRear_msg;
-  ros::Publisher bumperRear_pub;
+    std_msgs::Bool bumperFront_msg;
+    ros::Publisher bumperFront_pub;
+    std_msgs::Bool bumperRear_msg;
+    ros::Publisher bumperRear_pub;
 
-  Papierlogik papBumperFront;
-  Papierlogik papBumperRear;
+    Papierlogik papBumperFront;
+    Papierlogik papBumperRear;
 
-  const uint8_t PIN_BUMPER_FRONT=A0;
-  const uint8_t PIN_BUMPER_REAR=A2;
+    const uint8_t PIN_BUMPER_FRONT=A0;
+    const uint8_t PIN_BUMPER_REAR=A2;
 
-  float bumperFTresh=0.20;
-  float bumperRTresh=0.08;
+    float bumperFTresh=0.20;
+    float bumperRTresh=0.08;
 
-  boolean bumperFront;
-  boolean bumperRear;
+    boolean bumperFront;
+    boolean bumperRear;
 
-  void checkStop();
+    void checkStop();
+
+    /////////////////////TOUCH/////////////////////////////////
+
+
+    std_msgs::Bool touchLeft_msg;
+    ros::Publisher touchLeft_pub;
+    std_msgs::Bool touchRight_msg;
+    ros::Publisher touchRight_pub;
+
+    Papierlogik papTouchLeft;
+    Papierlogik papTouchRight;
+
+    const uint8_t PIN_TOUCH_LEFT=A5;
+    const uint8_t PIN_TOUCH_RIGHT=A4;
+
+    float touchLeftTresh=0.45;
+    float touchRightTresh=0.2;
+
+    boolean touchLeft;
+    boolean touchRight;
+
+
+    unsigned long last_timestamp_touch = 0;
+    unsigned long touchDelay = 100;
+
+    void checkTouch();
 
 ///////////////////////REBOOT//////////////////////////////////
 
@@ -127,6 +153,9 @@ private:
   ros::Subscriber<std_msgs::Empty,Robair> sub_loadParams;
   void loadParamsCb(const std_msgs::Empty&);
 
+  //////////////LOG/////////////////////
+
+
 
 public:
 Robair(ros::NodeHandle & nh);
@@ -134,6 +163,7 @@ Robair(ros::NodeHandle & nh);
 void begin();
 void spinOnce();
 
+void log(String str);
 };
 
 
