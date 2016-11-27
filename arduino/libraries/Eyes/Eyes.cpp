@@ -140,10 +140,10 @@ int Eyes::setMatrice(char * mat)
     int id = 0;
     int mir = 0;
     for(int i=0; i<NUMPIXELS; i++) {
-        ligne = 4- i /LINEWIDTH;
+        ligne = 4- (i /LINEWIDTH);
         if(ligne % 2 == 0)
         {
-            id=i;
+            id=ligne*LINEWIDTH+((i%LINEWIDTH));
         }
         else
         {
