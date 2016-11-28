@@ -19,7 +19,7 @@ ros.on('close', function() {
 
 
 var robairros = {
-    speed: 100
+    speed: 50
 }
 
 
@@ -202,3 +202,45 @@ robairros.reboot = function()
   topic_reboot.publish(new ROSLIB.Message({data:0}));
 
 }
+
+
+///////////bumper/////////////
+var topic_bumper_front = new ROSLIB.Topic({
+    ros: ros,
+    name: '/bumper_front',
+    messageType: 'std_msgs/Bool'
+})
+var topic_bumper_rear = new ROSLIB.Topic({
+    ros: ros,
+    name: '/bumper_rear',
+    messageType: 'std_msgs/Bool'
+})
+robairros.bumper_front_change =function (on){}
+robairros.bumper_rear_change =function (on){}
+
+topic_bumper_front.subscribe(function(message) {
+    robairros.bumper_front_change(message.data);
+});
+topic_bumper_rear.subscribe(function(message) {
+    robairros.bumper_rear_change(message.data);
+});
+///////////hand/////////////
+var topic_touch_left = new ROSLIB.Topic({
+    ros: ros,
+    name: '/touch_left',
+    messageType: 'std_msgs/Bool'
+})
+var topic_touch_right = new ROSLIB.Topic({
+    ros: ros,
+    name: '/touch_right',
+    messageType: 'std_msgs/Bool'
+})
+robairros.touch_left_change =function (on){}
+robairros.touch_right_change =function (on){}
+
+topic_touch_left.subscribe(function(message) {
+    robairros.touch_left_change(message.data);
+});
+topic_touch_right.subscribe(function(message) {
+    robairros.touch_right_change(message.data);
+});

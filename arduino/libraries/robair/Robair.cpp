@@ -83,7 +83,7 @@ void Robair::check_battery(unsigned int delay_check) {
 void Robair::setEyes(int id)
 {
   eyes.setMatrice(id);
-  eyes_msg.data = 24;
+  eyes_msg.data = id;
   eyes_pub.publish( &eyes_msg );
 }
 
@@ -171,7 +171,6 @@ void Robair::loadParamsCb(const std_msgs::Empty& msgemp){
 
 void Robair::checkTouch()
 {
-    if( millis() > last_timestamp_touch) {
       boolean oldtl,oldtr;
 
       oldtl=touchLeft;
@@ -189,8 +188,6 @@ void Robair::checkTouch()
         touchRight_msg.data = touchRight;
         touchRight_pub.publish( &touchRight_msg );
       }
-      last_timestamp_touch = millis() + touchDelay;
-    }
 }
 
 ////////////////////////////LOG/////////////////////

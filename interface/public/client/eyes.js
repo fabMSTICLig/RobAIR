@@ -150,7 +150,6 @@ Eyes.drawEyes = function(id)
     ctx.clearRect(0, 0, eyesCanvas.width, eyesCanvas.height);
     ctx.restore();
     var t=tabeyes[id];
-    console.log(t);
     for(i=0;i<5;i++)
     {
         for(j=0;j<14;j++)

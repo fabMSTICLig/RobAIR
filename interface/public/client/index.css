@@ -38,6 +38,10 @@ background-color: blue;
     position: absolute;
 }
 
+.status td{
+   vertical-align:middle;
+}
+
 .controles span {
 font-size:1.5em;
 }
@@ -47,4 +51,26 @@ font-size:2em;
 canvas {
     width: 100%;
     height: auto;
+}
+
+#touchLeft , #touchRight
+{
+font-size:4em;
+}
+
+
+#touchLeft.touched,#touchRight.touched
+{
+  color:green;
+  font-weight: bold;
+}
+#touchLeft
+{
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+}
+#touchRight
+{
 }

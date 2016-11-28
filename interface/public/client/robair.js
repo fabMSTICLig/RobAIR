@@ -4,6 +4,20 @@ function setArrowActive(arrow) {
     $("#" + arrow).addClass("btn-primary");
 }
 
+function setArrowDanger(arrow, on) {
+    if(on)
+    {
+      $("#" + arrow).removeClass("btn-default");
+      $("#" + arrow).removeClass("active");
+      $("#" + arrow).removeClass("btn-primary");
+      $("#" + arrow).addClass("btn-danger");
+    }
+    else {
+        $("#" + arrow).removeClass("btn-danger");
+        $("#" + arrow).addClass("btn-default");
+    }
+}
+
 var left = function() {
     stop();
     setArrowActive("left");
@@ -154,19 +168,19 @@ eyesCanvas.on("click", function(e) {
         posY = (e.pageY - $(this).offset().top) / $(this).height();
 
     if (posX < 0.25) {
-        Eyes.drawEyes(Eyes.EYESLEFT);
+        //Eyes.drawEyes(Eyes.EYESLEFT);
         robairros.setEyes(Eyes.EYESLEFT);
     } else if (posX > 0.75) {
-        Eyes.drawEyes(Eyes.EYESRIGHT);
+        //Eyes.drawEyes(Eyes.EYESRIGHT);
         robairros.setEyes(Eyes.EYESRIGHT);
     } else if (posY < 0.25) {
-        Eyes.drawEyes(Eyes.EYESTOP);
+        //Eyes.drawEyes(Eyes.EYESTOP);
         robairros.setEyes(Eyes.EYESTOP);
     } else if (posY > 0.75) {
-        Eyes.drawEyes(Eyes.EYESBOTTOM);
+        //Eyes.drawEyes(Eyes.EYESBOTTOM);
         robairros.setEyes(Eyes.EYESBOTTOM);
     } else {
-        Eyes.drawEyes(Eyes.EYESSTRAIGHT);
+        //Eyes.drawEyes(Eyes.EYESSTRAIGHT);
         robairros.setEyes(Eyes.EYESSTRAIGHT);
     }
 });
@@ -230,3 +244,35 @@ headCanvas.on("mousemove touchmove", function(e) {
     e.preventDefault();
     e.stopPropagation();
 });
+//////////////////////////////Bumper ///////////////////////
+
+robairros.bumper_front_change =function (on){
+  if(on)
+  {
+    $('#bumperFront').show();
+  }
+  else
+  {
+    $('#bumperFront').hide();
+  }
+  setArrowDanger('foward', on);
+}
+robairros.bumper_rear_change =function (on){
+  if(on) $('#bumperRear').show();
+  else $('#bumperRear').hide();
+  setArrowDanger('backward', on);
+}
+
+$('#bumperRear').hide();
+$('#bumperFront').hide();
+
+//////////////////////////////Bumper ///////////////////////
+
+robairros.touch_left_change =function (on){
+  if(on) $('#touchLeft').addClass('touched');
+  else $('#touchLeft').removeClass('touched');
+}
+robairros.touch_right_change =function (on){
+  if(on) $('#touchRight').addClass('touched');
+  else $('#touchRight').removeClass('touched');
+}
