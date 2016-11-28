@@ -162,6 +162,8 @@ void Robair::loadParamsCb(const std_msgs::Empty& msgemp){
     int ibuff;
     nh.getParam("/bumpFTresh", &bumperFTresh);
     nh.getParam("/bumpRTresh", &bumperRTresh);
+    nh.getParam("/touchLTresh", &touchLeftTresh);
+    nh.getParam("/touchRTresh", &touchRightTresh);
     nh.getParam("/aruDelay", &ibuff);
     timeoutARUDelay=ibuff;
 
