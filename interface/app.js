@@ -14,7 +14,7 @@ var config = JSON.parse(data);
 var ifs = require('os').networkInterfaces();
 localAddressTab = Object.keys(ifs).map(x => ifs[x].filter(x => x.family === 'IPv4' && !x.internal)[0]).filter(x => x);
 var localAddress='localhost';
-if (localAddress.lenth > 0)
+if (localAddress.length > 0)
 {
 	localAddress=localAddressTab[0].address;
 }
@@ -43,9 +43,9 @@ app.use(session({
 }))
 
 app.use('/', express.static('public/'));
-
 app.get('/', function(req, res) {
     res.header('Content-type', 'text/html');
+    console.log(localAddress+" "+req.ip);
     if ("::ffff:" + localAddress == req.ip)
             return res.sendFile(__dirname+'/views/robair/index.html');
     else {
