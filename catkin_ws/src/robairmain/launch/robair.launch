@@ -1,7 +1,7 @@
 <launch>
 
-  <param name="touchRTresh" value="0.3" />
-  <param name="touchLTresh" value="0.45" />
+  <param name="touchRTresh" value="0.85" />
+  <param name="touchLTresh" value="0.85" />
   <param name="bumpFTresh" value="0.15" />
   <param name="bumpRTresh" value="0.15" />
   <param name="aruDelay" value="5000" />

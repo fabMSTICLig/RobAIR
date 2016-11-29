@@ -121,8 +121,8 @@ private:
     const uint8_t PIN_TOUCH_LEFT=A5;
     const uint8_t PIN_TOUCH_RIGHT=A4;
 
-    float touchLeftTresh=0.45;
-    float touchRightTresh=0.3;
+    float touchLeftTresh=0.85;
+    float touchRightTresh=0.85;
 
     boolean touchLeft;
     boolean touchRight;
