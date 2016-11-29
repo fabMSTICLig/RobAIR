@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+startme() {
+  roslaunch robairmain robair.launch
+}
+
+stopme() {
+  pkill -SIGINT -f roslaunch
+}
+
+restart() {
+  pkill -9 -f "robairmain/proxy"
+  stopme
+  sleep 3
+  startme
+}
+
+case "$1" in
+    start)   startme ;;
+    stop)    stopme ;;
+    restart) restart ;;
+    *) echo "usage: $0 start|stop|restart" >&2
+       exit 1
+       ;;
+esac

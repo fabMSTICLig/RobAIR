@@ -24,7 +24,7 @@ void rebootCallback(const std_msgs::Int8::ConstPtr& msg)
   if (child_pid == 0)
   {
         //ros::Duration(2.0).sleep();
-        system("robairreboot.bash");
+        system("robair restart");
         ros::shutdown();
   }
 
