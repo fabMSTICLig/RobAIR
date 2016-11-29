@@ -14,6 +14,20 @@ ros.on('close', function() {
     console.log('Connection to websocket server closed.');
 });
 
+window.onunload = function (e) {
+  var e = e || window.event;
+
+  robairros.stop();
+
+  // For IE and Firefox
+  if (e) {
+    e.returnValue = 'Any string';
+  }
+
+  // For Safari
+  return 'Any string';
+};
+
 // Publishing a Topic
 // ------------------
 
