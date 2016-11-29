@@ -92,19 +92,20 @@ var topic_pong = new ROSLIB.Topic({
     name: '/pong',
     messageType: 'std_msgs/UInt64'
 });
-setInterval(function() {
-    var msg = new ROSLIB.Message({
-        data: $.now()
-    });
 
-  robairros.ping=$.now();
-  topic_ping.publish(msg);
-}, 2000);
+robairros.sendPing = function()
+{
+      robairros.ping=$.now();
+      var msg = new ROSLIB.Message({
+          data: robairros.ping
+      });
+      topic_ping.publish(msg);
 
-robairros.pingChange =function (val){}
+}
+
+robairros.pongChange =function (){}
 topic_pong.subscribe(function(message) {
-  //console.log($.now()-robairros.ping);
-  robairros.pingChange($.now()-robairros.ping);
+  robairros.pongChange()
 });
 
 

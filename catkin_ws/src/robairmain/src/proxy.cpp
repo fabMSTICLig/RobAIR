@@ -39,8 +39,8 @@ int main(int argc, char **argv)
 
         ros::NodeHandle n;
 
-        pong_pub = n.advertise<std_msgs::UInt64>("pong", 1000);
-        ping_sub = n.subscribe("ping", 1000, pingCallback);
+        pong_pub = n.advertise<std_msgs::UInt64>("pong", 1);
+        ping_sub = n.subscribe("ping", 1, pingCallback);
         reboot_sub = n.subscribe("reboot", 1000, rebootCallback);
 
         ros::spin();

@@ -145,17 +145,37 @@ robairros.batteryChange = function(battery) {
     $("#battery").addClass("fa fa-battery-" + (battery - 21));
 }
 
-robairros.pingChange = function(ping) {
-        if (ping > 500)
-            $("#ping").css('color', 'red');
-        else if (ping > 200)
-            $("#ping").css('color', 'orange');
-        else {
-            $("#ping").css('color', 'black');
-        }
-        $("#pingtxt").text(ping);
+var sendPing = function()
+{
+  robairros.sendPing();
+  robairros.pingTimeout = setTimeout(function() {
+    robairros.pingChange(3000);
+    sendPing();
+  }, 3000);
+}
 
+sendPing();
+
+robairros.pongChange = function() {
+    var ping= $.now()-robairros.ping;
+    clearTimeout(robairros.pingTimeout);
+    if(ping < 1000)
+    {
+      setTimeout(function(){
+        sendPing();
+      },1000-ping);
+    }else {
+      sendPing();
     }
+    if (ping > 500)
+        $("#ping").css('color', 'red');
+    else if (ping > 200)
+        $("#ping").css('color', 'orange');
+    else {
+        $("#ping").css('color', 'black');
+    }
+    $("#pingtxt").text(ping);
+}
     /////////////////////////////YEUX//////////////////////////////
 
 robairros.eyesChange = function(id) {
