@@ -12,7 +12,7 @@ Vous devez préalablement installer l'utilitaire `git`.
 
 Clone du repository
 ```bash
-git clone https://github.com/FabmsticLig/Rob-AIR.git
+git clone https://github.com/FabmsticLig/RobAIR.git
 ```
 
 Installation par le script
