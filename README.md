@@ -12,13 +12,13 @@ Vous devez préalablement installer l'utilitaire `git`.
 
 Clone du repository
 ```bash
-git clone https://github.com/FabmsticLig/RobAIR.git
+$ git clone https://github.com/FabmsticLig/RobAIR.git
 ```
 
 Installation par le script
 ```bash
-cd Rob-AIR
-./scripts/install.bash
+$ cd Rob-AIR
+$ ./scripts/install.bash
 ```
 
 Le script utilise sudo pour installer plusieurs packages. Il faudra rentrer votre mot de passe utilisateur.
@@ -27,7 +27,7 @@ Le script rajoute deux variable d'environnement à votre `.bashrc`. `ROBAIR_HOME
 
 A la fin de l'installation veuillez exécuter `source ~/.bashrc`afin de prendre en compte ces modifications.
 
-##SCRIPTS
+##SCRIPTS de configurations
 Différents scripts permettent de faciliter l'utilisation de Robair.
 
 ### Changement d'IP
@@ -49,13 +49,32 @@ Si vous avez déjà généré une autorité de certification sur un autre ordina
 Sinon exécutez :
 
 ```bash
-createRootCA.sh
+$ createRootCA.sh
 ```
 
+####Création du certificat du Robair
 Création du certificat du Robair, à exécuter à chaque changement d'addresse IP (inclut dans le script `changeip.bash`)
 ```bash
-createDeviceCRT.sh
+$ createDeviceCRT.sh
 ```
 
+###Changement carte arduino
+Le script `changearduino.bash` permet de configurer le fichier `robair.launch` afin que ROS se connecte à la bonne carte Arduino.
+Une seule carte disposant d'une laison serie doit être connecté à l'ordinateur avant de lancer ce script. 
 
+##Utilisation
+Le script `robair` vous permet de lancer, arreter ou relancer les différents programme de RobAIR.
+Le programme sous-jacent utiliser est l'utilitaire `roslaunch` de ROS
 
+```bash
+$ robair start
+```
+La commande  `robair start` lance les différents programmes de RobAIR. Vous pouvez ensuite utilisé Ctrl+C pour l'arrêter. 
+```bash
+$ robair stop
+```
+La commande  `robair stop` arrête l'ensemble des programmes. Utile quand vous n'avez plus acces au terminal qui a lancer le programme. 
+```bash
+$ robair restart
+```
+La commande  `robair restart` arrête l'ensemble des programmes puis les relance après 3 secondes. 
