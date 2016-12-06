@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -z $ROBAIR_HOME ]; then
+	echo "La variable ROBAIR_HOME doit être définie."
+	exit
+fi
 
 if [ ! -z "$1" ]; then
 	export ROBAIR_IP=$1
