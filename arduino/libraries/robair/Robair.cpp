@@ -26,6 +26,7 @@ sub_loadParams("load_params", &Robair::loadParamsCb, this)
 
 
 void Robair::cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK FUNCTION
+
   cmd_msg_speedL = command_msg.speedL;
   cmd_msg_speedR = command_msg.speedR;
 }
@@ -39,7 +40,7 @@ void Robair::stop_motors(){
 #endif
 }
 
-void Robair::speed_control(float coef_smoothness){
+void Robair::speed_control(){
 	if(aru ||
   (cmd_msg_speedR > 0 && cmd_msg_speedL > 0 && bumperFront) ||
   (cmd_msg_speedR < 0 && cmd_msg_speedL < 0 && bumperRear) )
@@ -50,8 +51,10 @@ void Robair::speed_control(float coef_smoothness){
 	else
 	{
     //low filter for smooth acceleration
-    cmd_speedL = cmd_speedL*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedL;
-    cmd_speedR = cmd_speedR*coef_smoothness+(1-coef_smoothness)*cmd_msg_speedR;
+    cmd_speedL =(int)( (float)(cmd_speedL)*coef_smoothness+(1.0-coef_smoothness)*(float)(cmd_msg_speedL));
+    cmd_speedR = (float)(cmd_speedR)*coef_smoothness+(1.0-coef_smoothness)*(float)(cmd_msg_speedR);
+          log(String("coef ")+String((int)(cmd_speedL)));
+
 	}
 #ifdef USESERVO
   servoL.write(map(cmd_speedL, -100, 100, 0, 179));
@@ -164,6 +167,7 @@ void Robair::loadParamsCb(const std_msgs::Empty& msgemp){
     nh.getParam("/bumpRTresh", &bumperRTresh);
     nh.getParam("/touchLTresh", &touchLeftTresh);
     nh.getParam("/touchRTresh", &touchRightTresh);
+    nh.getParam("/coefSmoothness", &coef_smoothness);
     nh.getParam("/aruDelay", &ibuff);
     timeoutARUDelay=ibuff;
 
@@ -266,7 +270,6 @@ void Robair::spinOnce()
 	setHead(cmd_head+val);
 
 	check_battery(5000);
-	speed_control(0.08);
-
+	speed_control();
 
 }

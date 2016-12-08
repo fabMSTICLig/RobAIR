@@ -45,5 +45,5 @@ void loop() {
   // ROBOT MOVEMENT
   robair.spinOnce();
   nh.spinOnce();
-  delay(10);
+  delay(50);
 }

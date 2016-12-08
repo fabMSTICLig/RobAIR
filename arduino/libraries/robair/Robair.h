@@ -34,7 +34,7 @@ private:
   int cmd_speedR = 0;
   int cmd_msg_speedL = 0; //current command send by user
   int cmd_msg_speedR = 0;
-
+  float coef_smoothness = 0.90;
   #ifdef USESERVO
   Servo servoL;
   Servo servoR;
@@ -49,7 +49,7 @@ private:
 
   void cmdmotorsCb(const robairmain::MotorsCmd& command_msg);
   void stop_motors();
-  void speed_control(float coef_smoothness);
+  void speed_control();
 
   //BATTERY
 
@@ -121,8 +121,8 @@ private:
     const uint8_t PIN_TOUCH_LEFT=A5;
     const uint8_t PIN_TOUCH_RIGHT=A4;
 
-    float touchLeftTresh=0.85;
-    float touchRightTresh=0.85;
+    float touchLeftTresh=0.93;
+    float touchRightTresh=0.95;
 
     boolean touchLeft;
     boolean touchRight;

@@ -6,6 +6,7 @@
 
 #include <sstream>
 ros::Publisher pong_pub;
+ros::Publisher load_params_pub;
 ros::Subscriber ping_sub;
 ros::Subscriber reboot_sub;
 
@@ -38,11 +39,16 @@ int main(int argc, char **argv)
         ros::init(argc, argv, "proxy");
 
         ros::NodeHandle n;
-
+        load_params_pub = n.advertise<std_msgs::Empty>("load_params", 1);
         pong_pub = n.advertise<std_msgs::UInt64>("pong", 1);
         ping_sub = n.subscribe("ping", 1, pingCallback);
         reboot_sub = n.subscribe("reboot", 1000, rebootCallback);
 
+        ros::spinOnce();
+        
+        ros::Duration(2.0).sleep();
+        std_msgs::Empty emp;
+        load_params_pub.publish(emp);
         ros::spin();
 
         return 0;
