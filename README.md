@@ -12,13 +12,13 @@ Vous devez préalablement installer l'utilitaire `git`.
 
 Clone du repository
 ```bash
-git clone https://github.com/FabmsticLig/Rob-AIR.git
+$ git clone https://github.com/FabmsticLig/RobAIR.git
 ```
 
 Installation par le script
 ```bash
-cd Rob-AIR
-./scripts/install.bash
+$ cd Rob-AIR
+$ ./scripts/install.bash
 ```
 
 Le script utilise sudo pour installer plusieurs packages. Il faudra rentrer votre mot de passe utilisateur.
@@ -27,7 +27,7 @@ Le script rajoute deux variable d'environnement à votre `.bashrc`. `ROBAIR_HOME
 
 A la fin de l'installation veuillez exécuter `source ~/.bashrc`afin de prendre en compte ces modifications.
 
-##SCRIPTS
+##CONFIGURATION
 Différents scripts permettent de faciliter l'utilisation de Robair.
 
 ### Changement d'IP
@@ -38,24 +38,44 @@ Lorsque Robair change de réseau, son IP change. Il est nécessaire de mettre à
 ###SSL/TLS
 Robair est piloté par une interface web. Afin de sécuriser la connexion et d'être compatible avec les navigateurs, les différentes connexions utilisent un certificat SSL.
 
-Le certificat dois être accepté par une autorité de certification. Ces autorités de certification sont généralement payantes. La solution adotpée est de créer soient même cette autorité. Cette autorité devra être importée dans le ou les navigateur(s) pilotant Robair.
+Le certificat dois être accepté par une autorité de certification. Ces autorités de certification sont généralement payantes. La solution adotpée est de créer soi-même cette autorité. Cette autorité devra être importée dans le ou les navigateur(s) pilotant RobAIR.
 A partir de cette autorité, vous pouvez générer des certificats SSL qui seront accepté par votre navigateur.
-Une autorité peut donc être utilisé par plusieurs Robair.
+Une autorité peut donc être utilisé pour générer les certificats de plusieurs RobAIR.
 
 ####Création de l'autorité de certification
 
-Si vous avez déjà généré une autorité de certification sur un autre ordinateur par exemple, veuillez copier les fichiers rootCA.crt  rootCA.key  rootCA.srl dans $ROBAIR_HOME/ssl
+Si vous avez déjà généré une autorité de certification sur un autre ordinateur par exemple, veuillez copier les fichiers rootCA.crt  rootCA.key  rootCA.srl dans `$ROBAIR_HOME/ssl`
 
 Sinon exécutez :
 
 ```bash
-createRootCA.sh
+$ createRootCA.sh
 ```
 
-Création du certificat du Robair, à exécuter à chaque changement d'addresse IP (inclut dans le script `changeip.bash`)
+####Création du certificat du Robair
+Une fois l'autorité de certificat créé, il faut créer le certificat de RobAIR. Cette opération est à effectuer à chaque changement d'addresse IP pour plus de facilité le script `changeip.bash` peut également être utilisé .
 ```bash
-createDeviceCRT.sh
+$ createDeviceCRT.sh
 ```
 
+###Changement carte arduino
+Le script `changearduino.bash` permet de configurer le fichier `robair.launch` afin que ROS se connecte à la bonne carte Arduino.
+Une seule carte disposant d'une laison serie doit être connecté à l'ordinateur avant de lancer ce script. 
+Ce script n'est utile que la carte arduino est changée.
 
+##Utilisation
+Le script `robair` vous permet de lancer, arreter ou relancer les différents programme de RobAIR.
+Le programme sous-jacent utiliser est l'utilitaire `roslaunch` de ROS
 
+```bash
+$ robair start
+```
+La commande  `robair start` lance les différents programmes de RobAIR. Vous pouvez ensuite utilisé Ctrl+C pour l'arrêter. 
+```bash
+$ robair stop
+```
+La commande  `robair stop` arrête l'ensemble des programmes. Utile quand vous n'avez plus acces au terminal qui a lancer le programme. 
+```bash
+$ robair restart
+```
+La commande  `robair restart` arrête l'ensemble des programmes puis les relance après 3 secondes. 
