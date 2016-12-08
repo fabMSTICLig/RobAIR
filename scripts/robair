@@ -26,7 +26,7 @@ update() {
   cd ../arduino/robairarduino
   arduino --upload robairarduino.ino
   cd $ROBAIR_HOME
-  echo "RobAIR a été mis à jour"
+  echo "$(tput setaf 2)RobAIR a été mis à jour$(tput sgr0)"
 }
 
 case "$1" in
