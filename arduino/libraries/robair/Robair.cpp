@@ -53,7 +53,6 @@ void Robair::speed_control(){
     //low filter for smooth acceleration
     cmd_speedL =(int)( (float)(cmd_speedL)*coef_smoothness+(1.0-coef_smoothness)*(float)(cmd_msg_speedL));
     cmd_speedR = (float)(cmd_speedR)*coef_smoothness+(1.0-coef_smoothness)*(float)(cmd_msg_speedR);
-          log(String("coef ")+String((int)(cmd_speedL)));
 
 	}
 #ifdef USESERVO
