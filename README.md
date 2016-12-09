@@ -64,6 +64,21 @@ Une seule carte disposant d'une laison serie doit être connecté à l'ordinateu
 Ce script n'est utile que la carte arduino est changée.
 
 ##Utilisation
+
+###Première utilisation
+
+- Allumez RobAIR
+- Branchez la tablette
+- Allumer la tablette
+- Connectez vous au réseau wifi.
+- Ouvrez un terminal et lancez la commande `changeip.bash`, notez l'adresse IP indiqué (ROBAIR_IP).
+- Lancer la commande `robair start`
+- Sur la machine utilisateur allez à l'adresse http://ROBAIR_IP:6081 (remplacé ROBAIR_IP par l'actuel adresse IP)
+- Récupérez l'autorité de certification et installez la sur le navigateur utilisateur.
+- Allez à l'adresse https://ROBAIR_IP:6080
+
+
+###Environnement RobAIR
 Le script `robair` vous permet de lancer, arreter ou relancer les différents programme de RobAIR.
 Le programme sous-jacent utiliser est l'utilitaire `roslaunch` de ROS
 
