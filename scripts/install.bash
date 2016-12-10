@@ -74,7 +74,7 @@ cd $ROBAIR_HOME
 
 read -r -p "Voulez vous générer une autorité de certification ? [O/n] " response
 case $response in
-	[nN]) 
+	[nN])
 		read -r -p "Copier les fichiers rootCA.crt rootCA.key dans $ROBAIR_HOME/ssl puis appuyer sur entrer " response
 		;;
  	*)
@@ -125,17 +125,17 @@ if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 fi
 
 echo "$(tput setaf 1)Installation $(tput setab 7) Arduino$(tput sgr0)"
-
-sudo -E apt-get install arduino
-echo "$(tput setaf 1)Arduino va être lancer veuillez accepter de rajouté dialout en rentrant votre mot de passe, puis fermer la fenêtre de Arduino$(tput sgr0)"
-arduino
-sed -i -e 's#\(.*sketchbook.path=\).*#\1'"$ROBAIR_HOME/arduino"'#' ~/.arduino/preferences.txt
-echo "$(tput setaf 1)Genère $ROBAIR_HOME/arduino/libraries/ros_lib$(tput sgr0)"
-mkdir -p $ROBAIR_HOME/arduino/libraries
-cd $ROBAIR_HOME/arduino/libraries
-rm -rf ros_lib
-rosrun rosserial_arduino make_libraries.py .
-
+echo "Veuillez vous rendre à l'adresse https://www.arduino.cc/en/Main/Software et télécharger la dernière version de arduino"
+echo "Une fois téléchargé veulliez modifier l'emplacement du carnet des croquis dans Fichier->Préférences par $ROBAIR_HOME/arduino"
+read -r -p "Veuillez appuyer sur ENTRER une fois l'installation effectuée."
+read -r -p "Voulez vous générer la librairie ros_lib pour arduino ? [O/n] "
+if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
+	echo "$(tput setaf 1)Genère $ROBAIR_HOME/arduino/libraries/ros_lib$(tput sgr0)"
+	mkdir -p $ROBAIR_HOME/arduino/libraries
+	cd $ROBAIR_HOME/arduino/libraries
+	rm -rf ros_lib
+	rosrun rosserial_arduino make_libraries.py .
+fi
 
 
 echo "$(tput setaf 1)Instalation terminé$(tput sgr0)"
