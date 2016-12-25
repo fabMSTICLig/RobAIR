@@ -4,7 +4,7 @@
 
 
 Papierlogik::Papierlogik(){
-	_alpha = 0.98;
+	_alpha = 0.90;
 	_last_sensorValue = 0.0;
 }
 

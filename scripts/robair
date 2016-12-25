@@ -16,11 +16,25 @@ restart() {
   startme
 }
 
+
+update() {
+  stopme
+  cd $ROBAIR_HOME
+  git pull
+  cd catkin_ws
+  catkin_make
+  cd ../arduino/robairarduino
+  arduino --upload robairarduino.ino
+  cd $ROBAIR_HOME
+  echo "$(tput setaf 2)RobAIR a été mis à jour$(tput sgr0)"
+}
+
 case "$1" in
     start)   startme ;;
     stop)    stopme ;;
     restart) restart ;;
-    *) echo "usage: $0 start|stop|restart" >&2
+    update) update ;;
+    *) echo "usage: $0 start|stop|restart|update" >&2
        exit 1
        ;;
 esac

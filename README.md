@@ -27,7 +27,7 @@ Le script rajoute deux variable d'environnement à votre `.bashrc`. `ROBAIR_HOME
 
 A la fin de l'installation veuillez exécuter `source ~/.bashrc`afin de prendre en compte ces modifications.
 
-##SCRIPTS de configurations
+##CONFIGURATION
 Différents scripts permettent de faciliter l'utilisation de Robair.
 
 ### Changement d'IP
@@ -38,13 +38,13 @@ Lorsque Robair change de réseau, son IP change. Il est nécessaire de mettre à
 ###SSL/TLS
 Robair est piloté par une interface web. Afin de sécuriser la connexion et d'être compatible avec les navigateurs, les différentes connexions utilisent un certificat SSL.
 
-Le certificat dois être accepté par une autorité de certification. Ces autorités de certification sont généralement payantes. La solution adotpée est de créer soient même cette autorité. Cette autorité devra être importée dans le ou les navigateur(s) pilotant Robair.
+Le certificat dois être accepté par une autorité de certification. Ces autorités de certification sont généralement payantes. La solution adotpée est de créer soi-même cette autorité. Cette autorité devra être importée dans le ou les navigateur(s) pilotant RobAIR.
 A partir de cette autorité, vous pouvez générer des certificats SSL qui seront accepté par votre navigateur.
-Une autorité peut donc être utilisé par plusieurs Robair.
+Une autorité peut donc être utilisé pour générer les certificats de plusieurs RobAIR.
 
 ####Création de l'autorité de certification
 
-Si vous avez déjà généré une autorité de certification sur un autre ordinateur par exemple, veuillez copier les fichiers rootCA.crt  rootCA.key  rootCA.srl dans $ROBAIR_HOME/ssl
+Si vous avez déjà généré une autorité de certification sur un autre ordinateur par exemple, veuillez copier les fichiers rootCA.crt  rootCA.key  rootCA.srl dans `$ROBAIR_HOME/ssl`
 
 Sinon exécutez :
 
@@ -53,7 +53,7 @@ $ createRootCA.sh
 ```
 
 ####Création du certificat du Robair
-Création du certificat du Robair, à exécuter à chaque changement d'addresse IP (inclut dans le script `changeip.bash`)
+Une fois l'autorité de certificat créé, il faut créer le certificat de RobAIR. Cette opération est à effectuer à chaque changement d'addresse IP pour plus de facilité le script `changeip.bash` peut également être utilisé .
 ```bash
 $ createDeviceCRT.sh
 ```
@@ -61,8 +61,24 @@ $ createDeviceCRT.sh
 ###Changement carte arduino
 Le script `changearduino.bash` permet de configurer le fichier `robair.launch` afin que ROS se connecte à la bonne carte Arduino.
 Une seule carte disposant d'une laison serie doit être connecté à l'ordinateur avant de lancer ce script. 
+Ce script n'est utile que la carte arduino est changée.
 
 ##Utilisation
+
+###Première utilisation
+
+- Allumez RobAIR
+- Branchez la tablette
+- Allumer la tablette
+- Connectez vous au réseau wifi. Si votre RobAIR dispose d'une carte wifi externe pensez à déconnecté la carte wifi interne (INTEL).
+- Ouvrez un terminal et lancez la commande `changeip.bash`, notez l'adresse IP indiqué (ROBAIR_IP).
+- Lancer la commande `robair start`
+- Sur la machine utilisateur, allez à l'adresse http://ROBAIR_IP:6081 (remplacez ROBAIR_IP par l'actuelle adresse IP)
+- Récupérez l'autorité de certification et installez la sur le navigateur utilisateur.
+- Allez à l'adresse https://ROBAIR_IP:6080
+
+
+###Environnement RobAIR
 Le script `robair` vous permet de lancer, arreter ou relancer les différents programme de RobAIR.
 Le programme sous-jacent utiliser est l'utilitaire `roslaunch` de ROS
 
