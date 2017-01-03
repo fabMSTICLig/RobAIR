@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source C:/Users/Germain/Projets/Fablab/Rob-AIR/docs/elec/cartehaute/cartehaute.sch)
-    (date "18/11/2016 13:48:29")
+    (date "03/01/2017 13:22:55")
     (tool "Eeschema 4.0.4-stable")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -46,7 +46,7 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 581A13A0))
     (comp (ref P11)
-      (value ARU)
+      (value AN2)
       (footprint Pin_Headers:Pin_Header_Straight_1x02)
       (libsource (lib conn) (part CONN_01X02))
       (sheetpath (names /) (tstamps /))
@@ -64,7 +64,7 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 581AF69C))
     (comp (ref P8)
-      (value AN2)
+      (value ARU)
       (footprint Pin_Headers:Pin_Header_Straight_1x02)
       (libsource (lib conn) (part CONN_01X02))
       (sheetpath (names /) (tstamps /))
