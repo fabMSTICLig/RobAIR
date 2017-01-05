@@ -10,6 +10,7 @@ sub_cmdmotor("cmdmotors", &Robair::cmdmotorsCb, this),
 eyes_pub("eyes",&eyes_msg),
 eyes(6),
 sub_cmdeyes("cmdeyes", &Robair::cmdEyesCb, this),
+sub_eyesmat("eyesmat", &Robair::eyesMatCb, this),
 head_pub("head",&head_msg),
 sub_cmdhead("cmdhead", &Robair::cmdHeadCb, this),
 sub_reboot("reboot", &Robair::rebootCb, this),
@@ -92,6 +93,10 @@ void Robair::setEyes(int id)
 void Robair::cmdEyesCb(const std_msgs::UInt8& eyes_msg) {  //CALLBACK FUNCTION
   setEyes(eyes_msg.data);
 }
+void Robair::eyesMatCb(const robairmain::EyesMat& mat_msg) {  //CALLBACK FUNCTION
+    //log(String((int)mat_msg.mat_length)+"MAT");
+    //eyes.setMatrice(&mat_msg.mat);
+}
 
 
 //////////////////HEAD/////////////////////////////////
@@ -161,6 +166,7 @@ void Robair::checkStop(){
 }
 //////////////PARAMS//////////////////////////////////
 void Robair::loadParamsCb(const std_msgs::Empty& msgemp){
+
     int ibuff;
     nh.getParam("/bumpFTresh", &bumperFTresh);
     nh.getParam("/bumpRTresh", &bumperRTresh);
@@ -212,6 +218,7 @@ void Robair::begin()
 	nh.advertise(battery_pub);
 	nh.advertise(eyes_pub);
 	nh.subscribe(sub_cmdeyes);
+	nh.subscribe(sub_eyesmat);
 	nh.advertise(head_pub);
 	nh.subscribe(sub_cmdhead);
 	nh.advertise(bumperRear_pub);
@@ -221,6 +228,16 @@ void Robair::begin()
 	nh.advertise(aru_pub);
 	nh.subscribe(sub_loadParams);
 	nh.spinOnce();
+
+
+  int ibuff;
+  nh.getParam("/bumpFTresh", &bumperFTresh);
+  nh.getParam("/bumpRTresh", &bumperRTresh);
+  nh.getParam("/touchLTresh", &touchLeftTresh);
+  nh.getParam("/touchRTresh", &touchRightTresh);
+  nh.getParam("/coefSmoothness", &coef_smoothness);
+  nh.getParam("/aruDelay", &ibuff);
+  timeoutARUDelay=ibuff;
 
 	eyes.begin();
 

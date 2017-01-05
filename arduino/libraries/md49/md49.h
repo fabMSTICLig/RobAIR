@@ -6,6 +6,8 @@ class MD49{
 private:
 HardwareSerial & m_serial;
 MD49_MODE_t m_mode;
+
+unsigned long m_timeout;
 void sendCmd(byte cmd,byte val=0);
 byte getByte();
 int getInt();

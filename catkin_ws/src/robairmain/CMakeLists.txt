@@ -55,6 +55,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   MotorsCmd.msg
+  EyesMat.msg
 )
 
 ## Generate services in the 'srv' folder
