@@ -67,9 +67,9 @@ F 3 "" H 4000 3650 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	5800 3600 6200 3600
+	6200 3600 5800 3600
 Wire Wire Line
-	5800 3700 6100 3700
+	6100 3700 5800 3700
 Wire Wire Line
 	4400 3600 4200 3600
 Wire Wire Line
@@ -88,7 +88,7 @@ $EndComp
 Wire Wire Line
 	4200 3100 4300 3100
 Wire Wire Line
-	4300 3100 4300 3600
+	4300 3100 4300 3900
 Connection ~ 4300 3600
 Text Label 5850 3600 0    60   ~ 0
 GND24
@@ -151,7 +151,7 @@ Wire Wire Line
 Wire Wire Line
 	7900 3450 7550 3450
 Wire Wire Line
-	6200 3600 6200 3350
+	6200 2900 6200 3600
 Connection ~ 7800 3350
 Wire Wire Line
 	6050 3350 6050 3200
@@ -161,6 +161,39 @@ Wire Wire Line
 Wire Wire Line
 	7350 3100 6050 3100
 Wire Wire Line
-	6100 3700 6100 3100
+	6100 2800 6100 3700
 Connection ~ 6100 3100
+$Comp
+L CONN_01X02 P7
+U 1 1 585255F2
+P 5850 2850
+F 0 "P7" H 5850 3000 50  0000 C CNN
+F 1 "AUX" V 5950 2850 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 5850 2850 50  0001 C CNN
+F 3 "" H 5850 2850 50  0000 C CNN
+	1    5850 2850
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_01X02 P6
+U 1 1 58525622
+P 4000 3950
+F 0 "P6" H 4000 4100 50  0000 C CNN
+F 1 "5V out AUX" V 4100 3950 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Angled_1x02" H 4000 3950 50  0001 C CNN
+F 3 "" H 4000 3950 50  0000 C CNN
+	1    4000 3950
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	6050 2900 6200 2900
+Wire Wire Line
+	6050 2800 6100 2800
+Wire Wire Line
+	4300 3900 4200 3900
+Wire Wire Line
+	4200 4000 4350 4000
+Wire Wire Line
+	4350 4000 4350 3700
+Connection ~ 4350 3700
 $EndSCHEMATC
