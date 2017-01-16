@@ -11,11 +11,11 @@ var webrtc = new SimpleWebRTC({
         video: {
             width: {
                 max: 800,
-		min: 800
+		min: 640
             },
             height: {
                 max: 600,
-		min: 600
+		min: 480
             },
             frameRate: {
                 max: 15
