@@ -2,6 +2,9 @@
 
 
 startme() {
+  if [ ! -f $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch ]; then
+    cp $ROBAIR_HOME/configs/robair.launch $ROBAIR_HOME/catkin_ws/src/robairmain/launch/
+  fi
   roslaunch robairmain robair.launch
 }
 
