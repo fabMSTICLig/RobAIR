@@ -22,9 +22,9 @@
 // These constants won't change.  They're used to give names
 // to the pins used:
 const int an0 = A0;  // Analog input pin that the potentiometer is attached to
-const int an2 = A2;
-const int an4 = A4;  // Analog input pin that the potentiometer is attached to
-const int an5 = A5;
+const int an2 = A1;
+const int an4 = A2;  // Analog input pin that the potentiometer is attached to
+const int an5 = A3;
 
 int sensorValue = 0;        // value read from the pot
 int sensorF = 0;        // value read from the pot
@@ -35,9 +35,9 @@ void setup() {
   // initialize serial communications at 9600 bps:
   Serial.begin(9600); 
   sensorF = analogRead(A0);
-  sensorR = analogRead(A2);
-  sensorF = analogRead(A4);
-  sensorR = analogRead(A5);
+  sensorR = analogRead(A1);
+  sensorF = analogRead(A2);
+  sensorR = analogRead(A3);
 }
 
 void loop() {
@@ -46,14 +46,14 @@ void loop() {
   Serial.print("A0 = " );                       
   Serial.println(sensorValue);   
   
+  sensorValue = analogRead(A1);    
+  Serial.print("A1 = " );                       
+  Serial.println(sensorValue);      
   sensorValue = analogRead(A2);    
   Serial.print("A2 = " );                       
   Serial.println(sensorValue);      
-  sensorValue = analogRead(A4);    
-  Serial.print("A4 = " );                       
-  Serial.println(sensorValue);      
-  sensorValue = analogRead(A5);    
-  Serial.print("A5 = " );                       
+  sensorValue = analogRead(A3);    
+  Serial.print("A3 = " );                       
   Serial.println(sensorValue);                   
   Serial.println();                        
   Serial.println();      
