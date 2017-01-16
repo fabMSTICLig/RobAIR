@@ -36,7 +36,7 @@ public:
     int display_void();
     int display_stop();
     int gaze_direction(byte value);
-    int setMatrice(char * mat);
+    int setMatrice(uint8_t * mat);
     int setMatrice(int id);
 
 public:

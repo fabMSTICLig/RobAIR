@@ -12,6 +12,7 @@
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
 #include <robairmain/MotorsCmd.h>
+#include <robairmain/EyesMat.h>
 //ARDUINO InCUDE
 #include <Servo.h>
 #include <Adafruit_NeoPixel.h>
@@ -64,8 +65,10 @@ private:
   std_msgs::UInt8 eyes_msg;
   ros::Publisher eyes_pub;
   ros::Subscriber<std_msgs::UInt8,Robair> sub_cmdeyes;
+  ros::Subscriber<robairmain::EyesMat,Robair> sub_eyesmat;
   void setEyes(int id);
   void cmdEyesCb(const std_msgs::UInt8& eyes_msg) ;
+  void eyesMatCb(const robairmain::EyesMat& mat_msg) ;
 
 
   //////////////////HEAD/////////////////////////////////
