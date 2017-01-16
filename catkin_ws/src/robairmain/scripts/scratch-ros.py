@@ -9,8 +9,12 @@ from std_msgs.msg import Bool
 
 client = scratch.Scratch(host='0.0.0.0',port=42001)
 mcmd = MotorsCmd()
-angleHead = 180
 
+angleHead = 180
+last_angleHead = 100
+
+last_speedL = 0
+last_speedR = 0
 
 def callback_bumper_rear(data):
   rospy.loginfo(data.data)
@@ -45,32 +49,42 @@ def listen():
       raise StopIteration
 
 def update_scratch_msg():
+  global angleHead
   for msg in listen():
     if msg[0] == 'broadcast':
       print msg[1]
     elif msg[0] == 'sensor-update':
       if msg[1].has_key('speedL'):
-        mcmd.speedL = msg[1]['speedL']
-        print "m1:",mcmd.speedL
+         mcmd.speedL = msg[1]['speedL']
+         print "m1:",mcmd.speedL
       if msg[1].has_key('speedR'):
-        mcmd.speedR = msg[1]['speedR']
-        print " m2:",mcmd.speedR
+         mcmd.speedR = msg[1]['speedR']
+         print " m2:",mcmd.speedR
       if msg[1].has_key('cmdHead'):
-        angleHead = msg[1]['cmdHead']
-        print " angleHead:",angleHead
+         angleHead = msg[1]['cmdHead']
+         print " angleHead:",angleHead
 
 def publisher():
+
+  global last_speedL
+  global last_speedR
+  global last_angleHead
   pubMotors = rospy.Publisher('cmdmotors',MotorsCmd, queue_size=10)
   pubHead = rospy.Publisher('cmdhead',Int8, queue_size=10)
   rate = rospy.Rate(100)
   while not rospy.is_shutdown():
-    #mcmd.speed1=64
-    #mcmd.speed2=64
-    rospy.loginfo(mcmd)
-    pubMotors.publish(mcmd)
-    pubHead.publish(angleHead)
+    if (mcmd.speedL != last_speedL) or (mcmd.speedR != last_speedR):
+	rospy.loginfo(mcmd)
+    	pubMotors.publish(mcmd)
+	last_speedL = mcmd.speedL
+        last_speedR = mcmd.speedR
+    if  angleHead != last_angleHead:
+        rospy.loginfo(angleHead)
+        pubHead.publish(angleHead)
+        last_angleHead = angleHead
+        
     rate.sleep()
-    
+  thread_update_scratch.join()    
 
 
 if __name__ == '__main__':
@@ -82,9 +96,8 @@ if __name__ == '__main__':
     rospy.loginfo('Node initialized')
     print 'Node initialized'
     listen() #scartch message buffer
-    publisher() #publisher vers les moteurs
-    head() #publisher vers les moteurs de la tete
     listener() #suscriber des evenements sur le robot
+    publisher() #publisher vers les moteurs
   except rospy.ROSInterruptException:
     print 'error'
     rospy.logerr('error')
