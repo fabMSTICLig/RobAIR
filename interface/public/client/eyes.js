@@ -154,7 +154,8 @@ Eyes.drawEyes = function(id)
     {
         for(j=0;j<14;j++)
         {
-            drawcircle(ctx,10+20*j,10+15*i,valtocolor(t[i*14+j]));
+            //drawcircle(ctx,10+20*(j),10+15*i,valtocolor(t[i*14+(j)]));
+            drawcircle(ctx,10+20*(13-j),10+15*i,valtocolor(t[i*14+(13-j)]));
         }
     }
 }

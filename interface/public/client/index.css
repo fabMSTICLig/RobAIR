@@ -18,6 +18,21 @@ body{
     left: 0;/*right: 0;*/
     position: absolute;
 }
+#overlay {
+    margin: auto;
+    width: 70vw;
+    height: 52.5vw;
+    background: pink;
+    opacity: 0.01;
+    max-height: 100vh;
+    max-width: 133.33vh;
+    top: 0;bottom: 0;
+    left: 0;/*right: 0;*/
+    position: absolute;
+    z-index: 100;
+    border: 10px solid red;
+
+}
 #localVideo {
     width: 15%;
     min-width: 12em;

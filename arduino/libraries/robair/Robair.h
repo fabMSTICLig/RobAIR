@@ -99,7 +99,7 @@ private:
     const uint8_t PIN_BUMPER_FRONT=A0;
     const uint8_t PIN_BUMPER_REAR=A1;
 
-    float bumperFTresh=0.300;
+    float bumperFTresh=0.06;
     float bumperRTresh=0.400;
 
     boolean bumperFront;
@@ -118,11 +118,11 @@ private:
     Papierlogik papTouchLeft;
     Papierlogik papTouchRight;
 
-    const uint8_t PIN_TOUCH_LEFT=A5;
-    const uint8_t PIN_TOUCH_RIGHT=A4;
+    const uint8_t PIN_TOUCH_LEFT=A3;
+    const uint8_t PIN_TOUCH_RIGHT=A2;
 
-    float touchLeftTresh=0.96;
-    float touchRightTresh=0.96;
+    float touchLeftTresh=0.250;
+    float touchRightTresh=0.250;
 
     boolean touchLeft;
     boolean touchRight;
