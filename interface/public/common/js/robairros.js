@@ -66,8 +66,8 @@ robairros.backward = function() {
 robairros.left = function() {
 
     var msg = new ROSLIB.Message({
-        speedL: -robairros.speed,
-        speedR: robairros.speed
+        speedL: robairros.speed,
+        speedR: -robairros.speed
     });
     topic_cmd.publish(msg);
 }
@@ -75,8 +75,8 @@ robairros.left = function() {
 robairros.right = function() {
 
     var msg = new ROSLIB.Message({
-        speedL: robairros.speed,
-        speedR: -robairros.speed
+        speedL: -robairros.speed,
+        speedR: robairros.speed
     });
     topic_cmd.publish(msg);
 }

@@ -91,11 +91,20 @@ $(document).keydown(function(e) {
             case 109: // down
                 setSpeed(robairros.speed - 5);
                 break;
+            case 79: // down
+                robairros.setHead(5);
+                break;
+            case 80: // down
+                turnheadright();
+                break;
+            case 73: // down
+                turnheadleft();
+                break;
             default:
                 return; // exit this handler for other keys
         }
     }
-    if (e.which == 37 || e.which == 38 || e.which == 39 || e.which == 40 || e.which == 107 || e.which == 109) {
+    if (e.which == 37 || e.which == 38 || e.which == 39 || e.which == 40 || e.which == 107 || e.which == 109 || e.which == 73 || e.which == 79 || e.which == 80) {
         e.preventDefault(); // prevent the default action (scroll / move caret)
     }
 });
@@ -110,6 +119,13 @@ $(document).keyup(function(e) {
             stop();
             e.preventDefault(); // prevent the default action (scroll / move caret)
             break;
+        case 79: // down
+        case 80: // down
+        case 73: // down
+            lastkeydown = 0;
+            turnheadstop();
+            e.preventDefault(); // prevent the default action (scroll / move caret)
+            break;
         default:
             return; // exit this handler for other keys
     }
@@ -120,7 +136,6 @@ $('#left').mousedown(left).mouseup(stop);
 $('#right').mousedown(right).mouseup(stop);
 $('#foward').mousedown(foward).mouseup(stop);
 $('#backward').mousedown(backward).mouseup(stop);
-$('#hleft').mousedown(turnheadleft).mouseup(stop);
 $('#refresh').click(function()
 {
   robairros.reboot();
@@ -209,8 +224,9 @@ eyesCanvas.on("click", function(e) {
 //////////////////////HEAD////////////////
 
 
-
+var headcur = 90;
 robairros.headChange = function(deg) {
+    headcur=deg;
     setHeadTheta(deg);
 }
 
@@ -225,10 +241,13 @@ function setHeadTheta(val) {
 
 }
 var turnheadright = function() {
-  robairros.reboot();
+    robairros.setHead(90);
 }
 var turnheadleft = function() {
-    setHeadTheta(-60);
+  robairros.setHead(-90);
+}
+var turnheadstop = function() {
+  robairros.setHead(headcur);
 }
 
 
@@ -248,18 +267,22 @@ headCanvas.on("mousedown touchstart", function(e) {
         var posX = (e.pageX - $(this).offset().left) / headCanvas.width(),
             posY = (e.pageY - $(this).offset().top) / headCanvas.height();
         posX = posX * 2 - 1;
+        posY = (posY * 2 - 1)*-1;
         degree=Math.degrees(Math.acos(posX)) - 90;
+        console.log(posX+" "+posY);
     //    setHeadTheta(-degree);
-        robairros.setHead(-parseInt(degree));
+        //robairros.setHead(-parseInt(degree));
 });
 headCanvas.on("mousemove touchmove", function(e) {
     if (headMouseDown) {
         var posX = (e.pageX - $(this).offset().left) / headCanvas.width(),
             posY = (e.pageY - $(this).offset().top) / headCanvas.height();
         posX = posX * 2 - 1;
+        posY = (posY * 2 - 1)*-1;
         degree=Math.degrees(Math.acos(posX)) - 90;
+        console.log(posX+" "+posY);
     //    setHeadTheta(-degree);
-        robairros.setHead(-parseInt(degree));
+        //robairros.setHead(-parseInt(degree));
     }
     e.preventDefault();
     e.stopPropagation();
