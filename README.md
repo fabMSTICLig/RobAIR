@@ -17,7 +17,7 @@ $ git clone https://github.com/FabmsticLig/RobAIR.git
 
 Installation par le script
 ```bash
-$ cd Rob-AIR
+$ cd RobAIR
 $ ./scripts/install.bash
 ```
 
