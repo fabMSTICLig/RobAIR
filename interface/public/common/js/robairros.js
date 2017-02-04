@@ -66,8 +66,8 @@ robairros.backward = function() {
 robairros.left = function() {
 
     var msg = new ROSLIB.Message({
-        speedL: -robairros.speed,
-        speedR: robairros.speed
+        speedL: robairros.speed,
+        speedR: -robairros.speed
     });
     topic_cmd.publish(msg);
 }
@@ -75,8 +75,8 @@ robairros.left = function() {
 robairros.right = function() {
 
     var msg = new ROSLIB.Message({
-        speedL: robairros.speed,
-        speedR: -robairros.speed
+        speedL: -robairros.speed,
+        speedR: robairros.speed
     });
     topic_cmd.publish(msg);
 }
@@ -87,6 +87,105 @@ robairros.stop = function() {
         speedR: 0
     });
     topic_cmd.publish(msg);
+}
+
+
+robairros.analogGamepad = function (dx, dy) {
+
+        var kx = robairros.speed / 100;
+        var ky = robairros.speed / 100;
+
+        speed1 = 0;
+        speed2 = 0;
+
+
+                dx=-dx;
+                var theta = Math.atan(dy / dx); // En radian
+                if (dx <= 0 && dy >= 0) {
+                    theta = theta + Math.PI;
+                } else if (dx <= 0 && dy <= 0) {
+                    theta = theta + Math.PI;
+                } else if (dx >= 0 && dy <= 0) {
+                    theta = theta + 2 * Math.PI;
+                }
+
+
+                var v, speed1, speed2;
+
+                if (theta >= 0 && theta <= Math.PI / 2) { // 1er cadran
+                    if (theta <= Math.PI / 4) { // 1ère moitié du 1er cadran
+                        v = dx * kx;
+                        speed1 = v * Math.sin(theta + Math.PI / 4);
+                        speed2 = v * Math.sin(theta * 2 - Math.PI / 4);
+                    } else {
+                        v = dy * ky;
+                        speed1 = v;
+                        speed2 = v * Math.sin(theta);
+                    }
+
+                } else if (theta > Math.PI / 2 && theta <= Math.PI) { // 2ème cadran
+                    if (theta <= 3 * Math.PI / 4) { // 1ère moitié du 2ème cadran
+                        v = dy * ky;
+                        speed1 = v * Math.sin(theta);
+                        speed2 = v;
+                    } else {
+                        v = -dx * kx;
+                        speed1 = v * Math.sin(theta * 2 - 3 * Math.PI / 4);
+                        speed2 = v * Math.sin(theta - Math.PI / 4);
+                    }
+
+                } else if (theta > Math.PI && theta <= 3 * Math.PI / 2) { // 3ème cadran
+                    if (theta <= 5 * Math.PI / 4) { // 1ère moitié du 3ème cadran
+                        v = dx * kx;
+                        speed2 = v * Math.sin(theta * 3 - 5 * Math.PI / 4);
+                        speed1 = v * Math.sin(Math.PI / 4);
+                    } else {
+                        v = dy * ky;
+                        speed1 = -v * Math.sin(theta);
+                        speed2 = v;
+                    }
+
+                } else { // 4ème cadran
+                    if (theta <= 7 * Math.PI / 4) { // 1ère moitié du 4ème cadran
+                        v = dy * ky;
+                        speed1 = v;
+                        speed2 = -v * Math.sin(theta);
+                    } else {
+                        v = -dx * kx;
+                        speed1 = -v * Math.sin(theta * 3 - 7 * Math.PI / 4);
+                        speed2 = v * Math.sin(Math.PI / 4);
+                    }
+
+                }
+
+
+        //speed1 = -speed1;
+        //speed2 = -speed2;
+
+
+        if (speed1 >= robairros.speed) {
+            speed1 = robairros.speed;
+        }
+
+        if (speed1 <= -robairros.speed) {
+            speed1 = -robairros.speed;
+        }
+
+        if (speed2 >= robairros.speed) {
+            speed2 = robairros.speed;
+        }
+
+        if (speed2 <= -robairros.speed) {
+            speed2 = -robairros.speed;
+        }
+
+        //console.log(""+speed1+" "+speed2);
+
+        var msg = new ROSLIB.Message({
+            speedL: parseInt(speed1*100),
+            speedR: parseInt(speed2*100)
+        });
+        topic_cmd.publish(msg);
 }
 
 robairros.setSpeed = function(speed) {
@@ -184,7 +283,7 @@ var topic_head = new ROSLIB.Topic({
 robairros.headChange =function (val){}
 topic_head.subscribe(function(message) {
     robairros.headChange(parseInt(message.data));
-    console.log("head "+parseInt(message.data));
+    //console.log("head "+parseInt(message.data));
 });
 
 robairros.setHead = function(degree){

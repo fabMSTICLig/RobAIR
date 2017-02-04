@@ -1,7 +1,17 @@
 #!/bin/bash
 
+if [ -z $ROBAIR_HOME ]; then
+	echo "$(tput setaf 1)La variable ROBAIR_HOME doit être définie.$(tput sgr0)"
+	exit
+fi
 
 startme() {
+  if [ ! -f $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch ]; then
+    cp $ROBAIR_HOME/configs/robair.launch $ROBAIR_HOME/catkin_ws/src/robairmain/launch/
+  fi
+  if [ ! -f $ROBAIR_HOME/interface/config.json ]; then
+    cp $ROBAIR_HOME/interface/config.json.default $ROBAIR_HOME/interface/config.json
+  fi
   roslaunch robairmain robair.launch
 }
 
@@ -15,7 +25,40 @@ restart() {
   sleep 3
   startme
 }
+changeip() {
+  if [ ! -z "$1" ]; then
+  	export ROBAIR_IP=$1
+  else
+    ROBAIR_IP_LOCAL=`ifconfig | grep 192.168 | awk -F'[: ]+' '{print $4}'`
+    if [[ -z $ROBAIR_IP_LOCAL ]]; then
+    	export ROBAIR_IP_LOCAL="localhost"
+    fi
+    if [ "$ROBAIR_IP" != "$ROBAIR_IP_LOCAL" ]; then
+      echo "$(tput setaf 1)ROBAIR_IP diffère de votre IP actuel '$ROBAIR_IP_LOCAL'. Veuillez exécuter:$(tput sgr0)"
+      echo "$(tput setaf 2)source ~/.bashrc$(tput sgr0)"
+      exit 1
+    fi
+  fi
 
+  $ROBAIR_HOME/scripts/createDeviceCRT.bash
+  if [[ ! -f  $ROBAIR_HOME/interface/public/common/js/config.js ]]; then
+  	cp $ROBAIR_HOME/interface/public/common/js/config.js.default $ROBAIR_HOME/interface/public/common/js/config.js
+  fi
+  sed -i -e 's#\(.*serverurl : \).*#\1"'"$ROBAIR_IP"'",#' $ROBAIR_HOME/interface/public/common/js/config.js
+  sed -i -e 's/\r$//g' $ROBAIR_HOME/interface/public/common/js/config.js
+  sed -i -e '/Robair/,/https/{s#\(.*"url":\).*#\1"https://'"$ROBAIR_IP"':6080/"#}' ~/.config/chromium/Default/Bookmarks
+  echo "$(tput setaf 2)L'IP de RobAIR est $ROBAIR_IP$(tput sgr0)"
+}
+
+changearduino()
+{
+  PORT=`ls /dev/serial/by-id/`
+  if [ -z $PORT ]; then
+  	echo "Aucune carte arduino connectée"
+  else
+  	sed -i -e 's#".*Arduino[^"]*"#"port" value="/dev/serial/by-id/'"$PORT"'"#g' $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch
+  fi
+}
 
 update() {
   stopme
@@ -23,7 +66,11 @@ update() {
   git pull
   cd catkin_ws
   catkin_make
-  cd ../arduino/robairarduino
+  catkin_make install
+  cd $ROBAIR_HOME/arduino/libraries
+  rm -rf ros_lib
+  rosrun rosserial_arduino make_libraries.py .
+  cd $ROBAIR_HOME/arduino/robairarduino
   arduino --upload robairarduino.ino
   cd $ROBAIR_HOME
   echo "$(tput setaf 2)RobAIR a été mis à jour$(tput sgr0)"
@@ -34,7 +81,9 @@ case "$1" in
     stop)    stopme ;;
     restart) restart ;;
     update) update ;;
-    *) echo "usage: $0 start|stop|restart|update" >&2
+    arduino) changearduino ;;
+    ip)     changeip $2 ;;
+    *) echo "usage: $0 start|stop|restart|update|ip" >&2
        exit 1
        ;;
 esac

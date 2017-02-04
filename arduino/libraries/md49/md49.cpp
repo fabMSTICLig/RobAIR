@@ -1,8 +1,8 @@
 #include "md49.h"
 
-#define CMD        (byte)0x00       // MD49 command address of 0 
-#define GET_SPEED1       0x21  // returns the current requested speed of motor 1 
-#define GET_SPEED2       0x22  // returns the current requested speed of motor 2 
+#define CMD        (byte)0x00       // MD49 command address of 0
+#define GET_SPEED1       0x21  // returns the current requested speed of motor 1
+#define GET_SPEED2       0x22  // returns the current requested speed of motor 2
 #define GET_ENC1         0x23  // motor 1 encoder count, 4 bytes returned high byte first (signed)
 #define GET_ENC2         0x24  // motor 2 encoder count, 4 bytes returned high byte first (signed)
 #define GET_ENCS         0x25  // returns 8 bytes -  encoder1 count, encoder2 count
@@ -33,19 +33,21 @@ void MD49::sendCmd(byte cmd,byte val)
 
 byte MD49::getByte()
 {
-	while(m_serial.available() <= 0)
+	m_timeout=millis()+500;
+	while(m_serial.available() <= 0 && millis()<m_timeout)
 	{
 		delay(1);
 	}
+	if(millis()>m_timeout) return -1;
 	return m_serial.read();
 }
 int MD49::getInt()
 {
-	while(m_serial.available() < 4)
+	while(m_serial.available() < 4 && millis()<m_timeout)
 	{
 		delay(1);
 	}
-
+	if(millis()>m_timeout) return -1;
 	int ret =0;
 	ret = m_serial.read() << 24;
 	ret += m_serial.read() << 16;
@@ -56,7 +58,7 @@ int MD49::getInt()
 
 MD49::MD49(HardwareSerial & serial) : m_serial(serial), m_mode(MD49_MODE0)
 {
-	
+
 }
 void MD49::init(int baud)
 {
@@ -75,13 +77,13 @@ int MD49::getCurrent(byte num)
 {
 	sendCmd(num == 1 ? GET_CURR1 :GET_CURR2);
 	return getByte();
-	
+
 }
 int MD49::getEncoder(byte num)
 {
 	sendCmd(num == 1 ? GET_ENC1 :GET_ENC2);
 	return getInt();
-	
+
 }
 void MD49::getEncoders(int * encs)
 {
@@ -98,14 +100,14 @@ int MD49::getAccel()
 {
 	sendCmd(GET_ACCEL);
 	return getByte();
-	
+
 }
 MD49_MODE_t MD49::getMode()
 {
 	sendCmd(GET_MODE);
 	m_mode = (MD49_MODE_t)getByte();
 	return m_mode;
-	
+
 }
 byte MD49::getError()
 {
@@ -117,7 +119,7 @@ boolean MD49::checkspeed(int val)
 {
 	if(val <0 && (m_mode == MD49_MODE0 || m_mode == MD49_MODE2)) return false;
 	if(val >128 && (m_mode == MD49_MODE1 || m_mode == MD49_MODE3)) return false;
-	
+
 	return true;
 }
 
@@ -139,13 +141,13 @@ void MD49::setTurn(int turn)
 void MD49::setAccel(byte acc)
 {
 	sendCmd(SET_ACCEL, acc);
-	
+
 }
 void MD49::setMode(MD49_MODE_t mode)
 {
 	m_mode=mode;
 	sendCmd(SET_MODE, (byte)mode);
-	
+
 }
 void MD49::resetEncoder()
 {
@@ -169,7 +171,7 @@ void MD49::stop()
 		setSpeed1(128);
 		setSpeed2(128);
 	}
-	
+
 	if(m_mode == MD49_MODE2 || m_mode == MD49_MODE3)
 	{
 		setSpeed1(0);

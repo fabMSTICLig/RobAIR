@@ -50,6 +50,7 @@ var stop = function() {
 }
 
 
+
 var setSpeed = function(speed) {
     robairros.setSpeed(speed);
     $('#speed').val(robairros.speed);
@@ -91,11 +92,20 @@ $(document).keydown(function(e) {
             case 109: // down
                 setSpeed(robairros.speed - 5);
                 break;
+            case 79: // down
+                robairros.setHead(5);
+                break;
+            case 80: // down
+                turnheadleft();
+                break;
+            case 73: // down
+                turnheadright();
+                break;
             default:
                 return; // exit this handler for other keys
         }
     }
-    if (e.which == 37 || e.which == 38 || e.which == 39 || e.which == 40 || e.which == 107 || e.which == 109) {
+    if (e.which == 37 || e.which == 38 || e.which == 39 || e.which == 40 || e.which == 107 || e.which == 109 || e.which == 73 || e.which == 79 || e.which == 80) {
         e.preventDefault(); // prevent the default action (scroll / move caret)
     }
 });
@@ -110,6 +120,13 @@ $(document).keyup(function(e) {
             stop();
             e.preventDefault(); // prevent the default action (scroll / move caret)
             break;
+        case 79: // down
+        case 80: // down
+        case 73: // down
+            lastkeydown = 0;
+            turnheadstop();
+            e.preventDefault(); // prevent the default action (scroll / move caret)
+            break;
         default:
             return; // exit this handler for other keys
     }
@@ -120,7 +137,6 @@ $('#left').mousedown(left).mouseup(stop);
 $('#right').mousedown(right).mouseup(stop);
 $('#foward').mousedown(foward).mouseup(stop);
 $('#backward').mousedown(backward).mouseup(stop);
-$('#hleft').mousedown(turnheadleft).mouseup(stop);
 $('#refresh').click(function()
 {
   robairros.reboot();
@@ -209,13 +225,14 @@ eyesCanvas.on("click", function(e) {
 //////////////////////HEAD////////////////
 
 
-
+var headcur = 90;
 robairros.headChange = function(deg) {
+    headcur=deg;
     setHeadTheta(deg);
 }
 
 function setHeadTheta(val) {
-    var srotate = "rotate(" + val + "deg)";
+    var srotate = "rotate(" + (360-val) + "deg)";
     $("#head").css({
         "-webkit-transform": srotate,
         "transform": srotate,
@@ -225,10 +242,18 @@ function setHeadTheta(val) {
 
 }
 var turnheadright = function() {
-  robairros.reboot();
+
+  robairros.setEyes(Eyes.EYESLEFT);
+    robairros.setHead(90);
 }
 var turnheadleft = function() {
-    setHeadTheta(-60);
+
+  robairros.setEyes(Eyes.EYESRIGHT);
+  robairros.setHead(-90);
+}
+var turnheadstop = function() {
+  robairros.setHead(headcur);
+  robairros.setEyes(Eyes.EYESSTRAIGHT);
 }
 
 
@@ -236,30 +261,44 @@ Math.degrees = function(radians) {
     return radians * 180 / Math.PI;
 };
 
-var headCanvas = $("#headCanvas");
-
+var headCanvas = $("#overlay");
+console.log(headCanvas);
 headMouseDown = false;
 
 headCanvas.on("mouseup touchend mouseleave", function(e) {
     headMouseDown = false;
+    robairros.stop();
 });
 headCanvas.on("mousedown touchstart", function(e) {
-    headMouseDown = true;
+
+        headMouseDown = true;
         var posX = (e.pageX - $(this).offset().left) / headCanvas.width(),
             posY = (e.pageY - $(this).offset().top) / headCanvas.height();
-        posX = posX * 2 - 1;
+            posX = posX * 2 - 1;
+            posY = (posY * 2 - 1)*-1;
+            //console.log(posX+" P "+posY);
+        robairros.analogGamepad(posX,posY);
+        /*posX = posX * 2 - 1;
+        posY = (posY * 2 - 1)*-1;
         degree=Math.degrees(Math.acos(posX)) - 90;
+        console.log(posX+" "+posY);*/
     //    setHeadTheta(-degree);
-        robairros.setHead(-parseInt(degree));
+        //robairros.setHead(-parseInt(degree));
 });
 headCanvas.on("mousemove touchmove", function(e) {
     if (headMouseDown) {
         var posX = (e.pageX - $(this).offset().left) / headCanvas.width(),
             posY = (e.pageY - $(this).offset().top) / headCanvas.height();
-        posX = posX * 2 - 1;
+            posX = posX * 2 - 1;
+            posY = (posY * 2 - 1)*-1;
+            //console.log(posX+" P "+posY);
+
+        robairros.analogGamepad(posX,posY);
+        /*
         degree=Math.degrees(Math.acos(posX)) - 90;
+        console.log(posX+" "+posY);*/
     //    setHeadTheta(-degree);
-        robairros.setHead(-parseInt(degree));
+        //robairros.setHead(-parseInt(degree));
     }
     e.preventDefault();
     e.stopPropagation();

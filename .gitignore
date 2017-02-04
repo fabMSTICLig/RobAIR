@@ -16,3 +16,4 @@ catkin_ws/src/rosserial
 arduino/libraries/ros_lib
 interface/node_modules
 interface/public/common/js/config.js
+catkin_ws/src/robairmain/launch/robair.launch

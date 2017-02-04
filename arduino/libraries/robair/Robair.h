@@ -12,6 +12,7 @@
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
 #include <robairmain/MotorsCmd.h>
+#include <robairmain/EyesMat.h>
 //ARDUINO InCUDE
 #include <Servo.h>
 #include <Adafruit_NeoPixel.h>
@@ -29,21 +30,14 @@ private:
   std_msgs::String log_msg;
   ros::Publisher log_pub;
 
-  //MOTORS
+  /////////////////////////////MOTORS////////////////////////////////////
   int cmd_speedL = 0;  //current_speed used by motors
   int cmd_speedR = 0;
   int cmd_msg_speedL = 0; //current command send by user
   int cmd_msg_speedR = 0;
   float coef_smoothness = 0.90;
-  #ifdef USESERVO
-  Servo servoL;
-  Servo servoR;
-  #else
   MD49 md49;
-  const uint8_t RML=2;
-  const uint8_t RMR=3;
-  const uint8_t RTRESH=0;
-  #endif
+  const uint8_t PIN_RMD49=5;
 
   ros::Subscriber<robairmain::MotorsCmd,Robair> sub_cmdmotor;
 
@@ -51,7 +45,9 @@ private:
   void stop_motors();
   void speed_control();
 
-  //BATTERY
+  void powerMD49(bool on);
+
+  ///////////////////////////BATTERY/////////////////////////
 
   std_msgs::Int32 battery_msg;
   ros::Publisher battery_pub;
@@ -60,17 +56,21 @@ private:
 
   ////////////EYES/////////////
 
+  const uint8_t PIN_EYES=4;
   Eyes eyes;
   std_msgs::UInt8 eyes_msg;
   ros::Publisher eyes_pub;
   ros::Subscriber<std_msgs::UInt8,Robair> sub_cmdeyes;
+  ros::Subscriber<robairmain::EyesMat,Robair> sub_eyesmat;
   void setEyes(int id);
   void cmdEyesCb(const std_msgs::UInt8& eyes_msg) ;
+  void eyesMatCb(const robairmain::EyesMat& mat_msg) ;
 
 
   //////////////////HEAD/////////////////////////////////
 
 
+  const uint8_t PIN_HEAD=3;
   Servo servoHead;
   int cmd_msg_head = 0;
   int cmd_head=0;
@@ -97,10 +97,10 @@ private:
     Papierlogik papBumperRear;
 
     const uint8_t PIN_BUMPER_FRONT=A0;
-    const uint8_t PIN_BUMPER_REAR=A2;
+    const uint8_t PIN_BUMPER_REAR=A1;
 
-    float bumperFTresh=0.15;
-    float bumperRTresh=0.15;
+    float bumperFTresh=0.06;
+    float bumperRTresh=0.400;
 
     boolean bumperFront;
     boolean bumperRear;
@@ -118,11 +118,11 @@ private:
     Papierlogik papTouchLeft;
     Papierlogik papTouchRight;
 
-    const uint8_t PIN_TOUCH_LEFT=A5;
-    const uint8_t PIN_TOUCH_RIGHT=A4;
+    const uint8_t PIN_TOUCH_LEFT=A3;
+    const uint8_t PIN_TOUCH_RIGHT=A2;
 
-    float touchLeftTresh=0.96;
-    float touchRightTresh=0.96;
+    float touchLeftTresh=0.250;
+    float touchRightTresh=0.250;
 
     boolean touchLeft;
     boolean touchRight;
@@ -140,10 +140,9 @@ private:
 
   //////////////////ARU/////////////////
 
+  const uint8_t PIN_ARU = 2;
   std_msgs::Bool aru_msg;
   ros::Publisher aru_pub;
-  const uint8_t PIN_ARU = A6; //14 + 6
-
   uint32_t timeoutARU = 0;
   uint32_t timeoutARUDelay = 5000;
 

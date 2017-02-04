@@ -1,8 +1,4 @@
 
-//maj 27 decembre 2015
-
-//#define USESERVO
-
 // ROS INCLUDE
 #include <ros.h>
 #include <std_msgs/Int32.h>

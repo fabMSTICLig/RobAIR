@@ -8,8 +8,9 @@ log_pub("log",&log_msg),
 md49(Serial1),
 sub_cmdmotor("cmdmotors", &Robair::cmdmotorsCb, this),
 eyes_pub("eyes",&eyes_msg),
-eyes(6),
+eyes(PIN_EYES),
 sub_cmdeyes("cmdeyes", &Robair::cmdEyesCb, this),
+sub_eyesmat("eyesmat", &Robair::eyesMatCb, this),
 head_pub("head",&head_msg),
 sub_cmdhead("cmdhead", &Robair::cmdHeadCb, this),
 sub_reboot("reboot", &Robair::rebootCb, this),
@@ -24,20 +25,29 @@ sub_loadParams("load_params", &Robair::loadParamsCb, this)
 }
 
 
+void Robair::powerMD49(bool on)
+{
+  digitalWrite(PIN_RMD49,on ? HIGH : LOW);
+  delay(100);
+  if(on)
+  {
+  	md49.setMode(MD49_MODE1);
+  	md49.setAccel(3);
+  }
+}
 
 void Robair::cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK FUNCTION
 
-  cmd_msg_speedL = command_msg.speedL;
-  cmd_msg_speedR = command_msg.speedR;
+  if(!aru)
+  {
+    cmd_msg_speedL = command_msg.speedL;
+    cmd_msg_speedR = command_msg.speedR;
+  }
 }
 
 void Robair::stop_motors(){
   cmd_msg_speedL = 0;
   cmd_msg_speedR = 0;
-#ifndef USESERVO
-  digitalWrite(RML,LOW);
-  digitalWrite(RMR,LOW);
-#endif
 }
 
 void Robair::speed_control(){
@@ -55,26 +65,16 @@ void Robair::speed_control(){
     cmd_speedR = (float)(cmd_speedR)*coef_smoothness+(1.0-coef_smoothness)*(float)(cmd_msg_speedR);
 
 	}
-#ifdef USESERVO
-  servoL.write(map(cmd_speedL, -100, 100, 0, 179));
-  servoR.write(map(cmd_speedR, -100, 100, 0, 179));
-#else
   md49.setSpeed1(map(cmd_speedR, -100, 100, -127, 127));
   md49.setSpeed2(map(cmd_speedL, -100, 100, -127, 127));
-  digitalWrite(RML, (abs(cmd_speedL)<RTRESH || aru) ? LOW : HIGH);
-  digitalWrite(RMR, (abs(cmd_speedR)<RTRESH || aru) ? LOW : HIGH);
-
-#endif
 }
 
 
 void Robair::check_battery(unsigned int delay_check) {
   if( millis() > last_timestamp_battery) {
-#ifdef USESERVO
-		battery_msg.data = 24;
-#else
+
     battery_msg.data = md49.getVolt();
-#endif
+
     battery_pub.publish( &battery_msg );
     last_timestamp_battery = millis() + delay_check;
   }
@@ -91,6 +91,10 @@ void Robair::setEyes(int id)
 
 void Robair::cmdEyesCb(const std_msgs::UInt8& eyes_msg) {  //CALLBACK FUNCTION
   setEyes(eyes_msg.data);
+}
+void Robair::eyesMatCb(const robairmain::EyesMat& mat_msg) {  //CALLBACK FUNCTION
+    //log(String((int)mat_msg.mat_length)+"MAT");
+    //eyes.setMatrice(&mat_msg.mat);
 }
 
 
@@ -145,11 +149,14 @@ void Robair::checkStop(){
 		aru=true;
 		timeoutARU=millis()+timeoutARUDelay;
     setEyes(EYESSTOP);
+    stop_motors();
+    powerMD49(false);
 	}
 	else if(aru && timeoutARU<millis())
 	{
 		aru=false;
     setEyes(EYESSTRAIGHT);
+    powerMD49(true);
 	}
 
   if(oldaru!=aru)
@@ -161,6 +168,7 @@ void Robair::checkStop(){
 }
 //////////////PARAMS//////////////////////////////////
 void Robair::loadParamsCb(const std_msgs::Empty& msgemp){
+
     int ibuff;
     nh.getParam("/bumpFTresh", &bumperFTresh);
     nh.getParam("/bumpRTresh", &bumperRTresh);
@@ -207,37 +215,18 @@ void Robair::log(String str)
 //////////////////////////////ARDUINO////////////////
 void Robair::begin()
 {
-	nh.subscribe(sub_cmdmotor);
-	nh.advertise(log_pub);
-	nh.advertise(battery_pub);
-	nh.advertise(eyes_pub);
-	nh.subscribe(sub_cmdeyes);
-	nh.advertise(head_pub);
-	nh.subscribe(sub_cmdhead);
-	nh.advertise(bumperRear_pub);
-	nh.advertise(bumperFront_pub);
-	nh.advertise(touchLeft_pub);
-	nh.advertise(touchRight_pub);
-	nh.advertise(aru_pub);
-	nh.subscribe(sub_loadParams);
-	nh.spinOnce();
+
+  pinMode(PIN_RMD49,OUTPUT);
+  digitalWrite(PIN_RMD49,HIGH);
 
 	eyes.begin();
 
-	#ifdef USESERVO
-	servoL.attach(3);
-	servoR.attach(5);
-	servoL.write(0);
-	servoR.write(0);
-	#else
-	pinMode(RMR,OUTPUT);
-	pinMode(RML,OUTPUT);
+	pinMode(PIN_RMD49,OUTPUT);
 	md49.init(9600);
-	md49.setMode(MD49_MODE1);
-	md49.setAccel(3);
-	#endif
+  powerMD49(true);
 
-	servoHead.attach(7);
+
+	servoHead.attach(PIN_HEAD);
 	servoHead.write(90);
 
 	pinMode(PIN_ARU,INPUT);
@@ -254,6 +243,33 @@ void Robair::begin()
   touchLeft=false;
   papTouchLeft.init(float(analogRead(PIN_TOUCH_LEFT))/ONEK);
   papTouchRight.init(float(analogRead(PIN_TOUCH_RIGHT))/ONEK);
+
+	nh.subscribe(sub_cmdmotor);
+	nh.advertise(log_pub);
+	nh.advertise(battery_pub);
+	nh.advertise(eyes_pub);
+	nh.subscribe(sub_cmdeyes);
+	nh.subscribe(sub_eyesmat);
+	nh.advertise(head_pub);
+	nh.subscribe(sub_cmdhead);
+	nh.advertise(bumperRear_pub);
+	nh.advertise(bumperFront_pub);
+	nh.advertise(touchLeft_pub);
+	nh.advertise(touchRight_pub);
+	nh.advertise(aru_pub);
+	nh.subscribe(sub_loadParams);
+	nh.spinOnce();
+
+
+  int ibuff;
+  nh.getParam("/bumpFTresh", &bumperFTresh);
+  nh.getParam("/bumpRTresh", &bumperRTresh);
+  nh.getParam("/touchLTresh", &touchLeftTresh);
+  nh.getParam("/touchRTresh", &touchRightTresh);
+  nh.getParam("/coefSmoothness", &coef_smoothness);
+  nh.getParam("/aruDelay", &ibuff);
+  timeoutARUDelay=ibuff;
+
 }
 void Robair::spinOnce()
 {
