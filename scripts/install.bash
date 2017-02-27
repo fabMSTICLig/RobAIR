@@ -28,6 +28,9 @@ fi
 export ROBAIR_IP=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
 export PATH="$PATH:$ROBAIR_HOME/scripts/"
 
+# Met à jour ROBAIR_HOME dans les fichiers de configuration
+./scripts/changehome.bash
+
 if [ -z $http_proxy ]; then
 	read -r -p "Veuillez entrer votre proxy ou tapez entrée si vous n'en avez pas:" response
 	if [ ! -z "$response" ]; then
