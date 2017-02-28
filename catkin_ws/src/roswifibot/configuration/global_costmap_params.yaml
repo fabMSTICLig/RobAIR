@@ -1,0 +1,6 @@
+global_costmap: 
+  global_frame: /map
+  robot_base_frame: base_link
+  update_frequency: 5.0
+  #if we are not using a static map or a mapserver we have to set it false
+  static_map: true

@@ -1,0 +1,13 @@
+<launch>
+	<!-- this file set the parameters to run the navigation stack in ROS for the wifibot platform-->
+	<node pkg="urg_node" type="urg_node" name="urg_node" output="screen">
+		<param name="rame_id" value="base_laser"/>
+	</node>
+
+	<node pkg="roswifibot" type="wifibot_node" name="wifibot_node" output="screen">
+		<param name="base_frame" value="base_link"/>
+	</node>
+
+	<node pkg="roswifibot" type="wifibot_tf_broadcaster" name="wifibot_tf_broadcaster" output="screen"/>
+		
+</launch>

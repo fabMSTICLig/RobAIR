@@ -1,0 +1,12 @@
+<launch>
+    <node pkg="wifibot" type="wifibot_node"
+    	  name="wifibot" output="screen" />
+
+    <node pkg="joy" type="joy_node"
+    	  name="joy" output="screen" >
+	  <param name="dev" value="/dev/input/js1" />
+	  <param name="autorepeat_rate" value="10" />
+    </node>
+    <node pkg="wifibot" type="wifibot_teleop_joy.py"
+    	  name="teleop" output="screen" />
+</launch>
