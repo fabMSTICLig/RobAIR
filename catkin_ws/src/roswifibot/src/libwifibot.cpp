@@ -19,16 +19,6 @@
  * MA 02110-1301  USA
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <termios.h> 
-#include <unistd.h>
-#include <iostream>
-#include <sys/stat.h> 
-#include <fcntl.h>
-#include <string.h>
-#include <stdint.h>
-
 #include "libwifibot.h"
 
 //
