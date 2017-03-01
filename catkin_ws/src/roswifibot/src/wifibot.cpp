@@ -42,8 +42,6 @@ Wifibot::Wifibot(const ros::NodeHandle& nh)
 
   // Create topics
   _pubOdometry = _nh.advertise<nav_msgs::Odometry>("odom", 10);
-
-  _subSpeeds = _nh.subscribe("cmd_vel", 1, &Wifibot::velocityCallback, this);
   _change_odometry = _nh.subscribe("change_odometry", 1, &Wifibot::change_odometryCallback, this);
 
   ros::Rate r(100);
@@ -95,15 +93,6 @@ void Wifibot::computeOdometry(double left, double right)
   else
     ROS_INFO("odometry pb");*/
 
-}
-
-void Wifibot::velocityCallback(const geometry_msgs::TwistConstPtr& vel)
-{
-  //ROS_INFO("input : %0.3f | %0.3f", vel->linear.x, vel->angular.z);
-
-  _speedLeft = vel->linear.x - (vel->angular.z * (_entrax / 2.0));
-  _speedRight =  vel->linear.x + (vel->angular.z * (_entrax / 2.0));
-  _updated = true;
 }
 
 void Wifibot::change_odometryCallback(const geometry_msgs::Point::ConstPtr& o) {

@@ -23,7 +23,6 @@ class Wifibot
   ~Wifibot();
 
  private:
-  void velocityCallback(const geometry_msgs::TwistConstPtr& vel);
   void change_odometryCallback(const geometry_msgs::Point::ConstPtr& o);
   void computeOdometry(double dleft, double dright);
   double getSpeedLinear(double speedLeft, double speedRight);
@@ -38,7 +37,6 @@ class Wifibot
   wifibot::Driver *_pDriver;
   
   ros::Publisher _pubOdometry;
-  ros::Subscriber _subSpeeds;
 
   //added by O. Aycard
   ros::Subscriber _change_odometry;
