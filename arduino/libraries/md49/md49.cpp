@@ -89,7 +89,7 @@ void MD49::getEncoders(int * encs)
 {
 	sendCmd(GET_ENCS);
 	encs[0]= getInt();
-	encs[2]= getInt();
+	encs[1]= getInt();
 }
 int MD49::getVolt()
 {
