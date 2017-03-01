@@ -20,6 +20,7 @@
  */
 
 #include "ros/ros.h"
+#include <robairmain/MotorsInfo.h>
 
 // Wifibot library namespace
 namespace wifibot
@@ -44,6 +45,9 @@ namespace wifibot
   private:
     double _ticsPerMeter;
     driverData _data;
+    ros::Subscriber _subMotors;
+
+    void motorsCallback(const robairmain::MotorsInfo& msg);
 
   public:
     Driver(ros::NodeHandle nh);

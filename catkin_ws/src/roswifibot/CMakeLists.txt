@@ -13,7 +13,7 @@ project(roswifibot)
 
 #rosbuild_init()
 
-find_package(catkin REQUIRED roscpp rospy message_generation std_msgs nav_msgs geometry_msgs tf)
+find_package(catkin REQUIRED roscpp rospy message_generation std_msgs nav_msgs geometry_msgs tf robairmain)
 
 #find_package(boost REQUIRED) 
 
@@ -32,7 +32,7 @@ find_package(catkin REQUIRED roscpp rospy message_generation std_msgs nav_msgs g
 #rosbuild_gensrv()
 
 catkin_package(
-CATKIN_DEPENDS message_runtime std_msgs nav_msgs geometry_msgs
+CATKIN_DEPENDS message_runtime std_msgs nav_msgs geometry_msgs robairmain
 ) #here we can include dependecies like opencv
 
 include_directories(include ${catkin_INCLUDE_DIRS})

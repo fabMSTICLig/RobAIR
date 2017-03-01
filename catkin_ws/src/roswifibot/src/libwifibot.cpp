@@ -29,6 +29,15 @@ namespace wifibot
   Driver::Driver(ros::NodeHandle nh)
     : _data(), _ticsPerMeter(1)
   {
+    _subMotors = nh.subscribe("/motors_info", 1, &Driver::motorsCallback, this);
+  }
+
+  void Driver::motorsCallback(const robairmain::MotorsInfo& msg)
+  {
+    _data.speedFrontLeft = (double)msg.speedL / (60.0 * _ticsPerMeter);
+    _data.speedFrontRight = (double)msg.speedR / (60.0 * _ticsPerMeter);
+    _data.odometryLeft = (double)msg.countL / _ticsPerMeter;
+    _data.odometryRight = (double)msg.countR / _ticsPerMeter;
   }
 
   driverData Driver::readData()
