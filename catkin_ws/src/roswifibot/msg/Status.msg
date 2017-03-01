@@ -1,4 +1,0 @@
-float64 speed_front_left
-float64 speed_front_right
-float64 odometry_left
-float64 odometry_right

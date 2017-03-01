@@ -17,10 +17,8 @@ find_package(catkin REQUIRED roscpp rospy message_generation std_msgs nav_msgs g
 
 #find_package(boost REQUIRED) 
 
-add_message_files(DIRECTORY msg FILES Status.msg)
+#add_message_files(DIRECTORY msg FILES )
 #add_service_files(DIRECTORY srv FILES )
-
-generate_messages(DEPENDENCIES std_msgs nav_msgs geometry_msgs)
 
 #set the default path for built executables to the "bin" directory
 #set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)

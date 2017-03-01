@@ -1,7 +1,6 @@
 #include "libwifibot.h"
 #include "wifibot.h"
 #include "ros/ros.h"
-#include "roswifibot/Status.h"
 
 #define TWOPI (M_PI * 2)
 
@@ -43,7 +42,6 @@ Wifibot::Wifibot(const ros::NodeHandle& nh)
 
   // Create topics
   _pubOdometry = _nh.advertise<nav_msgs::Odometry>("odom", 10);
-  _pubStatus = _nh.advertise<roswifibot::Status>("status", 10);
 
   _subSpeeds = _nh.subscribe("cmd_vel", 1, &Wifibot::velocityCallback, this);
   _change_odometry = _nh.subscribe("change_odometry", 1, &Wifibot::change_odometryCallback, this);
@@ -125,21 +123,10 @@ void Wifibot::change_odometryCallback(const geometry_msgs::Point::ConstPtr& o) {
 
 void Wifibot::update()
 {
-  roswifibot::Status topicStatus;
-
   // get data from driver
   wifibot::driverData st = _pDriver->readData();
   
   _timeCurrent = ros::Time::now();
-
-  // Fill status topic
-  topicStatus.speed_front_left = st.speedFrontLeft;
-  topicStatus.speed_front_right = st.speedFrontRight;
-  topicStatus.odometry_left = st.odometryLeft;
-  topicStatus.odometry_right = st.odometryRight;
-
-  // publish status
-  _pubStatus.publish(topicStatus);
 
   // compute position
   computeOdometry(st.odometryLeft, st.odometryRight);

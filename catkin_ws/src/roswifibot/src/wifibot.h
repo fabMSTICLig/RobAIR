@@ -37,7 +37,6 @@ class Wifibot
 
   wifibot::Driver *_pDriver;
   
-  ros::Publisher _pubStatus;
   ros::Publisher _pubOdometry;
   ros::Subscriber _subSpeeds;
 
