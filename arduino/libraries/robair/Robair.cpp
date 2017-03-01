@@ -34,6 +34,7 @@ void Robair::powerMD49(bool on)
   {
   	md49.setMode(MD49_MODE1);
   	md49.setAccel(3);
+    md49.resetEncoder();
   }
 }
 
