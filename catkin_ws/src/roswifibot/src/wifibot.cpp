@@ -13,15 +13,7 @@ Wifibot::Wifibot(const ros::NodeHandle& nh)
 {
   // Parameters handler
   ros::NodeHandle pn("~");
-  
-  // Get device port parameter
-  std::string dev;
-  if (!pn.getParam("port", dev))
-    {
-      dev = "/dev/ttyS0";
-      ROS_INFO("No device port set. Assuming : %s", dev.c_str());
-    }
-  
+
   // get base frame parameter
   std::string frameBase;
   if (!pn.getParam("base_frame", frameBase))
@@ -36,15 +28,9 @@ Wifibot::Wifibot(const ros::NodeHandle& nh)
   else
     _entrax = entrax;
   
-  ROS_INFO("Wifibot device : %s. Entrax : %0.3f",
-	   dev.c_str(), _entrax);
-  
   // Create and configure the driver
-  _pDriver = new wifibot::Driver(dev);
-  _pDriver->setRelays(false, false, false);
-  _pDriver->loopControlSpeed(0.01);  // Default loop control speed
-  _pDriver->setPid(0.8, 0.45, 0.0);  // Default PID values
-  _pDriver->setTicsPerMeter(5312.0); // Adapt this value according your wheels size
+  _pDriver = new wifibot::Driver(nh);
+  _pDriver->setTicsPerMeter(5312.0); // FIXME Adapt this value according your wheels size
 
   // Save initial position
   wifibot::driverData st = _pDriver->readData();
@@ -140,11 +126,6 @@ void Wifibot::change_odometryCallback(const geometry_msgs::Point::ConstPtr& o) {
 void Wifibot::update()
 {
   roswifibot::Status topicStatus;
-  
-  // Send speeds only if needed
-  if (_updated)
-    _pDriver->setSpeeds(_speedLeft, _speedRight);
-  _updated = false;
 
   // get data from driver
   wifibot::driverData st = _pDriver->readData();
@@ -152,20 +133,10 @@ void Wifibot::update()
   _timeCurrent = ros::Time::now();
 
   // Fill status topic
-  topicStatus.battery_level = st.voltage;
-  topicStatus.current = st.current; // see libwifibot to adapt this value
-  topicStatus.ADC1 = st.adc[0];
-  topicStatus.ADC2 = st.adc[1];
-  topicStatus.ADC3 = st.adc[2];
-  topicStatus.ADC4 = st.adc[3];
-
   topicStatus.speed_front_left = st.speedFrontLeft;
   topicStatus.speed_front_right = st.speedFrontRight;
-  
   topicStatus.odometry_left = st.odometryLeft;
   topicStatus.odometry_right = st.odometryRight;
-  topicStatus.version = st.version;
-  topicStatus.relay1 = 0;
 
   // publish status
   _pubStatus.publish(topicStatus);
