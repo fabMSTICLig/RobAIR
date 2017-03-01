@@ -43,6 +43,7 @@ byte MD49::getByte()
 }
 int MD49::getInt()
 {
+	m_timeout=millis()+500;
 	while(m_serial.available() < 4 && millis()<m_timeout)
 	{
 		delay(1);
