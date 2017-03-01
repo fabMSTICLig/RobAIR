@@ -12,6 +12,7 @@
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
 #include <robairmain/MotorsCmd.h>
+#include <robairmain/MotorsInfo.h>
 #include <robairmain/EyesMat.h>
 //ARDUINO InCUDE
 #include <Servo.h>
@@ -40,6 +41,9 @@ private:
   const uint8_t PIN_RMD49=5;
 
   ros::Subscriber<robairmain::MotorsCmd,Robair> sub_cmdmotor;
+
+  robairmain::MotorsInfo motors_msg;
+  ros::Publisher motors_pub;
 
   void cmdmotorsCb(const robairmain::MotorsCmd& command_msg);
   void stop_motors();

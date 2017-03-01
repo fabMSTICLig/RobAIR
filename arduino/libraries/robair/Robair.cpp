@@ -7,6 +7,7 @@ battery_pub("battery_level",&battery_msg),
 log_pub("log",&log_msg),
 md49(Serial1),
 sub_cmdmotor("cmdmotors", &Robair::cmdmotorsCb, this),
+motors_pub("motors_info", &motors_msg),
 eyes_pub("eyes",&eyes_msg),
 eyes(PIN_EYES),
 sub_cmdeyes("cmdeyes", &Robair::cmdEyesCb, this),
@@ -67,6 +68,14 @@ void Robair::speed_control(){
 	}
   md49.setSpeed1(map(cmd_speedR, -100, 100, -127, 127));
   md49.setSpeed2(map(cmd_speedL, -100, 100, -127, 127));
+
+  int encs[2];
+  motors_msg.speedL = cmd_speedL;
+  motors_msg.speedR = cmd_speedR;
+  md49.getEncoders(encs);
+  motors_msg.countL = encs[0];
+  motors_msg.countR = encs[1];
+  motors_pub.publish(&motors_msg);
 }
 
 
@@ -245,6 +254,7 @@ void Robair::begin()
   papTouchRight.init(float(analogRead(PIN_TOUCH_RIGHT))/ONEK);
 
 	nh.subscribe(sub_cmdmotor);
+	nh.advertise(motors_pub);
 	nh.advertise(log_pub);
 	nh.advertise(battery_pub);
 	nh.advertise(eyes_pub);
