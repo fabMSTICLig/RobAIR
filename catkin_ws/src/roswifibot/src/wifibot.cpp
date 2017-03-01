@@ -21,15 +21,17 @@ Wifibot::Wifibot(const ros::NodeHandle& nh)
     _frameBase = frameBase;
   
   // get entrax parameter
-  double entrax;
+  double entrax, ticsPerMeter;
   if (!pn.getParam("entrax", entrax))
     _entrax = 0.30;
   else
     _entrax = entrax;
+  if (!pn.getParam("ticsPerMeter", ticsPerMeter))
+    ticsPerMeter = 5000;
   
   // Create and configure the driver
   _pDriver = new wifibot::Driver(nh);
-  _pDriver->setTicsPerMeter(5312.0); // FIXME Adapt this value according your wheels size
+  _pDriver->setTicsPerMeter(ticsPerMeter);
 
   // Save initial position
   wifibot::driverData st = _pDriver->readData();
