@@ -37,10 +37,6 @@ CATKIN_DEPENDS message_runtime std_msgs nav_msgs geometry_msgs robairmain
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-install (DIRECTORY scripts/
-	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-	USE_SOURCE_PERMISSIONS)
-
 #common commands for building c++ executables and libraries
 add_library(libwifibot src/libwifibot.cpp)
 target_link_libraries(libwifibot ${catkin_LIBRARIES})
