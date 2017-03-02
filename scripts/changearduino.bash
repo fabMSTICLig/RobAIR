@@ -5,7 +5,7 @@ if [ -z $ROBAIR_HOME ]; then
 	exit
 fi
 
-PORT=`ls /dev/serial/by-id/`
+PORT=$(basename "$(ls /dev/serial/by-id/*arduino*)")
 if [ -z $PORT ]; then
 	echo "Aucune carte arduino connectée"
 else
