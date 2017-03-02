@@ -26,4 +26,7 @@
     <param name="ticsPerMeter" value="2497.69" />
   </node>
   <node pkg="roswifibot" type="wifibot_tf_broadcaster" name="tf_broadcaster" />
+  <node pkg="urg_node" type="urg_node" name="lidar">
+    <param name="serial_port" value="/dev/serial/by-id/usb-Hokuyo_Data_Flex_for_USB_URG-Series_USB_Driver-if00" />
+  </node>
 </launch>

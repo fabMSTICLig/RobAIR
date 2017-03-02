@@ -104,7 +104,7 @@ if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 	source /opt/ros/kinetic/setup.bash
 	sudo -E rosdep init
 	rosdep update
-	sudo -E apt-get install ros-kinetic-rosbridge-suite
+	sudo -E apt-get install ros-kinetic-rosbridge-suite ros-kinetic-urg-node
 	source /opt/ros/kinetic/setup.bash
 
 fi
