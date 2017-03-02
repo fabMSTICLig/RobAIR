@@ -13,14 +13,17 @@
   </node>
   <node pkg="robairmain" type="proxy" name="proxy">
   </node>
-  <node pkg="roswifibot" type="wifibot_node" name="wifibot_node">
-    <param name="entrax" value="0.40" />
-    <param name="ticsPerMeter" value="2497.69" />
-  </node>
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
      <arg name="port" value="6777"/>
      <arg name="ssl" value="true"/>
      <arg name="certfile" value="/home/robair/RobAIR/ssl/device.crt"/>
      <arg name="keyfile" value="/home/robair/RobAIR/ssl/device.key"/>
   </include>
+
+  <!-- Odometry -->
+  <node pkg="roswifibot" type="wifibot_node" name="wifibot_node">
+    <param name="entrax" value="0.40" />
+    <param name="ticsPerMeter" value="2497.69" />
+  </node>
+  <node pkg="roswifibot" type="wifibot_tf_broadcaster" name="tf_broadcaster" />
 </launch>
