@@ -47,7 +47,12 @@ namespace wifibot
     driverData _data;
     ros::Subscriber _subMotors;
 
+    int _lastCountL, _lastCountR;
+    int _overflowCountL, _overflowCountR;
+
     void motorsCallback(const robairmain::MotorsInfo& msg);
+    void detectOverflow(const robairmain::MotorsInfo& msg);
+    int accountForOverflows(int32_t count, bool right);
 
   public:
     Driver(ros::NodeHandle nh);

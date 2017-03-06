@@ -78,6 +78,7 @@ void Wifibot::computeOdometry(double left, double right)
 {
   double dleft = left - _odometryLeftLast;
   double dright = right - _odometryRightLast;
+
   double distance = getSpeedLinear(dleft, dright);
 
   ROS_INFO("leftlast : %f, rightlast : %f", _odometryLeftLast, _odometryRightLast);

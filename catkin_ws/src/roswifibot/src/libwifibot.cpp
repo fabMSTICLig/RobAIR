@@ -27,17 +27,47 @@
 namespace wifibot
 {
   Driver::Driver(ros::NodeHandle nh)
-    : _data(), _ticsPerMeter(1)
+    : _data(), _ticsPerMeter(1), _lastCountL(0), _lastCountR(0),
+    _overflowCountL(0), _overflowCountR(0)
   {
     _subMotors = nh.subscribe("/motors_info", 1, &Driver::motorsCallback, this);
   }
 
   void Driver::motorsCallback(const robairmain::MotorsInfo& msg)
   {
+    detectOverflow(msg);
+
     _data.speedFrontLeft = (double)msg.speedL / (60.0 * _ticsPerMeter);
     _data.speedFrontRight = (double)msg.speedR / (60.0 * _ticsPerMeter);
-    _data.odometryLeft = (double)msg.countL / _ticsPerMeter;
-    _data.odometryRight = (double)msg.countR / _ticsPerMeter;
+
+    _data.odometryLeft =
+      (double)accountForOverflows(msg.countL, false) / _ticsPerMeter;
+    _data.odometryRight =
+      (double)accountForOverflows(msg.countR, true) / _ticsPerMeter;
+  }
+
+  void Driver::detectOverflow(const robairmain::MotorsInfo& msg)
+  {
+    int dleft = msg.countL - _lastCountL,
+        dright = msg.countR - _lastCountR;
+
+    if (dleft < -64000)
+      _overflowCountL += 1;
+    else if (dleft > 64000)
+      _overflowCountL -= 1;
+    if (dright < -64000)
+      _overflowCountR += 1;
+    else if (dright > 64000)
+      _overflowCountR -= 1;
+
+    _lastCountL = msg.countL;
+    _lastCountR = msg.countR;
+  }
+
+  int Driver::accountForOverflows(int32_t count, bool right)
+  {
+    int overflows = (right ? _overflowCountR : _overflowCountL);
+    return count + overflows * 65536;
   }
 
   driverData Driver::readData()
