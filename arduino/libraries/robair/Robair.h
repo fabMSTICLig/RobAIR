@@ -11,6 +11,7 @@
 #include <std_msgs/Bool.h>
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
+#include <geometry_msgs/Twist.h>
 #include <robairmain/MotorsCmd.h>
 #include <robairmain/MotorsInfo.h>
 #include <robairmain/EyesMat.h>
@@ -41,11 +42,13 @@ private:
   const uint8_t PIN_RMD49=5;
 
   ros::Subscriber<robairmain::MotorsCmd,Robair> sub_cmdmotor;
+  ros::Subscriber<geometry_msgs::Twist,Robair> sub_cmdvel;
 
   robairmain::MotorsInfo motors_msg;
   ros::Publisher motors_pub;
 
   void cmdmotorsCb(const robairmain::MotorsCmd& command_msg);
+  void cmdvelCb(const geometry_msgs::Twist& command_msg);
   void stop_motors();
   void speed_control();
 

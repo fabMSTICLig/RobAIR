@@ -2,11 +2,17 @@
 
 #define ONEK 1024
 
+//TODO: use params instead
+#define ENTRAX 0.40
+#define MPS_TO_PERCENT_A 90.0
+#define MPS_TO_PERCENT_B 8.0
+
 Robair::Robair(ros::NodeHandle & nh):nh(nh),
 battery_pub("battery_level",&battery_msg),
 log_pub("log",&log_msg),
 md49(Serial1),
 sub_cmdmotor("cmdmotors", &Robair::cmdmotorsCb, this),
+sub_cmdvel("cmd_vel", &Robair::cmdvelCb, this),
 motors_pub("motors_info", &motors_msg),
 eyes_pub("eyes",&eyes_msg),
 eyes(PIN_EYES),
@@ -44,6 +50,46 @@ void Robair::cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK
   {
     cmd_msg_speedL = command_msg.speedL;
     cmd_msg_speedR = command_msg.speedR;
+  }
+}
+
+void Robair::cmdvelCb(const geometry_msgs::Twist& command_msg)
+{
+  if(!aru) {
+    // Compute requested speed
+
+    double angular_comp = command_msg.angular.z * (ENTRAX / 2.0);
+    double mps_speedL = command_msg.linear.x + angular_comp,
+           mps_speedR = command_msg.linear.x - angular_comp;
+
+
+    // Convert to percents
+
+    if (mps_speedL > 0)
+      cmd_msg_speedL = mps_speedL * MPS_TO_PERCENT_A + MPS_TO_PERCENT_B;
+    else if (mps_speedL < 0)
+      cmd_msg_speedL = mps_speedL * MPS_TO_PERCENT_A - MPS_TO_PERCENT_B;
+    else
+      cmd_msg_speedL = 0;
+    if (mps_speedR > 0)
+      cmd_msg_speedR = mps_speedR * MPS_TO_PERCENT_A + MPS_TO_PERCENT_B;
+    else if (mps_speedR < 0)
+      cmd_msg_speedR = mps_speedR * MPS_TO_PERCENT_A - MPS_TO_PERCENT_B;
+    else
+      cmd_msg_speedR = 0;
+
+
+    // Clamp values
+
+    if(cmd_msg_speedL < -100)
+      cmd_msg_speedL = -100;
+    else if(cmd_msg_speedL > 100)
+      cmd_msg_speedL = 100;
+
+    if(cmd_msg_speedR < -100)
+      cmd_msg_speedR = -100;
+    else if(cmd_msg_speedR > 100)
+      cmd_msg_speedR = 100;
   }
 }
 
@@ -255,6 +301,7 @@ void Robair::begin()
   papTouchRight.init(float(analogRead(PIN_TOUCH_RIGHT))/ONEK);
 
 	nh.subscribe(sub_cmdmotor);
+	nh.subscribe(sub_cmdvel);
 	nh.advertise(motors_pub);
 	nh.advertise(log_pub);
 	nh.advertise(battery_pub);
