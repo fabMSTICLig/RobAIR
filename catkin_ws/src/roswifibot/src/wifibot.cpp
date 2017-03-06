@@ -15,8 +15,8 @@ Wifibot::Wifibot(const ros::NodeHandle& nh)
 
   // get base frame parameter
   std::string frameBase;
-  if (!pn.getParam("base_frame", frameBase))
-    _frameBase = "base_frame";
+  if (!pn.getParam("base_link", frameBase))
+    _frameBase = "base_link";
   else
     _frameBase = frameBase;
   
@@ -125,7 +125,7 @@ void Wifibot::update()
   
   //TRANSFORM we'll publish the transform over tf
   _odomTf.header.stamp = _timeCurrent;
-  _odomTf.header.frame_id = "/odom";
+  _odomTf.header.frame_id = "laser";
   _odomTf.child_frame_id = _frameBase;
   
   _odomTf.transform.translation.x = _position.x;
