@@ -15,6 +15,9 @@ startme() {
   if [ ! -f $ROBAIR_HOME/interface/config.json ]; then
     cp $ROBAIR_HOME/interface/config.json.default $ROBAIR_HOME/interface/config.json
   fi
+
+  export ROS_IP=$ROBAIR_IP
+
   roslaunch robairmain robair.launch
 }
 
