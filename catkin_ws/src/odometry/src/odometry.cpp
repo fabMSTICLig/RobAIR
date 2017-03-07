@@ -82,33 +82,27 @@ void Odometry::computeOdometry(double left, double right)
 
   double distance = getSpeedLinear(dleft, dright);
 
-  ROS_INFO("leftlast : %f, rightlast : %f", _odometryLeftLast, _odometryRightLast);
-
-  /*if ( distance < 0.5 ) {*/
-    _position.th += getSpeedAngular(dleft, dright);
-    _position.th -= (float)((int)(_position.th / TWOPI)) * TWOPI;
+  _position.th += getSpeedAngular(dleft, dright);
+  _position.th -= (float)((int)(_position.th / TWOPI)) * TWOPI;
   
-    _position.x += distance * cos(_position.th);
-    _position.y += distance * sin(_position.th);
+  _position.x += distance * cos(_position.th);
+  _position.y += distance * sin(_position.th);
 
-    _odometryLeftLast = left;
-    _odometryRightLast = right;
-    /*}
-  else
-    ROS_INFO("odometry pb");*/
+  _odometryLeftLast = left;
+  _odometryRightLast = right;
 
 }
 
 void Odometry::change_odometryCallback(const geometry_msgs::Point::ConstPtr& o) {
-    // Save initial position
-    odometry::driverData st = _pDriver->readData();
-    _odometryLeftLast = st.odometryLeft;
-    _odometryRightLast = st.odometryRight;
+  // Save initial position
+  odometry::driverData st = _pDriver->readData();
+  _odometryLeftLast = st.odometryLeft;
+  _odometryRightLast = st.odometryRight;
 
-     //change position and orientation
-    _position.x = o->x;
-    _position.y = o->y;
-    _position.th = o->z;
+   //change position and orientation
+  _position.x = o->x;
+  _position.y = o->y;
+  _position.th = o->z;
 
 }
 
@@ -155,12 +149,6 @@ void Odometry::update()
   odometryTopic.twist.twist.linear.y = 0.0;
   odometryTopic.twist.twist.angular.z = getSpeedAngular(
     st.speedFrontLeft, st.speedFrontRight);
-
-  /*
-  ROS_INFO("lin:%0.3f ang:%0.3f", 
-	   odometryTopic.twist.twist.linear.x,
-	   odometryTopic.twist.twist.angular.z);
-  */
 
   //publish the message
   _pubOdometry.publish(odometryTopic);
