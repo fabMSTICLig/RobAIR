@@ -1,4 +1,0 @@
-<launch>
-    <node pkg="wifibot" type="wifibot_node"
-    	  name="wifibot_node" output="screen"/>
-</launch>

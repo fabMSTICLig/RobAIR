@@ -1,12 +1,8 @@
 <package>
-  <name>roswifibot</name>
+  <name>odometry</name>
   <version>1.1.0</version>
   <description> 
-    Several nodes for the wifibot platform:
-    - driver
-    - teleop_key
-    - tf_transform broadcaster
-    - (launch files for) urg_node usb_cam_node
+    Compute odometry data from Robair motors' state
   </description>
   <maintainer email="my@email.com"> Omar </maintainer>
   <license>TODO</license>

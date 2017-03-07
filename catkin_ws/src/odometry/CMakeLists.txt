@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.2)
-project(roswifibot)
+project(odometry)
 
 #include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
@@ -35,16 +35,11 @@ catkin_package(
 CATKIN_DEPENDS message_runtime std_msgs nav_msgs geometry_msgs robairmain
 ) #here we can include dependecies like opencv
 
-include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS})
 
 #common commands for building c++ executables and libraries
-add_library(libwifibot src/libwifibot.cpp)
-target_link_libraries(libwifibot ${catkin_LIBRARIES})
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-add_executable(wifibot_node src/wifibot.cpp)
-target_link_libraries(wifibot_node libwifibot ${catkin_LIBRARIES})
+add_executable(odometry_node src/odometry.cpp src/interface.cpp)
+target_link_libraries(odometry_node ${catkin_LIBRARIES})
 
-add_executable(wifibot_tf_broadcaster src/wifibot_tf_broadcaster.cpp)
-target_link_libraries(wifibot_tf_broadcaster ${catkin_LIBRARIES})
+add_executable(odometry_tf_broadcaster src/odometry_tf_broadcaster.cpp)
+target_link_libraries(odometry_tf_broadcaster ${catkin_LIBRARIES})

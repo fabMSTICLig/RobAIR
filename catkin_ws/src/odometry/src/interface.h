@@ -1,6 +1,4 @@
 /*
- * libwifibot.h
- *
  * Copyright (c) 2012, Jean Charles Mammana. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
@@ -19,11 +17,13 @@
  * MA 02110-1301  USA
  */
 
+#ifndef ODOMETRY_INTERFACE_H
+#define ODOMETRY_INTERFACE_H
+
 #include "ros/ros.h"
 #include <robairmain/MotorsInfo.h>
 
-// Wifibot library namespace
-namespace wifibot
+namespace odometry
 {
   typedef struct sDriverData
   {
@@ -38,8 +38,6 @@ namespace wifibot
       odometryRight(0.0) {}
   } driverData;
 
-  // High level class.
-  // Mainly used to explain howto deal with other classes
   class Driver
   {
   private:
@@ -58,6 +56,8 @@ namespace wifibot
     Driver(ros::NodeHandle nh);
 
     driverData readData();
-    void setTicsPerMeter(double tpm);                // Set the tics/meter value
+    void setTicsPerMeter(double tpm);
   };
 }
+
+#endif

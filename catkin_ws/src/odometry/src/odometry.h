@@ -1,5 +1,7 @@
-#ifndef SERVER_WIFIBOT_H
-#define SERVER_WIFIBOT_H
+#ifndef ODOMETRY_H
+#define ODOMETRY_H
+
+#include "interface.h"
 
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
@@ -16,11 +18,11 @@ typedef struct _sposition
   double th;
 } position;
 
-class Wifibot
+class Odometry
 {
  public:
-  Wifibot(const ros::NodeHandle& nh);
-  ~Wifibot();
+  Odometry(const ros::NodeHandle& nh);
+  ~Odometry();
 
  private:
   void change_odometryCallback(const geometry_msgs::Point::ConstPtr& o);
@@ -34,11 +36,9 @@ class Wifibot
   geometry_msgs::TransformStamped _odomTf;
   tf::TransformBroadcaster _odomBroadcast;
 
-  wifibot::Driver *_pDriver;
+  odometry::Driver *_pDriver;
   
   ros::Publisher _pubOdometry;
-
-  //added by O. Aycard
   ros::Subscriber _change_odometry;
     
   ros::Time _timeCurrent;

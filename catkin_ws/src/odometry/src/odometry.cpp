@@ -1,10 +1,11 @@
-#include "libwifibot.h"
-#include "wifibot.h"
+#include "odometry.h"
+
+#include "interface.h"
 #include "ros/ros.h"
 
 #define TWOPI (M_PI * 2)
 
-Wifibot::Wifibot(const ros::NodeHandle& nh)
+Odometry::Odometry(const ros::NodeHandle& nh)
   : _nh (nh)
   , _updated(false)
   , _speedLeft(0.0)
@@ -30,11 +31,11 @@ Wifibot::Wifibot(const ros::NodeHandle& nh)
     ticsPerMeter = 5000;
   
   // Create and configure the driver
-  _pDriver = new wifibot::Driver(nh);
+  _pDriver = new odometry::Driver(nh);
   _pDriver->setTicsPerMeter(ticsPerMeter);
 
   // Save initial position
-  wifibot::driverData st = _pDriver->readData();
+  odometry::driverData st = _pDriver->readData();
   _odometryLeftLast = st.odometryLeft;
   _odometryRightLast = st.odometryRight;
 
@@ -44,7 +45,7 @@ Wifibot::Wifibot(const ros::NodeHandle& nh)
 
   // Create topics
   _pubOdometry = _nh.advertise<nav_msgs::Odometry>("odom", 10);
-  _change_odometry = _nh.subscribe("change_odometry", 1, &Wifibot::change_odometryCallback, this);
+  _change_odometry = _nh.subscribe("change_odometry", 1, &Odometry::change_odometryCallback, this);
 
   ros::Rate r(100);
   
@@ -59,22 +60,22 @@ Wifibot::Wifibot(const ros::NodeHandle& nh)
     }
 }
 
-Wifibot::~Wifibot()
+Odometry::~Odometry()
 {
   delete _pDriver;
 }
 
-double Wifibot::getSpeedLinear(double left, double right)
+double Odometry::getSpeedLinear(double left, double right)
 {
   return (right + left) / 2.0;
 }
 
-double Wifibot::getSpeedAngular(double left, double right)
+double Odometry::getSpeedAngular(double left, double right)
 {
   return (right - left) / _entrax;
 }
 
-void Wifibot::computeOdometry(double left, double right)
+void Odometry::computeOdometry(double left, double right)
 {
   double dleft = left - _odometryLeftLast;
   double dright = right - _odometryRightLast;
@@ -98,11 +99,9 @@ void Wifibot::computeOdometry(double left, double right)
 
 }
 
-void Wifibot::change_odometryCallback(const geometry_msgs::Point::ConstPtr& o) {
-// added by O. Aycard
-
+void Odometry::change_odometryCallback(const geometry_msgs::Point::ConstPtr& o) {
     // Save initial position
-    wifibot::driverData st = _pDriver->readData();
+    odometry::driverData st = _pDriver->readData();
     _odometryLeftLast = st.odometryLeft;
     _odometryRightLast = st.odometryRight;
 
@@ -113,10 +112,10 @@ void Wifibot::change_odometryCallback(const geometry_msgs::Point::ConstPtr& o) {
 
 }
 
-void Wifibot::update()
+void Odometry::update()
 {
   // get data from driver
-  wifibot::driverData st = _pDriver->readData();
+  odometry::driverData st = _pDriver->readData();
   
   _timeCurrent = ros::Time::now();
 
@@ -172,8 +171,8 @@ void Wifibot::update()
 
 int main (int argc, char **argv)
 {
-  ros::init(argc, argv, "wifibot_base");
-  Wifibot _self(ros::NodeHandle("")); 
+  ros::init(argc, argv, "odometry_base");
+  Odometry _self(ros::NodeHandle("")); 
   
   return 0;
 }

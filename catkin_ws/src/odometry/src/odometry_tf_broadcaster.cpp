@@ -2,7 +2,7 @@
 #include <tf/transform_broadcaster.h>
 
 int main(int argc, char** argv){
-	ros::init(argc, argv, "wifibot_tf_publisher");
+	ros::init(argc, argv, "odometry_tf_publisher");
 	ros::NodeHandle n;
 	
 	ros::Rate r(100);

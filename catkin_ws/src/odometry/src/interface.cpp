@@ -1,6 +1,4 @@
 /*
- * libwifibot.cpp
- * 
  * Copyright (c) 2012, Jean Charles Mammana. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
@@ -19,12 +17,12 @@
  * MA 02110-1301  USA
  */
 
-#include "libwifibot.h"
+#include "interface.h"
 
 //
 // Library namespace
 //
-namespace wifibot
+namespace odometry
 {
   Driver::Driver(ros::NodeHandle nh)
     : _data(), _ticsPerMeter(1), _lastCountL(0), _lastCountR(0),
