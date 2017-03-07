@@ -109,23 +109,12 @@ if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 
 fi
 
+# Récupère les sous-modules
+git submodule update --init
 
-
-
-read -r -p "Installation rosserial ? [O/n] "
-if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-
-
-	sudo -E apt-get install ros-kinetic-rosserial-arduino
-	sudo -E apt-get install ros-kinetic-rosserial
-	cd $ROBAIR_HOME/catkin_ws/src
-	git clone https://github.com/ros-drivers/rosserial.git
-	cd $ROBAIR_HOME/catkin_ws
-	catkin_make
-	catkin_make install
-	source $ROBAIR_HOME/catkin_ws/devel/setup.bash
-
-fi
+# Compile les packages ROS
+(cd "$ROBAIR_HOME/catkin_ws" && catkin_make install)
+source $ROBAIR_HOME/catkin_ws/devel/setup.bash
 
 echo "$(tput setaf 1)Installation $(tput setab 7) Arduino$(tput sgr0)"
 echo "Veuillez vous rendre à l'adresse https://www.arduino.cc/en/Main/Software et télécharger la dernière version de arduino"
