@@ -4,3 +4,6 @@
 [submodule "catkin_ws/src/rosserial"]
 	path = catkin_ws/src/rosserial
 	url = https://github.com/ros-drivers/rosserial.git
+[submodule "signalmaster"]
+	path = signalmaster
+	url = https://github.com/andyet/signalmaster.git

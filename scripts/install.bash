@@ -52,23 +52,8 @@ echo "Veuillez entrer votre mot de passe pour installer les packages (sudo)"
 sudo -E apt-get update
 
 
-
-
 echo "$(tput setaf 1)Installation $(tput setab 7)coturn nodejs npm $(tput sgr0)"
 sudo -E apt-get install coturn nodejs-legacy npm chromium-browser
-
-if [[ ! -d signalmaster ]]; then
-	read -r -p "Installation signalmaster ? [O/n] "
-	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-		git clone https://github.com/andyet/signalmaster.git
-		#Copie et edition de la configuration de signalmaster
-		cp $ROBAIR_HOME/configs/signalmaster.json $ROBAIR_HOME/signalmaster/config/development.json
-		python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:key $ROBAIR_HOME/ssl/device.key
-		python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
-		cd $ROBAIR_HOME/signalmaster
-		npm install
-	fi
-fi
 
 cd $ROBAIR_HOME/interface
 npm install
@@ -115,6 +100,12 @@ git submodule update --init
 # Compile les packages ROS
 (cd "$ROBAIR_HOME/catkin_ws" && catkin_make install)
 source $ROBAIR_HOME/catkin_ws/devel/setup.bash
+
+# Configure signalmaster
+cp $ROBAIR_HOME/configs/signalmaster.json $ROBAIR_HOME/signalmaster/config/development.json
+python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:key $ROBAIR_HOME/ssl/device.key
+python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
+(cd $ROBAIR_HOME/signalmaster && npm install)
 
 echo "$(tput setaf 1)Installation $(tput setab 7) Arduino$(tput sgr0)"
 echo "Veuillez vous rendre à l'adresse https://www.arduino.cc/en/Main/Software et télécharger la dernière version de arduino"
