@@ -1,0 +1,2 @@
+ARDUINO_DIR   = /usr/share/arduino
+AVR_TOOLS_DIR = /usr

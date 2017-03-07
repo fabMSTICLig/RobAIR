@@ -1,5 +1,8 @@
 
 if [ ! -f $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch ]; then
+  if [ ! -d $ROBAIR_HOME/catkin_ws/src/robairmain/launch ]; then
+    mkdir $ROBAIR_HOME/catkin_ws/src/robairmain/launch
+  fi
   cp $ROBAIR_HOME/configs/robair.launch $ROBAIR_HOME/catkin_ws/src/robairmain/launch/
 fi
 if [ ! -f $ROBAIR_HOME/interface/config.json ]; then

@@ -1,0 +1,3 @@
+[submodule "arduino/makefiles"]
+	path = arduino/makefiles
+	url = https://github.com/sudar/Arduino-Makefile.git
