@@ -1,5 +1,38 @@
 # Rob-AIR
 
+
+##Utilisation
+
+###Première utilisation
+
+- Allumez RobAIR
+- Branchez la tablette
+- Allumer la tablette
+- Connectez vous au réseau wifi. Si votre RobAIR dispose d'une carte wifi externe pensez à déconnecté la carte wifi interne (INTEL).
+- Ouvrez un terminal et lancez la commande `robair ip`, notez l'adresse IP indiqué (ROBAIR_IP).
+- Lancer la commande `robair start`
+- Sur la machine utilisateur, allez à l'adresse http://ROBAIR_IP:6081 (remplacez ROBAIR_IP par l'actuelle adresse IP)
+- Récupérez l'autorité de certification et installez la sur le navigateur utilisateur.
+- Allez à l'adresse https://ROBAIR_IP:6080
+
+
+###Environnement RobAIR
+Le script `robair` vous permet de lancer, arrêter ou relancer les différents programme de RobAIR.
+Le programme sous-jacent utilisé est l'utilitaire `roslaunch` de ROS
+
+```bash
+$ robair start
+```
+La commande  `robair start` lance les différents programmes de RobAIR. Vous pouvez ensuite utilisé Ctrl+C pour l'arrêter. 
+```bash
+$ robair stop
+```
+La commande  `robair stop` arrête l'ensemble des programmes. Utile quand vous n'avez plus accés au terminal qui a lancé le programme. 
+```bash
+$ robair restart
+```
+La commande  `robair restart` arrête l'ensemble des programmes puis les relance après 3 secondes. 
+
 ##INSTALL
 
 ### Prérequis
@@ -63,34 +96,3 @@ Le script `changearduino.bash` permet de configurer le fichier `robair.launch` a
 Une seule carte disposant d'une laison serie doit être connecté à l'ordinateur avant de lancer ce script. 
 Ce script n'est utile que la carte arduino est changée.
 
-##Utilisation
-
-###Première utilisation
-
-- Allumez RobAIR
-- Branchez la tablette
-- Allumer la tablette
-- Connectez vous au réseau wifi. Si votre RobAIR dispose d'une carte wifi externe pensez à déconnecté la carte wifi interne (INTEL).
-- Ouvrez un terminal et lancez la commande `changeip.bash`, notez l'adresse IP indiqué (ROBAIR_IP).
-- Lancer la commande `robair start`
-- Sur la machine utilisateur, allez à l'adresse http://ROBAIR_IP:6081 (remplacez ROBAIR_IP par l'actuelle adresse IP)
-- Récupérez l'autorité de certification et installez la sur le navigateur utilisateur.
-- Allez à l'adresse https://ROBAIR_IP:6080
-
-
-###Environnement RobAIR
-Le script `robair` vous permet de lancer, arreter ou relancer les différents programme de RobAIR.
-Le programme sous-jacent utiliser est l'utilitaire `roslaunch` de ROS
-
-```bash
-$ robair start
-```
-La commande  `robair start` lance les différents programmes de RobAIR. Vous pouvez ensuite utilisé Ctrl+C pour l'arrêter. 
-```bash
-$ robair stop
-```
-La commande  `robair stop` arrête l'ensemble des programmes. Utile quand vous n'avez plus acces au terminal qui a lancer le programme. 
-```bash
-$ robair restart
-```
-La commande  `robair restart` arrête l'ensemble des programmes puis les relance après 3 secondes. 
