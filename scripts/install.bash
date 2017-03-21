@@ -60,7 +60,7 @@ npm install
 
 cd $ROBAIR_HOME
 
-read -r -p "Voulez vous générer une autorité de certification ? [O/n] " response
+read -r -p "Voulez-vous générer une autorité de certification ? [O/n] " response
 case $response in
 	[nN])
 		read -r -p "Copier les fichiers rootCA.crt rootCA.key dans $ROBAIR_HOME/ssl puis appuyer sur entrer " response
@@ -71,7 +71,7 @@ case $response in
 esac
 
 
-read -r -p "Voulez vous générer un certificat ssl ? [O/n] "
+read -r -p "Voulez-vous générer un certificat ssl ? [O/n] "
 if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 	./scripts/createDeviceCRT.bash
 fi
@@ -107,9 +107,9 @@ python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/develop
 python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
 (cd $ROBAIR_HOME/signalmaster && npm install)
 
-echo "$(tput setaf 1)Installation $(tput setab 7) Arduino$(tput sgr0)"
+echo "$(tput setaf 1)Installation $(tput setab 7)Arduino$(tput sgr0)"
 echo "Veuillez vous rendre à l'adresse https://www.arduino.cc/en/Main/Software et télécharger la dernière version de arduino"
-echo "Une fois téléchargé veulliez modifier l'emplacement du carnet des croquis dans Fichier->Préférences par $ROBAIR_HOME/arduino"
+echo "Une fois téléchargé veuillez modifier l'emplacement du carnet des croquis dans Fichier->Préférences par $ROBAIR_HOME/arduino"
 read -r -p "Veuillez appuyer sur ENTRER une fois l'installation effectuée."
 read -r -p "Voulez vous générer la librairie ros_lib pour arduino ? [O/n] "
 if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
@@ -121,4 +121,4 @@ if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
 fi
 
 
-echo "$(tput setaf 1)Instalation terminé$(tput sgr0)"
+echo "$(tput setaf 1)Installation terminée$(tput sgr0)"
