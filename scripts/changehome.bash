@@ -11,5 +11,3 @@ fi
 sed -i -e 's#\(.*\"key\":\).*#\1"'"$ROBAIR_HOME"'/ssl/device.key",#' $ROBAIR_HOME/interface/config.json
 sed -i -e 's#\(.*\"crt\":\).*#\1"'"$ROBAIR_HOME"'/ssl/device.crt",#' $ROBAIR_HOME/interface/config.json
 sed -i -e 's#\(.*\"ca\":\).*#\1"'"$ROBAIR_HOME"'/ssl/rootCA.crt"#' $ROBAIR_HOME/interface/config.json
-sed -i -e 's#\(.*\"certfile\" value=\).*#\1"'"$ROBAIR_HOME"'/ssl/device.crt"/>#' $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch
-sed -i -e 's#\(.*\"keyfile\" value=\).*#\1"'"$ROBAIR_HOME"'/ssl/device.key"/>#' $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch

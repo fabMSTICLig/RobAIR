@@ -16,7 +16,7 @@
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
      <arg name="port" value="6777"/>
      <arg name="ssl" value="true"/>
-     <arg name="certfile" value="/home/robair/RobAIR/ssl/device.crt"/>
-     <arg name="keyfile" value="/home/robair/RobAIR/ssl/device.key"/>
+     <arg name="certfile" value="$(env ROBAIR_HOME)/ssl/device.crt"/>
+     <arg name="keyfile" value="$(env ROBAIR_HOME)/ssl/device.key"/>
   </include>
 </launch>
