@@ -15,6 +15,7 @@ var GamepadHandler = {
 
 			this.update_speed(pads[i]);
 			this.update_head(pads[i]);
+			this.update_eyes(pads[i]);
 		}
 	},
 
@@ -51,6 +52,31 @@ var GamepadHandler = {
 				robairros.setHead(Math.floor(new_target));
 
 			this.head_target = new_target;
+		}
+	},
+
+	eyes_target: Eyes.EYESSTRAIGHT,
+
+	eyes_btn_map: {
+		12: Eyes.EYESTOP,
+		13: Eyes.EYESBOTTOM,
+		14: Eyes.EYESLEFT,
+		15: Eyes.EYESRIGHT,
+	},
+
+	update_eyes: function(pad) {
+		var new_target = Eyes.EYESSTRAIGHT;
+
+		for (btn in this.eyes_btn_map) {
+			if (pad.buttons[btn].pressed) {
+				new_target = this.eyes_btn_map[btn];
+				break;
+			}
+		}
+
+		if (new_target != this.eyes_target) {
+			robairros.setEyes(new_target);
+			this.eyes_target = new_target;
 		}
 	},
 
