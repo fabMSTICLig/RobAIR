@@ -225,7 +225,7 @@ eyesCanvas.on("click", function(e) {
 //////////////////////HEAD////////////////
 
 
-var headcur = 90;
+var headcur = 0;
 robairros.headChange = function(deg) {
     headcur=deg;
     setHeadTheta(deg);
