@@ -90,9 +90,3 @@ Une fois l'autorité de certificat créé, il faut créer le certificat de RobAI
 ```bash
 $ createDeviceCRT.sh
 ```
-
-### Changement carte arduino
-La commande `robair arduino` permet de configurer le fichier `robair.launch` afin que ROS se connecte à la bonne carte Arduino.
-Une seule carte disposant d'une laison serie doit être connecté à l'ordinateur avant de lancer la commande. 
-Cette commande n'est utile que lorsque la carte arduino est changée.
-

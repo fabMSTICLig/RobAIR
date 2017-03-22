@@ -15,6 +15,12 @@ startme() {
   if [ ! -f $ROBAIR_HOME/interface/config.json ]; then
     cp $ROBAIR_HOME/interface/config.json.default $ROBAIR_HOME/interface/config.json
   fi
+
+  if ! find_arduino; then
+    echo "Aucune carte Arduino trouvée" >> /dev/stderr
+    exit 1
+  fi
+
   roslaunch robairmain robair.launch
 }
 
@@ -53,14 +59,13 @@ changeip() {
   echo "$(tput setaf 2)L'IP de RobAIR est $ROBAIR_IP$(tput sgr0)"
 }
 
-changearduino()
+find_arduino()
 {
-  PORT=`ls /dev/serial/by-id/`
-  if [ -z $PORT ]; then
-  	echo "Aucune carte arduino connectée"
-  else
-  	sed -i -e 's#".*Arduino[^"]*"#"port" value="/dev/serial/by-id/'"$PORT"'"#g' $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch
+  ROBAIR_ARDUINO="$(ls /dev/serial/by-id/*Arduino* 2>>/dev/null)"
+  if [ $? -ne 0 ]; then
+    return 1;
   fi
+  export ROBAIR_ARDUINO
 }
 
 update() {
@@ -84,7 +89,6 @@ case "$1" in
     stop)    stopme ;;
     restart) restart ;;
     update) update ;;
-    arduino) changearduino ;;
     ip)     changeip $2 ;;
     *) echo "usage: $0 start|stop|restart|update|ip" >&2
        exit 1
