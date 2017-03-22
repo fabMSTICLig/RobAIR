@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ -z $ROBAIR_HOME ]; then
-	echo "$(tput setaf 1)La variable ROBAIR_HOME doit être définie.$(tput sgr0)"
-	exit
+  export ROBAIR_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  source "$ROBAIR_HOME/scripts/env.bash"
 fi
 
 startme() {
