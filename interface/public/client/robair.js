@@ -225,7 +225,7 @@ eyesCanvas.on("click", function(e) {
 //////////////////////HEAD////////////////
 
 
-var headcur = 90;
+var headcur = 0;
 robairros.headChange = function(deg) {
     headcur=deg;
     setHeadTheta(deg);
@@ -256,6 +256,91 @@ var turnheadstop = function() {
   robairros.setEyes(Eyes.EYESSTRAIGHT);
 }
 
+var analogGamepad = function (dx, dy) {
+
+    var kx = robairros.speed / 100;
+    var ky = robairros.speed / 100;
+
+    var v, speed1, speed2;
+
+    speed1 = 0;
+    speed2 = 0;
+
+    dx=-dx;
+    var theta = Math.atan(dy / dx); // En radian
+    if (dx <= 0 && dy >= 0) {
+        theta = theta + Math.PI;
+    } else if (dx <= 0 && dy <= 0) {
+        theta = theta + Math.PI;
+    } else if (dx >= 0 && dy <= 0) {
+        theta = theta + 2 * Math.PI;
+    }
+
+    if (theta >= 0 && theta <= Math.PI / 2) { // 1er cadran
+        if (theta <= Math.PI / 4) { // 1ère moitié du 1er cadran
+            v = dx * kx;
+            speed1 = v * Math.sin(theta + Math.PI / 4);
+            speed2 = v * Math.sin(theta * 2 - Math.PI / 4);
+        } else {
+            v = dy * ky;
+            speed1 = v;
+            speed2 = v * Math.sin(theta);
+        }
+
+    } else if (theta > Math.PI / 2 && theta <= Math.PI) { // 2ème cadran
+        if (theta <= 3 * Math.PI / 4) { // 1ère moitié du 2ème cadran
+            v = dy * ky;
+            speed1 = v * Math.sin(theta);
+            speed2 = v;
+        } else {
+            v = -dx * kx;
+            speed1 = v * Math.sin(theta * 2 - 3 * Math.PI / 4);
+            speed2 = v * Math.sin(theta - Math.PI / 4);
+        }
+
+    } else if (theta > Math.PI && theta <= 3 * Math.PI / 2) { // 3ème cadran
+        if (theta <= 5 * Math.PI / 4) { // 1ère moitié du 3ème cadran
+            v = dx * kx;
+            speed2 = v * Math.sin(theta * 3 - 5 * Math.PI / 4);
+            speed1 = v * Math.sin(Math.PI / 4);
+        } else {
+            v = dy * ky;
+            speed1 = -v * Math.sin(theta);
+            speed2 = v;
+        }
+
+    } else { // 4ème cadran
+        if (theta <= 7 * Math.PI / 4) { // 1ère moitié du 4ème cadran
+            v = dy * ky;
+            speed1 = v;
+            speed2 = -v * Math.sin(theta);
+        } else {
+            v = -dx * kx;
+            speed1 = -v * Math.sin(theta * 3 - 7 * Math.PI / 4);
+            speed2 = v * Math.sin(Math.PI / 4);
+        }
+
+    }
+
+    if (speed1 >= robairros.speed) {
+        speed1 = robairros.speed;
+    }
+
+    if (speed1 <= -robairros.speed) {
+        speed1 = -robairros.speed;
+    }
+
+    if (speed2 >= robairros.speed) {
+        speed2 = robairros.speed;
+    }
+
+    if (speed2 <= -robairros.speed) {
+        speed2 = -robairros.speed;
+    }
+
+    return [Math.round(speed1*100), Math.round(speed2*100)];
+}
+
 
 Math.degrees = function(radians) {
     return radians * 180 / Math.PI;
@@ -276,14 +361,9 @@ headCanvas.on("mousedown touchstart", function(e) {
             posY = (e.pageY - $(this).offset().top) / headCanvas.height();
             posX = posX * 2 - 1;
             posY = (posY * 2 - 1)*-1;
-            //console.log(posX+" P "+posY);
-        robairros.analogGamepad(posX,posY);
-        /*posX = posX * 2 - 1;
-        posY = (posY * 2 - 1)*-1;
-        degree=Math.degrees(Math.acos(posX)) - 90;
-        console.log(posX+" "+posY);*/
-    //    setHeadTheta(-degree);
-        //robairros.setHead(-parseInt(degree));
+
+        var speeds = analogGamepad(posX, posY);
+        robairros.sendSpeed(speeds[0], speeds[1]);
 });
 headCanvas.on("mousemove touchmove", function(e) {
     if (headMouseDown) {
@@ -291,14 +371,9 @@ headCanvas.on("mousemove touchmove", function(e) {
             posY = (e.pageY - $(this).offset().top) / headCanvas.height();
             posX = posX * 2 - 1;
             posY = (posY * 2 - 1)*-1;
-            //console.log(posX+" P "+posY);
 
-        robairros.analogGamepad(posX,posY);
-        /*
-        degree=Math.degrees(Math.acos(posX)) - 90;
-        console.log(posX+" "+posY);*/
-    //    setHeadTheta(-degree);
-        //robairros.setHead(-parseInt(degree));
+        var speeds = analogGamepad(posX, posY);
+        robairros.sendSpeed(speeds[0], speeds[1]);
     }
     e.preventDefault();
     e.stopPropagation();
