@@ -232,7 +232,7 @@ robairros.headChange = function(deg) {
 }
 
 function setHeadTheta(val) {
-    var srotate = "rotate(" + (360-val) + "deg)";
+    var srotate = "rotate(" + val + "deg)";
     $("#head").css({
         "-webkit-transform": srotate,
         "transform": srotate,
