@@ -19,8 +19,28 @@ var GamepadHandler = {
 		}
 	},
 
+	prev_speeds: [0, 0],
+	last_repeat: null,
+	repeat_delay: 1000,
+
 	update_speed: function(pad) {
-		robairros.analogGamepad(pad.axes[0], -pad.axes[1]);
+		var speeds = analogGamepad(pad.axes[0], -pad.axes[1]);
+
+
+		// Repeat messages for this.repeat_delay milliseconds then stop
+
+		if (speeds[0] == this.prev_speeds[0] && speeds[1] == this.prev_speeds[1]) {
+			if (this.last_repeat == null)
+				this.last_repeat = new Date;
+			if (new Date - this.last_repeat > this.repeat_delay)
+				return;
+		} else {
+			this.last_repeat = null;
+		}
+
+		this.prev_speeds = speeds;
+
+		robairros.sendSpeed(speeds[0], speeds[1]);
 	},
 
 	head_target: 0,
