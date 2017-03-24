@@ -58,7 +58,10 @@ var GamepadHandler = {
 		if (!this.head_cmd_sent)
 			this.head_target = headcur;
 
-		new_target = this.head_target + pad.axes[2] * turn_fact;
+		if (pad.buttons[7].pressed)
+			new_target = 0;
+		else
+			new_target = this.head_target + pad.axes[2] * turn_fact;
 
 		if (new_target > 90)
 			new_target = 90;
