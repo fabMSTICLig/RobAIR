@@ -85,6 +85,9 @@ var GamepadHandler = {
 		13: Eyes.EYESBOTTOM,
 		14: Eyes.EYESLEFT,
 		15: Eyes.EYESRIGHT,
+		2: Eyes.EYESHELLO,
+		1: Eyes.EYESINTEROGATIONS,
+		3: Eyes.EYESEXCLAMATIONS
 	},
 
 	update_eyes: function(pad) {
