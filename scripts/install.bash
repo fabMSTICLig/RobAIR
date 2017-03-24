@@ -102,9 +102,6 @@ git submodule update --init
 source $ROBAIR_HOME/catkin_ws/devel/setup.bash
 
 # Configure signalmaster
-cp $ROBAIR_HOME/configs/signalmaster.json $ROBAIR_HOME/signalmaster/config/development.json
-python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:key $ROBAIR_HOME/ssl/device.key
-python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
 (cd $ROBAIR_HOME/signalmaster && npm install)
 
 echo "$(tput setaf 1)Installation $(tput setab 7)Arduino$(tput sgr0)"

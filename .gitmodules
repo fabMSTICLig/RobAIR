@@ -6,4 +6,5 @@
 	url = https://github.com/ros-drivers/rosserial.git
 [submodule "signalmaster"]
 	path = signalmaster
-	url = https://github.com/andyet/signalmaster.git
+	url = https://github.com/fabMSTICLig/signalmaster.git
+	branch = robair
