@@ -18,3 +18,5 @@ interface/public/common/js/config.js
 
 arduino/*/paths.mk
 arduino/*/build-*/
+
+/configs/.last_ip

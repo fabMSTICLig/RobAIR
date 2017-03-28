@@ -10,10 +10,14 @@ startme() {
     cp $ROBAIR_HOME/interface/config.json.default $ROBAIR_HOME/interface/config.json
   fi
 
+  find_ip
+
   if ! find_arduino; then
     echo "Aucune carte Arduino trouvée" >> /dev/stderr
     exit 1
   fi
+
+  export ROS_IP=$ROBAIR_IP
 
   roslaunch robairmain robair.launch
 }
@@ -28,29 +32,40 @@ restart() {
   sleep 3
   startme
 }
-changeip() {
-  if [ ! -z "$1" ]; then
-  	export ROBAIR_IP=$1
-  else
-    ROBAIR_IP_LOCAL=`ifconfig | grep 192.168 | awk -F'[: ]+' '{print $4}'`
-    if [[ -z $ROBAIR_IP_LOCAL ]]; then
-    	export ROBAIR_IP_LOCAL="localhost"
-    fi
-    if [ "$ROBAIR_IP" != "$ROBAIR_IP_LOCAL" ]; then
-      echo "$(tput setaf 1)ROBAIR_IP diffère de votre IP actuel '$ROBAIR_IP_LOCAL'. Veuillez exécuter:$(tput sgr0)"
-      echo "$(tput setaf 2)source ~/.bashrc$(tput sgr0)"
-      exit 1
-    fi
+
+find_ip() {
+  ROBAIR_IP=$(ip route get 8.8.8.8 2>>/dev/null | awk 'NR==1 {print $NF}')
+  if [ "x$ROBAIR_IP" = 'x' ]; then
+    ROBAIR_IP=localhost
   fi
 
-  $ROBAIR_HOME/scripts/createDeviceCRT.bash
-  if [[ ! -f  $ROBAIR_HOME/interface/public/common/js/config.js ]]; then
-  	cp $ROBAIR_HOME/interface/public/common/js/config.js.default $ROBAIR_HOME/interface/public/common/js/config.js
+  export ROBAIR_IP
+
+  last_ip_file="$ROBAIR_HOME/configs/.last_ip"
+
+  if [ -f "$last_ip_file" ] &&
+    [ "$ROBAIR_IP" = "$(< "$last_ip_file")" ]; then
+    return 0
   fi
-  sed -i -e 's#\(.*serverurl : \).*#\1"'"$ROBAIR_IP"'",#' $ROBAIR_HOME/interface/public/common/js/config.js
-  sed -i -e 's/\r$//g' $ROBAIR_HOME/interface/public/common/js/config.js
-  sed -i -e '/Robair/,/https/{s#\(.*"url":\).*#\1"https://'"$ROBAIR_IP"':6080/"#}' ~/.config/chromium/Default/Bookmarks
-  echo "$(tput setaf 2)L'IP de RobAIR est $ROBAIR_IP$(tput sgr0)"
+
+
+  # The address changed since last time
+
+  $ROBAIR_HOME/scripts/createDeviceCRT.bash
+
+  if [[ ! -f  $ROBAIR_HOME/interface/public/common/js/config.js ]]; then
+    cp $ROBAIR_HOME/interface/public/common/js/config.js.default \
+      $ROBAIR_HOME/interface/public/common/js/config.js
+  fi
+
+  sed -i -e 's#\(.*serverurl *: \).*#\1"'"$ROBAIR_IP"'",#' \
+    $ROBAIR_HOME/interface/public/common/js/config.js
+
+  [ -f ~/.config/chromium/Default/Bookmarks ] &&
+    sed -i -e '/Robair/,/https/{s#\(.*"url":\).*#\1"https://'"$ROBAIR_IP"':6080/"#}' \
+      ~/.config/chromium/Default/Bookmarks
+
+  echo "$ROBAIR_IP" > "$last_ip_file"
 }
 
 find_arduino()
@@ -83,8 +98,7 @@ case "$1" in
     stop)    stopme ;;
     restart) restart ;;
     update) update ;;
-    ip)     changeip $2 ;;
-    *) echo "usage: $0 start|stop|restart|update|ip" >&2
+    *) echo "usage: $0 start|stop|restart|update" >&2
        exit 1
        ;;
 esac

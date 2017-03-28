@@ -24,8 +24,6 @@ if [[ -z $testbash ]]; then
 	fi
 fi
 
-# Récupère l'IP actuel du Robair
-export ROBAIR_IP=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
 export PATH="$PATH:$ROBAIR_HOME/scripts/"
 
 if [ -z $http_proxy ]; then
