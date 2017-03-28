@@ -1,0 +1,10 @@
+#!/bin/bash
+
+( git ls-tree --full-tree --name-only 'HEAD@{1}' scripts/migrations/
+git ls-tree --full-tree --name-only 'HEAD' scripts/migrations/ ) | \
+	sort | uniq -u | \
+	while read m; do
+		[ ! -x "$m" ] && continue
+		echo "Running migration script $m"
+		"$m"
+	done

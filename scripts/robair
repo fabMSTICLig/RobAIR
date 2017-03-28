@@ -116,6 +116,7 @@ update() {
   git fetch
   git reset --hard origin/master
   git submodule update --init
+  ./scripts/run-migrations
   do_reload
   echo "$(tput setaf 2)RobAIR a été mis à jour$(tput sgr0)"
 }
