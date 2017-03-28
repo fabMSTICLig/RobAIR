@@ -1,11 +1,18 @@
 #!/bin/bash
 
+PIDFILE="/run/user/$UID/robair.pid"
+
 if [ -z $ROBAIR_HOME ]; then
   export ROBAIR_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
   source "$ROBAIR_HOME/scripts/env.bash"
 fi
 
 startme() {
+  if is_running; then
+    echo "RobAIR est déjà en cours d'exécution"
+    exit 1
+  fi
+
   if [ ! -f $ROBAIR_HOME/interface/config.json ]; then
     cp $ROBAIR_HOME/interface/config.json.default $ROBAIR_HOME/interface/config.json
   fi
@@ -19,17 +26,28 @@ startme() {
 
   export ROS_IP=$ROBAIR_IP
 
-  roslaunch robairmain robair.launch
+  roslaunch robairmain robair.launch >>/dev/null 2>&1 &
+  echo "$!" > "$PIDFILE"
+}
+
+is_running() {
+  [ -f "$PIDFILE" ] || return 1
+  cmd=$(ps --no-headers --pid $(< "$PIDFILE") -o comm)
+  test "$cmd" = "roslaunch"
 }
 
 stopme() {
-  pkill -SIGINT -f roslaunch
+  [ -f "$PIDFILE" ] || return 1
+  kill -SIGINT $(< "$PIDFILE")
+  while is_running; do
+    sleep 0.5
+  done
+  rm -f "$PIDFILE"
 }
 
 restart() {
   pkill -9 -f "robairmain/proxy"
   stopme
-  sleep 3
   startme
 }
 
