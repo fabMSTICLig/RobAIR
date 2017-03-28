@@ -95,19 +95,28 @@ find_arduino()
   export ROBAIR_ARDUINO
 }
 
-update() {
+do_reload() {
+  (cd catkin_ws && catkin_make install)
+  rm -rf arduino/libraries/ros_lib
+  rosrun rosserial_arduino make_libraries.py arduino/libraries
+  (cd arduino/robairarduino && make upload)
+}
+
+reload() {
+  cd "$ROBAIR_HOME"
+  was_running=$(is_running)
   stopme
-  cd $ROBAIR_HOME
-  git pull
-  cd catkin_ws
-  catkin_make
-  catkin_make install
-  cd $ROBAIR_HOME/arduino/libraries
-  rm -rf ros_lib
-  rosrun rosserial_arduino make_libraries.py .
-  cd $ROBAIR_HOME/arduino/robairarduino
-  arduino --upload robairarduino.ino
-  cd $ROBAIR_HOME
+  do_reload
+  [ "$was_running" -eq 0 ] && startme
+}
+
+update() {
+  cd "$ROBAIR_HOME"
+  stopme
+  git fetch
+  git reset --hard origin/master
+  git submodule update --init
+  do_reload
   echo "$(tput setaf 2)RobAIR a été mis à jour$(tput sgr0)"
 }
 
@@ -115,8 +124,9 @@ case "$1" in
     start)   startme ;;
     stop)    stopme ;;
     restart) restart ;;
+    reload) reload ;;
     update) update ;;
-    *) echo "usage: $0 start|stop|restart|update" >&2
+    *) echo "usage: $0 start|stop|restart|reload|update" >&2
        exit 1
        ;;
 esac
