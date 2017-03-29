@@ -121,12 +121,18 @@ update() {
   echo "$(tput setaf 2)RobAIR a été mis à jour$(tput sgr0)"
 }
 
+print_ip() {
+  find_ip
+  echo "$ROBAIR_IP"
+}
+
 case "$1" in
     start)   startme ;;
     stop)    stopme ;;
     restart) restart ;;
     reload) reload ;;
     update) update ;;
+    ip) print_ip ;;
     *) echo "usage: $0 start|stop|restart|reload|update" >&2
        exit 1
        ;;
