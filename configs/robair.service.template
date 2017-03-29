@@ -1,0 +1,10 @@
+[Unit]
+Description=RobAIR
+
+[Service]
+Type=forking
+PIDFile=/run/user/<UID>/robair.pid
+ExecStart=<ROBAIR_HOME>/scripts/robair start
+
+[Install]
+WantedBy=default.target

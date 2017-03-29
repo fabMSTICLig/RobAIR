@@ -91,4 +91,36 @@ echo "$(tput setaf 1)Genère $ROBAIR_HOME/arduino/libraries/ros_lib$(tput sgr0)"
 rm -rf "$ROBAIR_HOME/arduino/libraries/ros_lib"
 rosrun rosserial_arduino make_libraries.py "$ROBAIR_HOME/arduino/libraries"
 
+# Génère le service systemd et l'ajoute au système
+sed "s#<ROBAIR_HOME>#$ROBAIR_HOME#g ; s#<UID>#$UID#g" \
+	"$ROBAIR_HOME/configs/robair.service.template" \
+	> "$ROBAIR_HOME/configs/robair.service"
+
+if which systemctl >>/dev/null 2>&1; then
+	response='x'
+	while [ "$response" = "x" ]; do
+		read -r -p "Voulez-vous lancer RobAIR au démarrage ? [O/n] " response
+		case "$response" in
+			[nN])
+				response=n
+				;;
+			[oO])
+				response=o
+				;;
+			'')
+				response=o
+				;;
+			*)
+				response='x'
+				;;
+		esac
+	done
+
+	if [ "$response" = 'n' ]; then
+		systemctl --user link "$ROBAIR_HOME/configs/robair.service"
+	else
+		systemctl --user enable "$ROBAIR_HOME/configs/robair.service"
+	fi
+fi
+
 echo "$(tput setaf 1)Installation terminée$(tput sgr0)"

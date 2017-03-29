@@ -19,4 +19,5 @@ interface/public/common/js/config.js
 arduino/*/paths.mk
 arduino/*/build-*/
 
+/configs/robair.service
 /configs/.last_ip
