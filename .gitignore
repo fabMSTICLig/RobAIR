@@ -21,3 +21,5 @@ arduino/*/build-*/
 
 /configs/robair.service
 /configs/.last_ip
+
+/install.log
