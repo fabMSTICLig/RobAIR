@@ -45,6 +45,16 @@ stopme() {
   rm -f "$PIDFILE"
 }
 
+status() {
+  if is_running; then
+    echo "$(tput setaf 2)RobAIR est activé$(tput sgr0)"
+    exit 0
+  else
+    echo "$(tput setaf 1)RobAIR est arrêté$(tput sgr0)"
+    exit 1
+  fi
+}
+
 restart() {
   pkill -9 -f "robairmain/proxy"
   stopme
@@ -130,10 +140,11 @@ case "$1" in
     start)   startme ;;
     stop)    stopme ;;
     restart) restart ;;
+    status)  status ;;
     reload) reload ;;
     update) update ;;
     ip) print_ip ;;
-    *) echo "usage: $0 start|stop|restart|reload|update" >&2
+    *) echo "usage: $0 start|stop|restart|status|reload|update" >&2
        exit 1
        ;;
 esac
