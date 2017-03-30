@@ -6,6 +6,9 @@ ssl/*.csr
 *.gbr
 *.drl
 *bak
+*.sw[op]
+#*#
+*~
 
 catkin_ws/install
 catkin_ws/build
