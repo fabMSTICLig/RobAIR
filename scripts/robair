@@ -82,7 +82,9 @@ find_ip() {
 
   # The address changed since last time
 
-  $ROBAIR_HOME/scripts/createDeviceCRT.bash
+  start_job "Génère un nouveau certificat SSL"
+  $ROBAIR_HOME/scripts/createDeviceCRT.bash &>/dev/null
+  end_job noexit
 
   if [[ ! -f  $ROBAIR_HOME/interface/public/common/js/config.js ]]; then
     cp $ROBAIR_HOME/interface/public/common/js/config.js.default \

@@ -28,7 +28,7 @@ start_job() {
 	if [ "$_robair_quiet_mode" = 'y' ]; then
 		echo -n "[      ] $1" >&3
 	else
-		echo -n "[      ] $1"
+		echo -n "[      ] $1" >&2
 	fi
 }
 
@@ -37,8 +37,8 @@ end_job_success() {
 		echo -ne "\r[  $(tput setaf 2)OK$(tput sgr0)  ]" >&3
 		echo >&3
 	else
-		echo -ne "\r[  $(tput setaf 2)OK$(tput sgr0)  ]"
-		echo
+		echo -ne "\r[  $(tput setaf 2)OK$(tput sgr0)  ]" >&2
+		echo >&2
 	fi
 }
 
@@ -53,18 +53,18 @@ end_job_failure() {
 				"pour déterminer la cause de l'erreur$(tput sgr0)" >&4
 		fi
 
-		exit 1
+		[ "$1" = 'noexit' ] || exit 1
 	else
-		echo -ne "\r[$(tput setaf 9)ERREUR$(tput sgr0)]"
-		echo
-		exit 1
+		echo -ne "\r[$(tput setaf 9)ERREUR$(tput sgr0)]" >&2
+		echo >&2
+		[ "$1" = 'noexit' ] || exit 1
 	fi
 }
 
 end_job() {
 	if [ "$?" -eq 0 ]; then
-		end_job_success
+		end_job_success "$@"
 	else
-		end_job_failure
+		end_job_failure "$@"
 	fi
 }
