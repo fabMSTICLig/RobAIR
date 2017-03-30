@@ -2,7 +2,7 @@
 Description=RobAIR
 
 [Service]
-Type=forking
+Type=simple
 PIDFile=/run/user/<UID>/robair.pid
 ExecStart=<ROBAIR_HOME>/scripts/robair start --systemd
 

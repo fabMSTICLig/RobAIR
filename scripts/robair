@@ -33,8 +33,8 @@ startme() {
 
   export ROS_IP=$ROBAIR_IP
 
-  roslaunch robairmain robair.launch >>/dev/null 2>&1 &
-  echo "$!" > "$PIDFILE"
+  echo $$ > "$PIDFILE"
+  exec roslaunch robairmain robair.launch
 }
 
 should_run_systemd() {
