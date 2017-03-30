@@ -13,7 +13,11 @@ source "$ROBAIR_HOME/scripts/helpers.sh"
 startme() {
   if is_running; then
     echo "RobAIR est déjà en cours d'exécution"
-    exit 1
+    exit 0
+  fi
+
+  if should_run_systemd "$@"; then
+    exec systemctl --user start robair.service
   fi
 
   if [ ! -f $ROBAIR_HOME/interface/config.json ]; then
@@ -31,6 +35,13 @@ startme() {
 
   roslaunch robairmain robair.launch >>/dev/null 2>&1 &
   echo "$!" > "$PIDFILE"
+}
+
+should_run_systemd() {
+  [ "$1" = '--systemd' ] && return 1
+  state="$(systemctl --user is-enabled robair.service 2>>/dev/null)"
+  [ "$state" = 'enabled' -o "$state" = 'linked' ] && return 0
+  return 1
 }
 
 is_running_systemd() {
@@ -224,8 +235,12 @@ print_ip() {
   echo "$ROBAIR_IP"
 }
 
-case "$1" in
-    start)   startme ;;
+
+command="$1"
+shift
+
+case "$command" in
+    start)   startme "$@" ;;
     stop)    stopme ;;
     restart) restart ;;
     status)  status ;;

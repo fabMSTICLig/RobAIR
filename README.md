@@ -55,29 +55,20 @@ Sur la machine utilisateur
 ### Gestion
 
 La partie logicielle de RobAIR peut être contrôlée depuis la tablette via le
-service systemd ou directement par le programme `robair`.
-
-- Par systemd, vous pouvez respectivement lancer, arrêter ou relancer RobAIR
-grâce aux commandes suivantes
-```bash
-$ systemctl --user start robair
-$ systemctl --user stop robair
-$ systemctl --user restart robair
-```
-
-- Par le programme `robair`, ces commandes sont équivalents aux trois ci-dessus
+programme `robair`. Utilisez les commandes suivantes pour respectivement lancer,
+arrêter ou redémarrer le logiciel.
 ```bash
 $ robair start
 $ robair stop
 $ robair restart
 ```
 
-Ces deux modes de contrôle sont incompatibles entre eux.
-
-L'intérêt de `systemd` est essentiellement de permettre le lancement de RobAIR
-au démarrage, puis la gestion automatique des erreurs (`systemd` relancera le
-logiciel s'il venait à planter). Avec quelques modifications il est aussi
-possible de configurer l'activation par socket.
+Si `systemd` est installé (par défaut sous Ubuntu), ces commandes pilotent
+RobAIR via un service systemd en session utilisateur. L'intérêt est
+essentiellement de permettre le lancement de RobAIR au démarrage, puis de gérer
+automatiquement les erreurs (`systemd` relancera le logiciel s'il venait à
+planter). Avec quelques modifications il serait aussi possible de
+configurer l'activation par socket.
 
 Le programme `robair` permet aussi la mise à jour du logiciel via cette commande
 ```bash
