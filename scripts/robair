@@ -109,6 +109,11 @@ do_reload() {
   (cd catkin_ws && catkin_make install)
   rm -rf arduino/libraries/ros_lib
   rosrun rosserial_arduino make_libraries.py arduino/libraries
+  if ! find_arduino; then
+	  echo "Aucune carte Arduino trouvée" 1>&2
+	  exit 1
+  fi
+  export MONITOR_PORT="$ROBAIR_ARDUINO"
   (cd arduino/robairarduino && make upload)
 }
 
