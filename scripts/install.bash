@@ -20,39 +20,8 @@ export ROBAIR_HOME=`pwd`
 
 # Mise en place du logging et de l'affichage
 
-exec 3>&1
-exec 4>&2
-exec 1>install.log
-exec 2>&1
-
-
-# Fonction d'aide pour l'affichage
-
-start_job() {
-	echo -n "[      ] $1" >&3
-}
-
-end_job_success() {
-	echo -ne "\r[  $(tput setaf 2)OK$(tput sgr0)  ]" >&3
-	echo >&3
-}
-
-end_job_failure() {
-	echo -ne "\r[$(tput setaf 9)ERREUR$(tput sgr0)]" >&3
-	echo >&3
-	echo >&3
-	echo "$(tput setab 1)Consultez le fichier install.log pour" \
-		"déterminer la cause de l'erreur$(tput sgr0)" >&4
-	exit 1
-}
-
-end_job() {
-	if [ "$?" -eq 0 ]; then
-		end_job_success
-	else
-		end_job_failure
-	fi
-}
+source "$ROBAIR_HOME/scripts/helpers.sh"
+start_quiet_mode install.log
 
 
 ################################################################################
