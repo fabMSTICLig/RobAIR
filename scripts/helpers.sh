@@ -34,17 +34,29 @@ start_job() {
 
 end_job_success() {
 	if [ "$_robair_quiet_mode" = 'y' ]; then
-		echo -ne "\r[  $(tput setaf 2)OK$(tput sgr0)  ]" >&3
+		if [ -n "$TERM" -a "$TERM" != 'dumb' ]; then
+			echo -ne "\r[  $(tput setaf 2)OK$(tput sgr0)  ]" >&3
+		else
+			echo -n ": OK" >&3
+		fi
 		echo >&3
 	else
-		echo -ne "\r[  $(tput setaf 2)OK$(tput sgr0)  ]" >&2
+		if [ -n "$TERM" -a "$TERM" != 'dumb' ]; then
+			echo -ne "\r[  $(tput setaf 2)OK$(tput sgr0)  ]" >&2
+		else
+			echo -n ": OK" >&2
+		fi
 		echo >&2
 	fi
 }
 
 end_job_failure() {
 	if [ "$_robair_quiet_mode" = 'y' ]; then
-		echo -ne "\r[$(tput setaf 9)ERREUR$(tput sgr0)]" >&3
+		if [ -n "$TERM" -a "$TERM" != 'dumb' ]; then
+			echo -ne "\r[$(tput setaf 9)ERREUR$(tput sgr0)]" >&3
+		else
+			echo -n ": ERREUR" >&3
+		fi
 		echo >&3
 
 		if [ "$_robair_quiet_mode_log" != "/dev/null" ]; then
@@ -55,7 +67,11 @@ end_job_failure() {
 
 		[ "$1" = 'noexit' ] || exit 1
 	else
-		echo -ne "\r[$(tput setaf 9)ERREUR$(tput sgr0)]" >&2
+		if [ -n "$TERM" -a "$TERM" != 'dumb' ]; then
+			echo -ne "\r[$(tput setaf 9)ERREUR$(tput sgr0)]" >&2
+		else
+			echo -n ": ERREUR" >&2
+		fi
 		echo >&2
 		[ "$1" = 'noexit' ] || exit 1
 	fi
