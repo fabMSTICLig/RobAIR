@@ -133,6 +133,13 @@ fi
 
 export PATH="$PATH:$ROBAIR_HOME/scripts/"
 
+# Droits d'accès au port série
+if ! groups | grep dialout &>/dev/null; then
+	start_job "Donne à l'utilisateur l'accès aux ports série"
+	sudo adduser "$USER" dialout
+	end_job
+fi
+
 # Installation des paquets
 start_job "Ajoute les dépôts ROS"
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'

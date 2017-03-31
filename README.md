@@ -7,7 +7,6 @@
 - Ubuntu 16.04 LTS
 - Git
 - L'utilisateur courant doit avoir les droits root via `sudo`
-- L'utilisateur courant doit être dans le groupe `dialout`
 
 ### Procédure
 
@@ -20,6 +19,9 @@ $ git clone https://github.com/FabmsticLig/RobAIR.git
 $ cd RobAIR
 $ ./scripts/install.bash
 ```
+- Si l'utilisateur courant n'était préalablement pas dans le groupe `dialout`
+(autrement dit, si le script d'installation a affiché "donne à l'utilisateur
+l'accès aux ports série"), redémarrez votre session
 - Avec la carte Arduino branchée, lancez le chargement des programmes
 ```bash
 $ robair reload
