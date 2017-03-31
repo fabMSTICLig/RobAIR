@@ -1,5 +1,7 @@
 [Unit]
 Description=RobAIR
+Wants=robair-wait-online.service
+After=robair-wait-online.service
 
 [Service]
 Type=simple

@@ -1,0 +1,11 @@
+[Unit]
+Description=RobAIR's Network Manager Wait Online
+Documentation=man:nm-online(1)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/nm-online -q --timeout=30
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

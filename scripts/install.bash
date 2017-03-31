@@ -214,6 +214,7 @@ if which systemctl >>/dev/null 2>&1; then
 	if [ "$do_enable_systemd_unit" = 'n' ]; then
 		systemctl --user link "$ROBAIR_HOME/configs/robair.service"
 	else
+		systemctl --user enable "$ROBAIR_HOME/configs/robair-wait-online.service"
 		systemctl --user enable "$ROBAIR_HOME/configs/robair.service"
 	fi
 fi
