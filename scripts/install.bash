@@ -140,6 +140,15 @@ if ! groups | grep dialout &>/dev/null; then
 	end_job
 fi
 
+# Ajoute une règle pour que ModemManager ne considère pas les Arduino pour sa
+# recherche de modems (évite que le périphérique soit temporairement utilisé au
+# démarrage)
+if [ ! -f /etc/udev/rules.d/77-arduino.rules ]; then
+	start_job "Ajoute les règles udev pour Arduino"
+	sudo sh -c "echo 'ATTRS{idVendor}==\"2a03\", ENV{ID_MM_DEVICE_IGNORE}=\"1\"' > /etc/udev/rules.d/77-arduino.rules"
+	end_job
+fi
+
 # Installation des paquets
 start_job "Ajoute les dépôts ROS"
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
