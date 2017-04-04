@@ -7,3 +7,6 @@
 [submodule "signalmaster"]
 	path = signalmaster
 	url = https://github.com/andyet/signalmaster.git
+[submodule "arduino/libraries/Adafruit_TiCoServo"]
+	path = arduino/libraries/Adafruit_TiCoServo
+	url = https://github.com/adafruit/Adafruit_TiCoServo.git

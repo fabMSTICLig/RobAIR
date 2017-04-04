@@ -14,7 +14,7 @@
 #include <robairmain/MotorsCmd.h>
 #include <robairmain/EyesMat.h>
 //ARDUINO InCUDE
-#include <Servo.h>
+#include <Adafruit_TiCoServo.h>
 #include <Adafruit_NeoPixel.h>
 #include <Eyes.h>
 #include <md49.h>
@@ -71,7 +71,7 @@ private:
 
 
   const uint8_t PIN_HEAD=3;
-  Servo servoHead;
+  Adafruit_TiCoServo servoHead;
   int cmd_msg_head = 0;
   int cmd_head=0;
 
