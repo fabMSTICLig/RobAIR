@@ -17,3 +17,6 @@
 [submodule "simulator/simavr"]
 	path = simulator/simavr
 	url = https://github.com/buserror/simavr.git
+[submodule "interface/public/common/libs/fisheye"]
+	path = interface/public/common/libs/fisheye
+	url = https://github.com/ericleong/fisheye.js.git
