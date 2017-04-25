@@ -23,9 +23,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.24748738"
-     inkscape:cx="-582.64421"
-     inkscape:cy="683.99446"
+     inkscape:zoom="0.175"
+     inkscape:cx="-1638.8458"
+     inkscape:cy="-490.32971"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -94,14 +94,6 @@
        id="circle4359"
        style="stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
        r="10.62992" />
-    <rect
-       style="stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect4361"
-       width="113.38581"
-       height="77.952744"
-       x="1373.6995"
-       y="378.63879"
-       transform="matrix(0,1,-1,0,0,0)" />
     <circle
        style="stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
        id="path4363"
@@ -290,31 +282,31 @@
        id="rect4175-1"
        width="389.76367"
        height="233.85822"
-       x="653.64612"
-       y="155.59534" />
-    <circle
+       x="403.12833"
+       y="-103.00368" />
+    <ellipse
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.35433072;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4177-7"
-       cx="674.90601"
-       cy="371.73694"
+       cx="424.38821"
+       cy="113.13792"
        r="5.31496" />
-    <circle
+    <ellipse
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.35433072;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4177-0-3"
-       cx="674.90601"
-       cy="173.31183"
+       cx="424.38821"
+       cy="-85.287186"
        r="5.31496" />
-    <circle
+    <ellipse
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.35433072;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4177-0-0-6"
-       cx="1022.15"
-       cy="173.31183"
+       cx="771.6322"
+       cy="-85.287186"
        r="5.31496" />
-    <circle
+    <ellipse
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.35433072;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4177-0-0-9-5"
-       cx="1022.15"
-       cy="371.73694"
+       cx="771.6322"
+       cy="113.13792"
        r="5.31496" />
     <rect
        style="stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
@@ -374,6 +366,12 @@
        id="rect4234"
        style="stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
        transform="scale(-1,-1)" />
+    <circle
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.89999998;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4180"
+       cx="-424.31067"
+       cy="1441.24"
+       r="36.318893" />
   </g>
   <g
      inkscape:groupmode="layer"
