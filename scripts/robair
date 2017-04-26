@@ -28,7 +28,7 @@ startme() {
 
   if ! find_arduino; then
     echo "Aucune carte Arduino trouvée" >> /dev/stderr
-    exit 1
+    export SKIP_ARDUINO=true
   fi
 
   export ROS_IP=$ROBAIR_IP

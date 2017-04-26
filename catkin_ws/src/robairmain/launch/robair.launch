@@ -6,7 +6,7 @@
   <param name="bumpRTresh" value="0.15" />
   <param name="aruDelay" value="5000" />
   <param name="coefSmoothness" value="0.90" />
-  <node pkg="rosserial_python" type="serial_node.py" name="serial_node">
+  <node pkg="rosserial_python" type="serial_node.py" name="serial_node" unless="$(optenv SKIP_ARDUINO false)">
     <param name="port" value="$(env ROBAIR_ARDUINO)" />
   </node>
   <node pkg="robairmain" type="webserver.sh" name="webserver">
