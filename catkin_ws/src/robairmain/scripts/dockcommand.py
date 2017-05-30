@@ -51,17 +51,17 @@ dock_distance = 1	#The distance where the robot is too close to send a dock requ
 #############
 
 motors_info = MotorsInfo()	#RobAIR motors informations
-marker_pos = Pose()		#RobAIR position in the camera coordinate system
+marker_pos = Pose()		#Marker position in the camera coordinate system
+robair_pos = Pose()		#RobAIR position in the camera coordinate system
 motors_cmd = Twist()		#RobAIR motors command
 
-DockState = 0		#Actual RobAIR state for docking
-See = False
+DockState = 0			#Actual RobAIR state for docking
 
 ##################
 # MOVES Funtions #
 ##################
 
-def turn(angle):#, state = DockState): #Turn over himself (angle in degrees)(- clockwise)(+ anti-clockwise)
+def turn(angle):	#Turn over himself (angle in degrees)(- clockwise)(+ anti-clockwise)
 	global motors_cmd, DockState		#Use the global motors_cmd
 
 	motors_start = motors_info		#Get the initial motors informations
@@ -91,14 +91,14 @@ def turn(angle):#, state = DockState): #Turn over himself (angle in degrees)(- c
 	else:
 		return True
 
-def move(distance):  #Move stright (distance in meters)(- backward)(+ forward)
+def move(distance):	#Move stright (distance in meters)(- backward)(+ forward)
 	global motors_cmd, DockState		#Use the global motors_cmd
 	distance = distance * 1000	#Get the distance in mm
 	
 	motors_start = motors_info		#Get the initial motors informations
 	error = (distance*encoder_resolution) - ((motors_info.countR - motors_start.countR) + (motors_info.countL - motors_start.countL))/2	#Get the error between the reference and the system
 
-	while((error < (-wheel_incrementation/50)) or ((wheel_incrementation/50) < error)) and (DockState != DK_NOTDOCKED):	#While the error is too big and the robot stay in the same dock state
+	while((error < (-wheel_incrementation/50)) or ((wheel_incrementation/50) < error)) and (DockState != DK_NOTDOCKED and DockState != DK_DOCKED):	#While the error is too big and the robot stay in the same dock state
 		
 		rate.sleep()	#Wait for the next sampling
 
@@ -117,10 +117,96 @@ def move(distance):  #Move stright (distance in meters)(- backward)(+ forward)
 
 	motors_cmd.linear.x = 0		#Reset the command
 
-	if(DockState == DK_NOTDOCKED):
+	if (DockState == DK_NOTDOCKED or DockState == DK_DOCKED):
 		return False
 	else:
 		return True
+
+def start_docking():
+	
+	while(DockState == DK_WANTTODOCK):	#Wait for an answer
+		rate.sleep()			#Do nothing
+
+	count = 0				#Reset counter
+	motors_cmd.angular.z = SLOW_ANGLE_SPEED	#Turn anti-clockwise
+	motors_cmd.linear.x = 0			#On himself
+	
+	while(DockState == DK_NOTSEEN and count < 200):
+
+		rate.sleep()			#Wait for the next sampling
+		send_cmd_vel(motors_cmd)	#Send the command
+		count += 1			#Incrementation
+
+	if(DockState == DK_NOTSEEN):
+		send_dockstate(DK_NOTDOCKED)
+		return False
+
+	if(DockState == DK_TOOCLOSE):	#If the robot is too close
+
+		distance = -sqrt((dock_distance - robair_pos.position.z)**2+robair_pos.position.x**2)	#Get the distance between the objectif and the actual position
+		angle2 = -atan2(robair_pos.position.x, dock_distance - robair_pos.position.z)*180/pi	#Get the angle for the objectif
+		angle1 = robair_pos.orientation.y*180/pi - angle2					#Get the angle for the actual position
+
+		turn(angle1)	#Turn
+		move(distance)	#Move
+		turn(angle2)	#Turn
+
+	while(DockState != DK_INPROGRESS):	#Wait for an answer
+		rate.sleep()			#Do nothing
+
+	step = 0.20
+
+	while(DockState == DK_INPROGRESS and marker_pos.position.z > 0.15):	#Wait for an answer
+
+		rate.sleep()
+		#rate.sleep()
+		#rate.sleep()
+
+		#angle2 = atan2(robair_pos.position.x, step)*180/pi	#Get the angle for the objectif
+		#angle1 = robair_pos.orientation.y*180/pi - angle2	#Get the angle for the actual position
+		#distance = sqrt((step)**2 + robair_pos.position.x**2)	#Get the distance between the objectif and the actual position
+
+		#pub_log.publish(str(robair_pos))	#Log info for ROS network
+
+		#pub_log.publish('Turn ' + str(angle1) + ' degrees')	#Log info for ROS network
+		#pub_log.publish('Move ' + str(distance) + ' meters')	#Log info for ROS network
+		#pub_log.publish('Turn ' + str(angle2) + ' degrees')	#Log info for ROS network
+
+		#turn(angle1)	#Turn
+		#move(distance)	#Move
+		#turn(angle2)	#Turn
+
+		angle_objectif = sat(marker_pos.position.x * 2.6, -0.78, 0.78)
+
+		if(angle_objectif > 0):
+			if(robair_pos.orientation.y < angle_objectif):
+				motors_cmd.angular.z = -FAST_ANGLE_SPEED
+				motors_cmd.linear.x = SLOW_DISTANCE_SPEED
+			else:
+				motors_cmd.angular.z = FAST_ANGLE_SPEED
+				motors_cmd.linear.x = SLOW_DISTANCE_SPEED
+
+		else:		
+			if(robair_pos.orientation.y > angle_objectif):
+				motors_cmd.angular.z = FAST_ANGLE_SPEED
+				motors_cmd.linear.x = SLOW_DISTANCE_SPEED
+			else:
+				motors_cmd.angular.z = -FAST_ANGLE_SPEED
+				motors_cmd.linear.x = SLOW_DISTANCE_SPEED
+
+		send_cmd_vel(motors_cmd)
+
+	if(DockState == DK_DOCKED):
+		return True
+	else:
+		return False
+
+def sat(value, minimum, maximum):
+	if(value < minimum):
+		return minimum
+	elif(value > maximum):
+		return maximum
+	return value
 
 #################
 # Send Funtions #
@@ -140,85 +226,41 @@ def send_cmd_vel(data):		#Send motors commands
 ####################
 
 def receive_motors_info(data):	#Receive motors informations
-	global motors_info		#Use the global motors_info
+	global motors_info	#Use the global motors_info
 
 	if(isinstance(data,MotorsInfo)):	#If data is type of MotorsInfo
 		motors_info = data		#Get motors info
 
+def receive_position(data):		#Receive RobAIR position in 
+	global marker_pos, robair_pos		#Use the global marker_pos
+	marker_pos = data		#Get the position
 
-def receive_position(data):	#Receive RobAIR position in 
-	global marker_pos, See		#Use the global marker_pos
-	marker_pos = data	#Get the position
-
-	if (DockState == DK_INPROGRESS):	#If it is the DK_INPROGRESS state 
-
-		#Get the cmd_vel in function of marker_pos		
-
-		if(marker_pos.position.x > 0):
-			motors_cmd.angular.z = -FAST_ANGLE_SPEED
-		else:
-			motors_cmd.angular.z = FAST_ANGLE_SPEED
-
-		motors_cmd.linear.x = 0.9*SLOW_DISTANCE_SPEED
-
-		#Enslavement ?
-
-		send_cmd_vel(motors_cmd)	#Send the command
-
-	elif(DockState == DK_NOTSEEN):
-		See = True
+	robair_pos.position.x = marker_pos.position.x + sin(marker_pos.orientation.y)*marker_center_distance
+	robair_pos.position.z = marker_pos.position.z + sin(marker_pos.orientation.y)*marker_center_distance
+	robair_pos.orientation.y = marker_pos.orientation.y
 
 def receive_battery_level(data):	#Receive battery level information
 
 	if(DockState == DK_NOTDOCKED and data.data < 15):	#If we are not docked and low battery level	
-		send_dockstate(DK_WANTTODOCK)			#Send a dock request
+		#send_dockstate(DK_WANTTODOCK)			#Send a dock request
+		pass
 
 def receive_dockstate(data):		#Receive dock state
-	global DockState, motors_cmd, See	#Use the global DockState and motors_cmd
-	DockState = data.data		#Get the dock state
+	global DockState		#Use the global DockState and motors_cmd
 
-	if (DockState == DK_NOTSEEN):	#If RobAIR is not seen
+	if (data.data == DK_WANTTODOCK):
+		if(DockState == DK_NOTDOCKED):
+			DockState = data.data		#Get the dock state
+			start_docking()			#Start docking
+	else:
+		DockState = data.data		#Get the dock state
 
-		count = 0				#Reset counter
-		motors_cmd.angular.z = SLOW_ANGLE_SPEED	#Turn anti-clockwise
-		See = False				#Reset the flag
-
-		while(See == False):	#While the robot is not see
-
-			rate.sleep()		#Wait for the next sampling
-			send_cmd_vel(motors_cmd)	#Send the command
-			count += 1		#Incrementation
-		
-		motors_cmd.angular.z = 0		#Stop turning
-
-		if(count >= 200):		#If the robot has not been seen
-
-			send_dockstate(DK_NOTDOCKED)	#Stop Docking
-
-	elif (DockState == DK_TOOCLOSE):	#If the robot is too close
-		
-		robair_pos = marker_pos
-		robair_pos.position.x = marker_pos.position.x + sin(marker_pos.orientation.y)*marker_center_distance
-		robair_pos.position.z = marker_pos.position.z + sin(marker_pos.orientation.y)*marker_center_distance
-
-		distance = -sqrt((dock_distance - robair_pos.position.z)**2+robair_pos.position.x**2)	#Get the distance between the objectif and the actual position
-		angle2 = -atan2(robair_pos.position.x, dock_distance - robair_pos.position.z)*180/pi	#Get the angle for the objectif
-		angle1 = robair_pos.orientation.y*180/pi - angle2					#Get the angle for the actual position
-		
-		pub_log.publish('Turn ' + str(angle1) + ' degrees')	#Log info for ROS network
-		pub_log.publish('Move ' + str(distance) + ' meters')	#Log info for ROS network
-		pub_log.publish('Turn ' + str(angle2) + ' degrees')	#Log info for ROS network
-
-		turn(angle1)	#Turn
-		move(distance)	#Move
-		turn(angle2)	#Turn
-    		
 ############################
 # Subscribers & Publishers #
 ############################
 
 rospy.Subscriber("motors_info",MotorsInfo,receive_motors_info)	#Subscribe to "motors_info" topic
-rospy.Subscriber("battery_level",Int32,receive_motors_info)	#Subscribe to "motors_info" topic
+rospy.Subscriber("battery_level",Int32,receive_battery_level)	#Subscribe to "motors_info" topic
 rospy.Subscriber("position",Pose,receive_position)		#Subscribe to "position" topic
 rospy.Subscriber("dockstate",Byte,receive_dockstate)		#Subscribe to "dockstate" topic
 pub_dock = rospy.Publisher('dockstate',Byte, queue_size=10)	#"dockstate" topic object
