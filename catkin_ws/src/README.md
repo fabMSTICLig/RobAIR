@@ -15,7 +15,7 @@ RobAIR possède maintenant une capacitée de docking. Il peut se docker à la ba
 Vous aurez besoin d'un RaspberryPi supplémentaire pour la base. Il faut installer dessus :
 
 - La dernière version de ROS : http://wiki.ros.org/kinetic/Installation/Ubuntu
-- La dernière version de OpenCV avec Aruco sur RaspberryPi de RobAIR :
+- La dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR
 
 ### Installation
 
@@ -32,7 +32,7 @@ Sourcer les paquets :
 $ . devel/setup.bash
 ```
 
-Pour lancer le noeud de manière autonome au démarage du RaspberryPi, il faut ajouter les lignes suivantes un fin du fichier `.bashrc` :
+Pour lancer le noeud de manière autonome au démarage du RaspberryPi, il faut ajouter les lignes suivantes en fin du fichier `.bashrc` :
 ```bash
 export ROS_IP= [adresse ip de la base]
 export ROS_MASTER_URI=http://[adresse ip de RobAIR]:11311
