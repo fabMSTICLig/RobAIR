@@ -27,7 +27,7 @@ MarkerWidth = 0.08             	#Marker width in meters
 DK_NOTDOCKED = 0	#Not docked state
 DK_WANTTODOCK = 1	#Want to docked state
 DK_NOTSEEN = 2		#Not seen state
-DK_TOOCLOSE = 3		#Too close state
+DK_MISPLACED = 3		#Too close state
 DK_INPROGRESS = 4	#In progress state
 DK_DOCKED = 5		#Docked state
 
@@ -115,8 +115,8 @@ def receive_dockstate(data):	#Receive dock state
 
 					send_marker_pos(marker_pos)		#Publish the position
 
-					if (DockState != DK_INPROGRESS and (marker_pos.position.z < dock_distance or marker_pos.position.x < -dock_distance or marker_pos.position.x > dock_distance)):	#If we are not in DK_INPROGRESS mode and RobAIR is too close
-						State = DK_TOOCLOSE			#The futur state will be DK_TOOCLOSE
+					if (DockState != DK_INPROGRESS and (marker_pos.position.z < dock_distance or marker_pos.position.x < -dock_distance or marker_pos.position.x > dock_distance)):	#If we are not in DK_INPROGRESS mode and RobAIR is misplaced
+						State = DK_MISPLACED			#The futur state will be DK_MISPLACED
 
 					else:
 						State = DK_INPROGRESS		#The futur state will be DK_INPROGRESS

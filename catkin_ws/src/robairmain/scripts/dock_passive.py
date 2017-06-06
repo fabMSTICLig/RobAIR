@@ -21,7 +21,6 @@ from robairdock.msg import MotorsInfo
 
 wheel_diameter = 125 		#Wheels diameter in mm
 wheels_distance = 400		#The distance between the tow wheels in mm
-marker_center_distance = 0.185 	#The distance between the centre en the marker in m
 camera_center_distance = 0.185 	#The distance between the centre en the marker in m
 wheel_incrementation = 976 	#Number of incrementaion in one wheel
 
@@ -41,8 +40,10 @@ FAST_ANGLE_SPEED = 0.2		#Angular speed when far from the objective
 
 DK_NOTDOCKED = 0	#Not docked state
 DK_WANTTODOCK = 1	#Want to dock state
-DK_INPROGRESS = 2	#In progress state
-DK_DOCKED = 3		#Docked state
+DK_NOTSEEN = 2		#Not seen state
+DK_MISPLACED = 3	#Mis placed state
+DK_INPROGRESS = 4	#In progress state
+DK_DOCKED = 5		#Docked state
 
 dock_distance = 1	#The distance where the robot is too close to send a dock request
 MarkerWidth = 0.08      #Marker width in meters
@@ -178,23 +179,28 @@ def start_docking():	#Start docking function
 
 		if(GetPose(cap) == True):	#If the marker is detected
 
-			if(DockState == DK_WANTTODOCK):
+			if (DockState != DK_INPROGRESS):	#If the robot is not in progress
+				if (marker_pos.position.z < dock_distance or marker_pos.position.x < -dock_distance or marker_pos.position.x > dock_distance)):	#If we are not in DK_INPROGRESS mode and RobAIR is misplaced
 
-				send_dockstate(DK_INPROGRESS)
+					send_dockstate(DK_MISPLACED)	#Set the state to DK_MISPLACED
 
-				X = marker_pos_robair.x + cos(marker_pos_robair.orientation.y)*dock_distance	#Get the X coordinate objective
-				Z = marker_pos_robair.z + sin(marker_pos_robair.orientation.y)*dock_distance	#Get the Z coordinate objective
+					X = marker_pos_robair.x + cos(marker_pos_robair.orientation.y)*dock_distance	#Get the X coordinate objective
+					Z = marker_pos_robair.z + sin(marker_pos_robair.orientation.y)*dock_distance	#Get the Z coordinate objective
 
-				distance = -sqrt(X**2 + Z**2)					#Get the distance between the objectif and the actual position
+					distance = -sqrt(X**2 + Z**2)					#Get the distance between the objectif and the actual position
 
-				angle1 = -arctan2(Z,X)						#Get the angle for the actual position
-				angle2 =-angle1 + marker_pos_robair.orientation.y*180/pi	#Get the angle for the objectif
+					angle1 = -arctan2(Z,X)						#Get the angle for the actual position
+					angle2 =-angle1 + marker_pos_robair.orientation.y*180/pi	#Get the angle for the objectif
 						
-				turn(angle1)	#Turn
-				move(distance)	#Move backward
-				turn(angle2)	#Turn
+					turn(angle1)	#Turn
+					move(distance)	#Move backward
+					turn(angle2)	#Turn
+								
+				send_dockstate(DK_INPROGRESS)	#Set the state to DK_INPROGRESS
 
 			else:
+				
+				motors_cmd.linear.z = SLOW_DISTANCE_SPEED	
 
 				if(marker_pos_camera.position.x > 0 and marker_pos_robair.orientation.y < 0):	#marker on the right facing in
 					motors_cmd.angular.z = 0
@@ -211,9 +217,13 @@ def start_docking():	#Start docking function
 				send_cmd_vel(motors_cmd)	#Send the command
 
 		else:
-			if(DockState == DK_WANTTODOCK):	#If the robot want to dock
-				
-				if(count < 200):
+
+			if(DockState == DK_WANTTODOCK):			#If the robot want to dock
+					send_dockstate(DK_NOTSEEN)	#The robot is not seen
+
+			if(DockState == DK_NOTSEEN):			#If the robot is not seen
+
+				if(count < 200):	
 
 					motors_cmd.angular.z = SLOW_ANGLE_SPEED	#Turn anti-clockwise
 					motors_cmd.linear.x = 0			#On himself
@@ -225,7 +235,7 @@ def start_docking():	#Start docking function
 					send_dockstate(NOT_DOCKED)
 			
 			if (DockState == DK_INPROGRESS and marker_pos_camera.position.z < MarkerWidth*3):	#If we are in DK_INPROGRESS mode and RobAIR is too close
-				send_dockstate(DK_DOCKED)						#Set the state to DK_DOCKED
+				send_dockstate(DK_DOCKED)							#Set the state to DK_DOCKED
 
 	cap.release()				#Stop the video frame
 	pub_log.publish('Stop docking')		#Log info for ROS network
