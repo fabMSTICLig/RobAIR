@@ -30,9 +30,9 @@ Placer la caméra de la base verticalement, à hauteur du marqueur.
 
 ###### Depuis le RaspberryPi de la base :
 
-- Installer le paquet ROS `robairdock` sur le RaspberryPi de la base dans `catkin_ws/src/`.
+- Installer le paquet ROS `robairdock` sur le RaspberryPi de la base dans `RobAIR/catkin_ws/src/`.
 
-- Rendez-vous dans le répertoire `catkin_ws` puis compiler les paquets :
+- Rendez-vous dans le répertoire `RobAIR/catkin_ws/` puis compiler les paquets :
 ```bash
 $ catkin_make
 ```
@@ -68,7 +68,7 @@ rosrun robairmain dock_active.py
 
 **Depuis le RaspberryPi de RobAIR :**
 
-- Vérifier que le paquet ROS `robairmain` est bien installé dans `catkin_ws/src/`
+- Vérifier que le paquet ROS `robairmain` est bien installé dans `RobAIR/catkin_ws/src/`
 
 - Ajouter à la fin du fichier `.bashrc` de RobAIR la ligne suivante :
 ```bash
@@ -95,7 +95,7 @@ La procédure de docking peut-être annulée à tout moment en publiant un `0` s
 
 ## Marqueurs OpenCV
 
-Vous trouverez dans le répertoire `docs/dock/Marker/` quelques marqueurs utilisés pour le docking.
-Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator.py` qui se trouve dans `docs/dock/`.
+Vous trouverez dans le répertoire `RobAIR/docs/dock/Marker/` quelques marqueurs utilisés pour le docking.
+Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator.py` qui se trouve dans `RobAIR/docs/dock/`.
 
 
