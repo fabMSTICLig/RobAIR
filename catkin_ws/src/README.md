@@ -94,6 +94,6 @@ La procédure de docking peut-être annulée à tout moment en publiant un `0` s
 ## Marqueurs OpenCV
 
 Vous trouverez dans le répertoire `docs/dock/Marker/` quelques marqueurs utilisés pour le docking.
-Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator` qui se trouve dans `docs/dock/`.
+Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator.py` qui se trouve dans `docs/dock/`.
 
 
