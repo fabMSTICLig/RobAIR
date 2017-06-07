@@ -15,7 +15,7 @@ RobAIR possède maintenant une capacitée de docking. Il peut se docker à la ba
 Vous aurez besoin d'un RaspberryPi supplémentaire pour la base. Il faut installer dessus :
 
 - La dernière version de ROS : http://wiki.ros.org/kinetic/Installation/Ubuntu
-- La dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR
+- La dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 
 ### Installation
 
