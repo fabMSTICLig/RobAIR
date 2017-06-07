@@ -2,9 +2,9 @@ import cv2
 import cv2.aruco as aruco
  
 aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
-file_path = "../Lib/Aruco Markers/"
+file_path = "../Lib/Markers/"
 ID_min = 0
-ID_max = 250
+ID_max = 10
 
 for ID in range(ID_min, ID_max):
 
