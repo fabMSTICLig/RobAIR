@@ -19,39 +19,54 @@ Vous aurez besoin d'un RaspberryPi supplémentaire pour la base. Il faut install
 
 ### Installation
 
-Installer le paquet `robairdock` sur le RaspberryPi de la base.
+Depuis le RaspberryPi de la base :
 
-Depuis le répertoire `catkin_ws` initialement créé :
+- Installer le paquet ROS `robairdock` sur le RaspberryPi de la base dans `catkin_ws/src/`.
 
-Compiler les paquets :
+Depuis le répertoire `catkin_ws` :
+
+- Compiler les paquets :
 ```bash
 $ catkin_make
 ```
-Sourcer les paquets :
+
+- Sourcer les paquets :
 ```bash
 $ . devel/setup.bash
 ```
 
-Pour lancer le noeud de manière autonome au démarage du RaspberryPi, il faut ajouter les lignes suivantes en fin du fichier `.bashrc` :
+- Ajouter à la fin du fichier `.bashrc` de la ligne suivante :
 ```bash
 export ROS_IP= [adresse ip de la base]
 export ROS_MASTER_URI=http://[adresse ip de RobAIR]:11311
 rosrun robairdock dockmain.py
 ```
 
-Dans le fichier `RobAIR/xxx/yyy/zzz` décommenter l'instruction permettant le lancement du noeud sous docking actif : `rosrun robairmain dock_active.py`. L'instruction lançant le noeud sous docking passif peut-être supprimée.
+Depuis le RaspberryPi de RobAIR :
+
+- Ajouter à la fin du fichier `.bashrc` de RobAIR la ligne suivante :
+```bash
+rosrun robairmain dock_active.py
+```
 
 ## Installation Docking Passif
 
 ### Prérequis
 
-Installer la dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR :
+- Installer la dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 
 ### Installation
 
-Note : Le paquet `robairdock` n'est pas utilisé.
+Depuis le RaspberryPi de RobAIR :
 
-Dans le fichier `RobAIR/xxx/yyy/zzz` décommenter l'instruction permettant le lancement du noeud sous docking actif : `rosrun robairmain dock_passive.py`. L'instruction lançant le noeud sous docking actif peut-être supprimée.
+Note : Le paquet ROS `robairdock` n'est pas utilisé.
+
+- Vérifier que le paquet ROS `robairmain` est bien installé dans `catkin_ws/src/`
+
+- Ajouter à la fin du fichier `.bashrc` de RobAIR la ligne suivante :
+```bash
+rosrun robairmain dock_passive.py
+```
 
 ## Utilisation
 
@@ -62,18 +77,12 @@ La procédure de docking peut-être annulée à tout moment en publiant un `0` s
 
 ### Les états
 
-0 = Non amarré
-
-1 = Demande d'amarrage
-
-2 = Non vu
-
-3 = Mal placé
-
-4 = Amarrage en cours
-
-5 = Amarré
-
+- 0 = Non amarré
+- 1 = Demande d'amarrage
+- 2 = Non vu
+- 3 = Mal placé
+- 4 = Amarrage en cours
+- 5 = Amarré
 
 
 
