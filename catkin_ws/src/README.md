@@ -18,17 +18,17 @@ Installer dessus :
 - La dernière version de ROS : http://wiki.ros.org/kinetic/Installation/Ubuntu
 - La dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 
-**Sur RobAIR :**
+###### Sur RobAIR :
 
 Placer un marqueur OpenCV à l'arrière de RobAIR.
 
-**Sur la base :**
+###### Sur la base :
 
 Placer la caméra de la base verticalement, à hauteur du marqueur.
 
 ### Installation
 
-**Depuis le RaspberryPi de la base :**
+###### Depuis le RaspberryPi de la base :
 
 - Installer le paquet ROS `robairdock` sur le RaspberryPi de la base dans `catkin_ws/src/`.
 
@@ -49,7 +49,7 @@ export ROS_MASTER_URI=http://[adresse ip de RobAIR]:11311
 rosrun robairdock dockmain.py
 ```
 
-**Depuis le RaspberryPi de RobAIR :**
+###### Depuis le RaspberryPi de RobAIR :**
 
 - Ajouter à la fin du fichier `.bashrc` de RobAIR la ligne suivante :
 ```bash
