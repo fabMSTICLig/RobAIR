@@ -162,16 +162,10 @@ def start_docking():	#Start docking function
 
 		motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/abs(angular_error),0,SLOW_DISTANCE_SPEED)	#Backward
 
-		if(angular_target > 0):						#If the robot is on the right side of the dock
-			if(robair_pos.orientation.y > angular_target):		#If the objective is reach
-				motors_cmd.angular.z = -FAST_ANGLE_SPEED	#Turn Right
-			else:							#If the objective isn't reach
-				motors_cmd.angular.z = FAST_ANGLE_SPEED		#Turn left
-		else:								#If the robot is on the left side of the dock
-			if(robair_pos.orientation.y < angular_target):		#If the objective is reach
-				motors_cmd.angular.z = FAST_ANGLE_SPEED		#Turn left
-			else:							#If the objective isn't reach
-				motors_cmd.angular.z = -FAST_ANGLE_SPEED	#Turn Right
+		if(robair_pos.orientation.y > angular_target):		#If the objective is reach
+			motors_cmd.angular.z = -FAST_ANGLE_SPEED	#Turn Right
+		else:							#If the objective isn't reach
+			motors_cmd.angular.z = FAST_ANGLE_SPEED		#Turn left
 
 		send_cmd_vel(motors_cmd)	#Send the command
 	

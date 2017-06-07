@@ -5,7 +5,11 @@
 ###########
 
 import rospy
+import cv2
+import cv2.aruco as aruco
+import numpy as np
 from math import *
+from threading import Thread
 
 from std_msgs.msg import String
 from std_msgs.msg import Byte
@@ -45,7 +49,7 @@ DK_MISPLACED = 3	#Mis placed state
 DK_INPROGRESS = 4	#In progress state
 DK_DOCKED = 5		#Docked state
 
-dock_distance = 1	#The distance where the robot is too close to send a dock request
+dock_distance = 0.7	#The distance where the robot is too close to send a dock request
 MarkerWidth = 0.08      #Marker width in meters
 
 #Both are used to get the marker position in the camera coordinate system
@@ -162,84 +166,118 @@ def GetPose(cap):	#Get RobAIR position in screen coordinate
 	else:
 		return False		#Return false because no marker detected
 
+def PoseThread():
+
+	while not rospy.is_shutdown():
+
+		rate.sleep()
+		
+		if(DockState != DK_NOTDOCKED and DockState != DK_DOCKED):
+
+			pub_log.publish('Start docking')	#Log info for ROS network
+			rospy.loginfo('Start docking')		#Log info for computer only
+			cap = cv2.VideoCapture(0)	#Start a video frame
+
+			State = DockState
+			LastState = DockState
+
+			while(DockState != DK_NOTDOCKED and DockState != DK_DOCKED):
+				
+				rate.sleep()
+
+				if(GetPose(cap) == True):
+
+					if (DockState != DK_INPROGRESS and (marker_pos_camera.position.z < dock_distance or marker_pos_camera.position.x < -dock_distance or marker_pos_camera.position.x > dock_distance)):	#If we are not in DK_INPROGRESS mode and RobAIR is misplaced
+							State = DK_MISPLACED
+				
+					else:				
+						State = DK_INPROGRESS
+					
+				elif(DockState == DK_WANTTODOCK):
+					State = DK_NOTSEEN
+
+				if(DockState == DK_INPROGRESS and marker_pos_camera.position.z < MarkerWidth*3):
+					State = DK_DOCKED
+
+				if(LastState != State):
+					send_dockstate(State)
+					LastState = State
+
+			cap.release()	#Stop the video frame
+			pub_log.publish('Stop docking')		#Log info for ROS network
+			rospy.loginfo('Stop docking')		#Log info for computer only
+
 ################
 # DOCK Funtion #
 ################
 
 def start_docking():	#Start docking function
 	
-	pub_log.publish('Start docking')	#Log info for ROS network
-	rospy.loginfo('Start docking')		#Log info for computer only
-	cap = cv2.VideoCapture(0)		#Start a video frame
-	count = 0				#Reset counter
+	while(DockState == DK_WANTTODOCK):
+		rate.sleep()
 
-	while(DockState != DK_NOTDOCKED and DockState != DK_DOCKED):
+	count = 0				#Reset counter
+	motors_cmd.angular.z = SLOW_ANGLE_SPEED	
+	motors_cmd.linear.x = 0	
+
+	while(DockState == DK_NOTSEEN and count < 200):
+		
+		rate.sleep()
+		send_cmd_vel(motors_cmd)
+		count += 1
+
+	if(DockState == DK_NOTSEEN):
+		send_dockstate(DK_NOTDOCKED)	#Set the state to DK_NOTDOCKED
+		return False
+
+	while(DockState == DK_MISPLACED):
+
+		X = marker_pos_robair.position.x + cos(marker_pos_robair.orientation.y)*dock_distance	#Get the X coordinate objective
+		Z = marker_pos_robair.position.z + sin(marker_pos_robair.orientation.y)*dock_distance	#Get the Z coordinate objective
+
+		distance = sqrt(X**2 + Z**2)	#Get the distance between the objectif and the actual position
+		angle2 = -atan2(Z,X)			#Get the angle for the actual position
+		angle1 = -angle2 + marker_pos_robair.orientation.y*180/pi	#Get the angle for the objectif
+						
+		pub_log.publish("angle1 = " + str(angle1))
+		pub_log.publish("distance = " + str(distance))
+		pub_log.publish("angle2 = " + str(angle2))
+
+		turn(angle1)	#Turn
+		move(distance)	#Move backward
+		turn(angle2)	#Turn	
+
+	while(DockState == DK_INPROGRESS):
 		
 		rate.sleep()	#Wait for the next sampling
 
-		if(GetPose(cap) == True):	#If the marker is detected
+		A = marker_pos_camera.orientation.y + atan2(marker_pos_camera.position.x, marker_pos_camera.position.z)
+		X = sin(A)*sqrt(marker_pos_camera.position.x**2 + marker_pos_camera.position.z**2)
 
-			if (DockState != DK_INPROGRESS):	#If the robot is not in progress
-				if (marker_pos.position.z < dock_distance or marker_pos.position.x < -dock_distance or marker_pos.position.x > dock_distance)):	#If we are not in DK_INPROGRESS mode and RobAIR is misplaced
 
-					send_dockstate(DK_MISPLACED)	#Set the state to DK_MISPLACED
+		angular_target = sat(X * 5, -0.78, 0.78)
+		angular_error = angular_target - marker_pos_camera.orientation.y
 
-					X = marker_pos_robair.x + cos(marker_pos_robair.orientation.y)*dock_distance	#Get the X coordinate objective
-					Z = marker_pos_robair.z + sin(marker_pos_robair.orientation.y)*dock_distance	#Get the Z coordinate objective
+		motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/abs(angular_error),0,SLOW_DISTANCE_SPEED)
 
-					distance = -sqrt(X**2 + Z**2)					#Get the distance between the objectif and the actual position
+		print("")
+		print(angular_target)
+		print(marker_pos_camera.orientation.y)
 
-					angle1 = -arctan2(Z,X)						#Get the angle for the actual position
-					angle2 =-angle1 + marker_pos_robair.orientation.y*180/pi	#Get the angle for the objectif
-						
-					turn(angle1)	#Turn
-					move(distance)	#Move backward
-					turn(angle2)	#Turn
-								
-				send_dockstate(DK_INPROGRESS)	#Set the state to DK_INPROGRESS
-
-			else:
-				
-				motors_cmd.linear.z = SLOW_DISTANCE_SPEED	
-
-				if(marker_pos_camera.position.x > 0 and marker_pos_robair.orientation.y < 0):	#marker on the right facing in
-					motors_cmd.angular.z = 0
-
-				elif(marker_pos_camera.position.x > 0 and marker_pos_robair.orientation.y > 0):	#marker on the right facing out
-					motors_cmd.angular.z = -FAST_ANGLE_SPEED
-
-				elif(marker_pos_camera.position.x < 0 and marker_pos_robair.orientation.y > 0):	#marker on the left facing in
-					motors_cmd.angular.z = 0
-
-				elif(marker_pos_camera.position.x < 0 and marker_pos_robair.orientation.y < 0):	#marker on the left facing out
-					motors_cmd.angular.z = FAST_ANGLE_SPEED				
-
-				send_cmd_vel(motors_cmd)	#Send the command
-
+		if(marker_pos_camera.orientation.y > angular_target):
+			motors_cmd.angular.z = FAST_ANGLE_SPEED
 		else:
+			motors_cmd.angular.z = -FAST_ANGLE_SPEED			
 
-			if(DockState == DK_WANTTODOCK):			#If the robot want to dock
-					send_dockstate(DK_NOTSEEN)	#The robot is not seen
+		send_cmd_vel(motors_cmd)	#Send the command
 
-			if(DockState == DK_NOTSEEN):			#If the robot is not seen
+	motors_cmd.linear.x = 0		
+	motors_cmd.angular.z = 0
 
-				if(count < 200):	
-
-					motors_cmd.angular.z = SLOW_ANGLE_SPEED	#Turn anti-clockwise
-					motors_cmd.linear.x = 0			#On himself
-	
-					send_cmd_vel(motors_cmd)	#Send the command
-					count += 1			#Incrementation
-
-				else:
-					send_dockstate(NOT_DOCKED)
-			
-			if (DockState == DK_INPROGRESS and marker_pos_camera.position.z < MarkerWidth*3):	#If we are in DK_INPROGRESS mode and RobAIR is too close
-				send_dockstate(DK_DOCKED)							#Set the state to DK_DOCKED
-
-	cap.release()				#Stop the video frame
-	pub_log.publish('Stop docking')		#Log info for ROS network
-	rospy.loginfo('Stop docking')		#Log info for computer only
+	if(DockState == DK_DOCKED):
+		return True
+	else:
+		return False
 
 def sat(value, minimum, maximum):	#Saturation function
 	if(value < minimum):		#If the value is under the minimum
@@ -270,7 +308,7 @@ def receive_motors_info(data):	#Receive motors informations
 
 	if(isinstance(data,MotorsInfo)):	#If data is type of MotorsInfo
 
-		if(DockState == DK_TOOCLOSE):
+		if(DockState == DK_MISPLACED):
 
 			if(abs(data.countR - motors_info.countR) > 10000):		#If the right counter change sign
 				data.countR = motors_info.countR + 32768 - data.countR	#Change sign and add the difference
@@ -307,8 +345,12 @@ pub_log = rospy.Publisher('log',String, queue_size=10)		#"log" topic object
 if __name__ == '__main__':	#If the file is executed for the first time
 	
 	try:
+
 		rospy.init_node('dock_passive', anonymous=True)	#Initialise the node
 		rate = rospy.Rate(10)			#Rate set to 10Hz
+
+		mythread = Thread(None,PoseThread,(),{})
+		mythread.start()
 
 		rospy.loginfo('Node "dock_passive" initialized')	#Log info for computer only
 		pub_log.publish('Node "dock_passive" initialized')	#Log info for ROS network
