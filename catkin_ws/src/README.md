@@ -12,20 +12,22 @@ RobAIR possède maintenant une capacitée de docking. Il peut se docker à la ba
 
 ### Prérequis
 
-Vous aurez besoin d'un RaspberryPi supplémentaire pour la base. Il faut installer dessus :
+Vous aurez besoin d'un RaspberryPi supplémentaire pour la base.
+Installer dessus :
 
-- La dernière version de ROS : http://wiki.ros.org/kinetic/Installation/Ubuntu
-- La dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
+-     La dernière version de ROS : http://wiki.ros.org/kinetic/Installation/Ubuntu
+-     La dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
+
+Accrocher un marqueur OpenCV à l'arrière de RobAIR.
+Accrocher la caméra de la base à hauteur du marqueur.
 
 ### Installation
 
-Depuis le RaspberryPi de la base :
+**Depuis le RaspberryPi de la base :**
 
 - Installer le paquet ROS `robairdock` sur le RaspberryPi de la base dans `catkin_ws/src/`.
 
-Depuis le répertoire `catkin_ws` :
-
-- Compiler les paquets :
+- Rendez-vous dans le répertoire `catkin_ws` puis compiler les paquets :
 ```bash
 $ catkin_make
 ```
@@ -42,7 +44,7 @@ export ROS_MASTER_URI=http://[adresse ip de RobAIR]:11311
 rosrun robairdock dockmain.py
 ```
 
-Depuis le RaspberryPi de RobAIR :
+**Depuis le RaspberryPi de RobAIR :**
 
 - Ajouter à la fin du fichier `.bashrc` de RobAIR la ligne suivante :
 ```bash
@@ -57,9 +59,7 @@ rosrun robairmain dock_active.py
 
 ### Installation
 
-Depuis le RaspberryPi de RobAIR :
-
-Note : Le paquet ROS `robairdock` n'est pas utilisé.
+**Depuis le RaspberryPi de RobAIR :**
 
 - Vérifier que le paquet ROS `robairmain` est bien installé dans `catkin_ws/src/`
 
@@ -67,6 +67,8 @@ Note : Le paquet ROS `robairdock` n'est pas utilisé.
 ```bash
 rosrun robairmain dock_passive.py
 ```
+
+*Note : Le paquet ROS `robairdock` n'est pas utilisé.*
 
 ## Utilisation
 
@@ -84,5 +86,9 @@ La procédure de docking peut-être annulée à tout moment en publiant un `0` s
 - 4 = Amarrage en cours
 - 5 = Amarré
 
+## Marqueurs OpenCV
+
+Vous trouverez dans le répertoire `docs/dock/Marker/` quelques marqueurs utilisés pour le docking.
+Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator` qui se trouve dans `docs/dock/`.
 
 
