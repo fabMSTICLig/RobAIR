@@ -42,10 +42,10 @@ $ catkin_make
 $ . devel/setup.bash
 ```
 
-- Ajouter à la fin du fichier `.bashrc` de la ligne suivante :
+- Ajouter à la fin du fichier `.bashrc` les lignes suivantes :
 ```bash
-export ROS_IP= [adresse ip de la base]
-export ROS_MASTER_URI=http://[adresse ip de RobAIR]:11311
+export ROS_IP = [adresse ip de la base]
+export ROS_MASTER_URI = http://[adresse ip de RobAIR]:11311
 rosrun robairdock dockmain.py
 ```
 
@@ -53,6 +53,8 @@ rosrun robairdock dockmain.py
 
 - Ajouter à la fin du fichier `.bashrc` de RobAIR la ligne suivante :
 ```bash
+export ROS_IP=[adresse ip de RobAIR]
+export ROS_MASTER_URI=http://localhost:11311
 rosrun robairmain dock_active.py
 ```
 
