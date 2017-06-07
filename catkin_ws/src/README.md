@@ -15,11 +15,16 @@ RobAIR possède maintenant une capacitée de docking. Il peut se docker à la ba
 Vous aurez besoin d'un RaspberryPi supplémentaire pour la base.
 Installer dessus :
 
--     La dernière version de ROS : http://wiki.ros.org/kinetic/Installation/Ubuntu
--     La dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
+- La dernière version de ROS : http://wiki.ros.org/kinetic/Installation/Ubuntu
+- La dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 
-Accrocher un marqueur OpenCV à l'arrière de RobAIR.
-Accrocher la caméra de la base à hauteur du marqueur.
+**Sur RobAIR :**
+
+Placer un marqueur OpenCV à l'arrière de RobAIR.
+
+**Sur la base :**
+
+Placer la caméra de la base verticalement, à hauteur du marqueur.
 
 ### Installation
 
