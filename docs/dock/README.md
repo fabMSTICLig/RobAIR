@@ -16,7 +16,7 @@ Vous aurez besoin d'un RaspberryPi supplémentaire pour la base.
 Installer dessus :
 
 - La dernière version de ROS : http://wiki.ros.org/kinetic/Installation/Ubuntu
-- La dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
+- La dernière version de OpenCV avec Aruco sur le RaspberryPi de la base : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 
 ###### Sur RobAIR :
 
