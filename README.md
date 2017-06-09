@@ -1,3 +1,5 @@
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/fr/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/3.0/fr/88x31.png" /></a><br />Les différentes partie de ce projet sont mise à disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/fr/">Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 3.0 France</a>.
+
 # RobAIR
 
 
@@ -95,4 +97,8 @@ $ createDeviceCRT.sh
 La commande `robair arduino` permet de configurer le fichier `robair.launch` afin que ROS se connecte à la bonne carte Arduino.
 Une seule carte disposant d'une laison serie doit être connecté à l'ordinateur avant de lancer la commande. 
 Cette commande n'est utile que lorsque la carte arduino est changée.
+
+## Architecture
+Le document suivant présente l'archtecture de robot. <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/fr/">lien</a>
+
 
