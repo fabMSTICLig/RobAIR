@@ -13,16 +13,17 @@ from std_msgs.msg import Int32
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Pose
 
-from robairdock.msg import MotorsInfo
+from robairmain.msg import MotorsInfo
 
 ###################
 # Robot Constants #
 ###################
 
-wheel_diameter = 125 		#Wheels diameter in mm
-wheels_distance = 400		#The distance between the tow wheels in mm
-marker_center_distance = 0.185 	#The distance between the centre en the marker in m
-wheel_incrementation = 976 	#Number of incrementaion in one wheel
+wheel_diameter = 125 				#Wheels diameter in mm
+wheels_distance = 400				#The distance between the two wheels in mm
+center_marker_distance = 0.185 		#The distance between the centre and the marker in m
+center_electrodes_distance = 0.25 	#The distance between the centre and the marker in m
+wheel_incrementation = 976 			#Number of incrementaion in one wheel
 
 wheel_perimeter = pi*wheel_diameter 				#Wheel perimeter in mm
 robot_perimeter = pi*wheels_distance				#Robot perimeter in mm
@@ -41,11 +42,10 @@ FAST_ANGLE_SPEED = 0.2		#Angular speed when far from the objective
 DK_NOTDOCKED = 0	#Not docked state
 DK_WANTTODOCK = 1	#Want to dock state
 DK_NOTSEEN = 2		#Not seen state
-DK_MISPLACED = 3	#Mis placed state
-DK_INPROGRESS = 4	#In progress state
-DK_DOCKED = 5		#Docked state
+DK_SEEN = 3			#Seen state
+DK_DOCKED = 4		#Docked state
 
-dock_distance = 1	#The distance where the robot is too close to send a dock request
+dock_distance = 2*center_electrodes_distance	#The distance where the robot is too close to send a dock request
 
 #############
 # Variables #
@@ -126,6 +126,8 @@ def move(distance):	#Move stright (distance in meters)(- backward)(+ forward)
 
 def start_docking():	#Start docking function
 	
+	pub_log.publish('Start docking')	#Log info for ROS network
+
 	while(DockState == DK_WANTTODOCK):	#Wait for an answer
 		rate.sleep()			#Do nothing
 
@@ -141,11 +143,16 @@ def start_docking():	#Start docking function
 
 	if(DockState == DK_NOTSEEN):		#If the robot isn't seen yet
 		send_dockstate(DK_NOTDOCKED)	#Cancel docking operation
-		return False			#Return False
+		return False					#Return False
 
-	while(DockState == DK_MISPLACED):	#If the robot is too close
+	while(DockState != DK_NOTDOCKED and DockState != DK_DOCKED and robair_pos.position.z < dock_distance):	#If the robot is too close
 
-		distance = sqrt((dock_distance - robair_pos.position.z)**2+robair_pos.position.x**2)	#Get the distance between the objectif and the actual position
+		rate.sleep()	#Wait for the next sampling
+
+		X = 0
+		Z = dock_distance * 2
+
+		distance = sqrt((Z - robair_pos.position.z)**2+(X-robair_pos.position.x)**2)	#Get the distance between the objectif and the actual position
 		angle2 = -atan2(robair_pos.position.x, dock_distance - robair_pos.position.z)*180/pi	#Get the angle for the objectif
 		angle1 = -robair_pos.orientation.y*180/pi - angle2					#Get the angle for the actual
 
@@ -153,36 +160,53 @@ def start_docking():	#Start docking function
 		move(distance)	#Move
 		turn(angle2)	#Turn
 
-	while(DockState == DK_INPROGRESS):	#Wait for an answer
+	while(DockState != DK_NOTDOCKED and DockState != DK_DOCKED):	#While the robot is in progress
 
 		rate.sleep()	#Wait for the next sampling
 
-		angular_target = -sat(marker_pos.position.x * 5, -1, 1)	#Get the target angle
-		angular_error = angular_target - robair_pos.orientation.y
+		if(DockState == DK_SEEN):
 
-		motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/abs(angular_error),0,SLOW_DISTANCE_SPEED)	#Backward
+			sat_angle = sat(1/marker_pos.position.z,0,1)
+			target_angle = -sat(marker_pos.position.x * 10, -sat_angle, sat_angle)	#Get the target angle
+			error_angle = target_angle - robair_pos.orientation.y
 
-		if(robair_pos.orientation.y > angular_target):		#If the objective is reach
-			motors_cmd.angular.z = -FAST_ANGLE_SPEED	#Turn Right
-		else:							#If the objective isn't reach
-			motors_cmd.angular.z = FAST_ANGLE_SPEED		#Turn left
+			print("")
+			print(robair_pos.position.x)
+			print(marker_pos.position.x)
+			print(sat_angle*180/pi)
+			print(target_angle*180/pi)
+			print(error_angle*180/pi)
+
+			motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/abs(error_angle),0,SLOW_DISTANCE_SPEED)	#Backward
+			motors_cmd.angular.z = sat(error_angle/2.6,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)
+
+		elif(DockState == DK_NOTSEEN):
+
+			motors_cmd.linear.x = 0
+			motors_cmd.angular.z = 0
 
 		send_cmd_vel(motors_cmd)	#Send the command
-	
+
+		if(marker_pos.position.z < 0.24):
+				
+			send_dockstate(DK_DOCKED)	#The robot is docked
+
 	motors_cmd.linear.x = 0		#Reset the linear command 
 	motors_cmd.angular.z = 0	#Reset the angular command 
 
+	pub_log.publish('Stop docking')	#Log info for ROS network
+
 	if(DockState == DK_DOCKED):	#If the robot is docked
-		return True		#Return True
-	else:				#If the robot is not docked
-		return False		#Return False
+		return True				#Return True
+	else:						#If the robot is not docked
+		return False			#Return False
 
 def sat(value, minimum, maximum):	#Saturation function
-	if(value < minimum):		#If the value is under the minimum
-		return minimum		#Set minimum
-	elif(value > maximum):		#If the value is over the maximum
-		return maximum		#Set maximum
-	return value			#Stay the same
+	if(value < minimum):			#If the value is under the minimum
+		return minimum				#Set minimum
+	elif(value > maximum):			#If the value is over the maximum
+		return maximum				#Set maximum
+	return value					#Stay the same
 
 #################
 # Send Funtions #
@@ -206,13 +230,11 @@ def receive_motors_info(data):	#Receive motors informations
 
 	if(isinstance(data,MotorsInfo)):	#If data is type of MotorsInfo
 
-		if(DockState == DK_MISPLACED):
+		if(abs(data.countR - motors_info.countR) > 10000):		#If the right counter change sign
+			data.countR = motors_info.countR + 32768 - data.countR	#Change sign and add the difference
 
-			if(abs(data.countR - motors_info.countR) > 10000):		#If the right counter change sign
-				data.countR = motors_info.countR + 32768 - data.countR	#Change sign and add the difference
-
-			if(abs(data.countL - motors_info.countL) > 10000):		#If the right counter change sign
-				data.countL = motors_info.countL + 32768 - data.countL	#Change sign and add the difference
+		if(abs(data.countL - motors_info.countL) > 10000):		#If the right counter change sign
+			data.countL = motors_info.countL + 32768 - data.countL	#Change sign and add the difference
 
 		motors_info = data		#Get motors info
 
@@ -220,8 +242,8 @@ def receive_position(data):		#Receive RobAIR position in
 	global marker_pos, robair_pos	#Use the global marker_pos
 	marker_pos = data		#Get the position
 
-	robair_pos.position.x = marker_pos.position.x + sin(marker_pos.orientation.y)*marker_center_distance	#Get the x robair position
-	robair_pos.position.z = marker_pos.position.z + cos(marker_pos.orientation.y)*marker_center_distance	#Get the z robair position
+	robair_pos.position.x = marker_pos.position.x + sin(marker_pos.orientation.y)*center_marker_distance	#Get the x robair position
+	robair_pos.position.z = marker_pos.position.z + cos(marker_pos.orientation.y)*center_marker_distance	#Get the z robair position
 	robair_pos.orientation.y = marker_pos.orientation.y	#Get the y robair orientation
 
 def receive_battery_level(data):	#Receive battery level information

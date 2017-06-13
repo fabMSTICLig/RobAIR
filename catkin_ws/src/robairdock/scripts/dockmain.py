@@ -27,11 +27,8 @@ MarkerWidth = 0.08             	#Marker width in meters
 DK_NOTDOCKED = 0	#Not docked state
 DK_WANTTODOCK = 1	#Want to docked state
 DK_NOTSEEN = 2		#Not seen state
-DK_MISPLACED = 3		#Too close state
-DK_INPROGRESS = 4	#In progress state
-DK_DOCKED = 5		#Docked state
-
-dock_distance = 1	#The distance where the robot is too close to send a dock request
+DK_SEEN = 3			#Seen state
+DK_DOCKED = 4		#Docked state
 
 #Both are used to get the marker position in the camera coordinate system
 mtx = np.array([[635.35746725, 0, 330.33237895], [ 0, 636.86233192, 229.39423206], [0, 0, 1]])	#This is the camera callibration matrix 
@@ -75,42 +72,31 @@ def GetPose(cap):	#Get RobAIR position in screen coordinate
 	else:
 		return False		#Return false because no marker detected
 
+
 def start_docking():
 
-	pub_log.publish('Start docking')	#Log info for ROS network
-	rospy.loginfo('Start docking')		#Log info for computer only
-	cap = cv2.VideoCapture(0)			#Start a video frame
-
-	State = DockState		#State initialisation
-	LastState = DockState	#Last statye initialization
+	cap = cv2.VideoCapture(0)	#Start a video frame
+	State = DockState			#State initialisation
+	LastState = DockState		#Last statye initialization
 
 	while(DockState != DK_NOTDOCKED and DockState != DK_DOCKED):	#If the docking operation isn't finish
 
 		rate.sleep()	#Wait for the next sampling
+		print("vu")
 
 		if(GetPose(cap) == True):	#If the marker is detected
 
+			State = DK_SEEN					#The futur state will be DK_SEEN
 			send_marker_pos(marker_pos)		#Publish the position
 
-			if (DockState != DK_INPROGRESS and (marker_pos.position.z < dock_distance or marker_pos.position.x < -dock_distance or marker_pos.position.x > dock_distance)):	#If we are not in DK_INPROGRESS mode and RobAIR is misplaced
-				State = DK_MISPLACED		#The futur state will be DK_MISPLACED
-
-			else:
-				State = DK_INPROGRESS		#The futur state will be DK_INPROGRESS
-
-		elif(DockState == DK_WANTTODOCK):	#If the robot want to dock
-				State = DK_NOTSEEN	#The futur state will be DK_NOTSEEN
-
-		if (DockState == DK_INPROGRESS and marker_pos.position.z < MarkerWidth*3):	#If we are not in DK_INPROGRESS mode and RobAIR is too close
-				State = DK_DOCKED			#The futur state will be
+		else:
+			State = DK_NOTSEEN			#The futur state will be DK_NOTSEEN
 
 		if(LastState != State):		#If the last state is different from this one
 			send_dockstate(State)	#Send the new state
 			LastState = State		#Last state and actual state are now the same
-			
+				
 	cap.release()						#Stop the video frame
-	pub_log.publish('Stop docking')		#Log info for ROS network
-	rospy.loginfo('Stop docking')		#Log info for computer only
 
 #################
 # Send Funtions #
@@ -131,12 +117,12 @@ def send_marker_pos(data):		#Send RobAIR position
 ####################
 
 def receive_dockstate(data):	#Receive dock state
-	global DockState	#Use the global DockState
+	global DockState			#Use the global DockState
 
 	if(data.data == DK_WANTTODOCK):
 		if(DockState == DK_NOTDOCKED):		#If the robot want to dock and it is not
-			DockState = data.data		#Save the dock state
-			start_docking()			#start_docking
+			DockState = data.data			#Save the dock state
+			start_docking()
 
 	else:
 		DockState = data.data		#Save the dock state
