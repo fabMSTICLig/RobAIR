@@ -96,6 +96,6 @@ La procédure de docking peut-être annulée à tout moment en publiant un `0` s
 ## Marqueurs OpenCV
 
 Vous trouverez dans le répertoire `RobAIR/docs/dock/Marker/` quelques marqueurs utilisés pour le docking.
-Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator.py` qui se trouve dans `RobAIR/docs/dock/`.
+Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator.py` et tester la détection de marqueur avec le script `Aruco Detection.py` qui se trouvent dans `RobAIR/docs/dock/`.
 
 
