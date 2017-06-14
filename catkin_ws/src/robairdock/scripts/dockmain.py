@@ -76,13 +76,13 @@ def GetPose(cap):	#Get RobAIR position in screen coordinate
 def start_docking():
 
 	cap = cv2.VideoCapture(0)	#Start a video frame
+
 	State = DockState			#State initialisation
 	LastState = DockState		#Last statye initialization
 
 	while(DockState != DK_NOTDOCKED and DockState != DK_DOCKED):	#If the docking operation isn't finish
 
 		rate.sleep()	#Wait for the next sampling
-		print("vu")
 
 		if(GetPose(cap) == True):	#If the marker is detected
 
@@ -97,6 +97,13 @@ def start_docking():
 			LastState = State		#Last state and actual state are now the same
 				
 	cap.release()						#Stop the video frame
+
+def sat(value, minimum, maximum):
+	if(value < minimum):
+		return minimum
+	elif(value > maximum):
+		return maximum
+	return value
 
 #################
 # Send Funtions #

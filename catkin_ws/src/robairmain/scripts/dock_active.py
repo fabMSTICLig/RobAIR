@@ -166,24 +166,23 @@ def start_docking():	#Start docking function
 
 		if(DockState == DK_SEEN):
 
-			sat_angle = sat(1/marker_pos.position.z,0,1)
-			target_angle = -sat(marker_pos.position.x * 10, -sat_angle, sat_angle)	#Get the target angle
+			sat_angle = sat(3 - marker_pos.position.z*2,0.17,1)
+
+			target_angle = -sat(marker_pos.position.x * sat_angle/0.2, -sat_angle, sat_angle)	#Get the target angle
+			target_angle = -sat(marker_pos.position.x * 5, -sat_angle, sat_angle)	#Get the target angle
 			error_angle = target_angle - robair_pos.orientation.y
 
-			print("")
-			print(robair_pos.position.x)
-			print(marker_pos.position.x)
-			print(sat_angle*180/pi)
-			print(target_angle*180/pi)
-			print(error_angle*180/pi)
+			motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/2 + marker_pos.position.z*SLOW_DISTANCE_SPEED/2,0,SLOW_DISTANCE_SPEED)	#Backward
+			motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.52,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)
 
-			motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/abs(error_angle),0,SLOW_DISTANCE_SPEED)	#Backward
-			motors_cmd.angular.z = sat(error_angle/2.6,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)
+			pub_log.publish("target_angle = " + str(target_angle*180/pi))
+			pub_log.publish("error_angle = " + str(error_angle*180/pi))
 
 		elif(DockState == DK_NOTSEEN):
 
-			motors_cmd.linear.x = 0
-			motors_cmd.angular.z = 0
+			#motors_cmd.linear.x = 0
+			#motors_cmd.angular.z = 0
+			pass
 
 		send_cmd_vel(motors_cmd)	#Send the command
 
