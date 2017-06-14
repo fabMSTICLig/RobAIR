@@ -16,7 +16,7 @@ Vous aurez besoin d'un RaspberryPi supplémentaire pour la base.
 Installer dessus :
 
 - La dernière version de ROS : http://wiki.ros.org/kinetic/Installation/Ubuntu
-- La dernière version de OpenCV avec Aruco sur le RaspberryPi de la base : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
+- La dernière version de OpenCV : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 
 ###### Sur RobAIR :
 
@@ -62,7 +62,8 @@ rosrun robairmain dock_active.py
 
 ### Prérequis
 
-- Installer la dernière version de OpenCV avec Aruco sur le RaspberryPi de RobAIR : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
+Installer sur le RaspberryPi de RobAIR :
+-  La dernière version de OpenCV : http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 
 ### Installation
 
@@ -89,13 +90,12 @@ La procédure de docking peut-être annulée à tout moment en publiant un `0` s
 - 0 = Non amarré
 - 1 = Demande d'amarrage
 - 2 = Non vu
-- 3 = Mal placé
-- 4 = Amarrage en cours
-- 5 = Amarré
+- 3 = Vu
+- 4 = Amarré
 
 ## Marqueurs OpenCV
 
 Vous trouverez dans le répertoire `RobAIR/docs/dock/Marker/` quelques marqueurs utilisés pour le docking.
-Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator.py` qui se trouve dans `RobAIR/docs/dock/`.
+Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator.py` et tester la détection de marqueur avec le script `Aruco Detection.py` qui se trouvent dans `RobAIR/docs/dock/`.
 
 
