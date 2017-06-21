@@ -31,8 +31,11 @@ DK_SEEN = 3			#Seen state
 DK_DOCKED = 4		#Docked state
 
 #Both are used to get the marker position in the camera coordinate system
-mtx = np.array([[635.35746725, 0, 330.33237895], [ 0, 636.86233192, 229.39423206], [0, 0, 1]])	#This is the camera callibration matrix 
-disp = np.array([0.08063491, -0.29704246, 0.00137873, -0.00190106, 0.08985177])					#This is the camera dispertion array
+#mtx = np.array([[635.35746725, 0, 330.33237895], [ 0, 636.86233192, 229.39423206], [0, 0, 1]])	#This is the camera callibration matrix 
+#disp = np.array([0.08063491, -0.29704246, 0.00137873, -0.00190106, 0.08985177])					#This is the camera dispertion array
+
+mtx =  np.array([[505.62638698, 0, 326.44665333], [0, 506.57448647, 228.39570037],[0, 0, 1]])
+disp = np.array([1.55319525e-01, 4.30522297e-02, -2.08579382e-04, -3.47100297e-03, -1.37788831e+00])
 
 aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)	#Declare the markers dictionnary
 parameters =  aruco.DetectorParameters_create()			#Declare the aruco parameters

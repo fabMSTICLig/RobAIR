@@ -156,9 +156,11 @@ def start_docking():	#Start docking function
 		angle2 = -atan2(robair_pos.position.x, dock_distance - robair_pos.position.z)*180/pi	#Get the angle for the objectif
 		angle1 = -robair_pos.orientation.y*180/pi - angle2					#Get the angle for the actual
 
-		turn(angle1)	#Turn
+		turn(-angle1)	#Turn
 		move(distance)	#Move
-		turn(angle2)	#Turn
+		turn(-angle2)	#Turn
+
+	count = 0
 
 	while(DockState != DK_NOTDOCKED and DockState != DK_DOCKED):	#While the robot is in progress
 
@@ -166,27 +168,29 @@ def start_docking():	#Start docking function
 
 		if(DockState == DK_SEEN):
 
-			sat_angle = sat(3 - marker_pos.position.z*2,0.17,1)
+			count = 0
 
-			target_angle = -sat(marker_pos.position.x * sat_angle/0.2, -sat_angle, sat_angle)	#Get the target angle
-			target_angle = -sat(marker_pos.position.x * 5, -sat_angle, sat_angle)	#Get the target angle
+			sat_angle = sat(3 - marker_pos.position.z*2,0.5235,1)
+			gain = sat(7 - marker_pos.position.z*2,1,5)
+			target_angle = -sat(marker_pos.position.x * gain, -sat_angle, sat_angle)	#Get the target angle
 			error_angle = target_angle - robair_pos.orientation.y
 
 			motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/2 + marker_pos.position.z*SLOW_DISTANCE_SPEED/2,0,SLOW_DISTANCE_SPEED)	#Backward
 			motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.52,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)
 
-			pub_log.publish("target_angle = " + str(target_angle*180/pi))
-			pub_log.publish("error_angle = " + str(error_angle*180/pi))
+			pub_log.publish("target="+str(target_angle))
 
 		elif(DockState == DK_NOTSEEN):
+			count+=1
 
-			#motors_cmd.linear.x = 0
-			#motors_cmd.angular.z = 0
+			if(count == 20):
+				motors_cmd.linear.x = 0
+				motors_cmd.angular.z = 0
 			pass
 
 		send_cmd_vel(motors_cmd)	#Send the command
 
-		if(marker_pos.position.z < 0.24):
+		if(marker_pos.position.z < (center_electrodes_distance-center_marker_distance)*3):
 				
 			send_dockstate(DK_DOCKED)	#The robot is docked
 
