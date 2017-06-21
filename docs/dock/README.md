@@ -99,3 +99,15 @@ Vous trouverez dans le répertoire `RobAIR/docs/dock/Marker/` quelques marqueurs
 Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator.py` et tester la détection de marqueur avec le script `Aruco Detection.py` qui se trouvent dans `RobAIR/docs/dock/`.
 
 
+## Calibration de la caméra
+
+**Si vous utilisez une caméra RaspberryPi v1.3 ou v2.1**
+
+La calibration de votre caméra à déjà été faite. Vous pouvez récupérer les matrices dans `RobAIR/docs/dock/Measurements/`.
+Les images utilisées pour la calibration se trouve dans le dossier `RobAIR/docs/dock/Calibration_Images/`.
+
+**Si la calibration n'a pas été faite pour votre caméra**
+
+- Utilisez le script `Calibration_Image_Creator.py` qui se trouve dans `RobAIR/docs/dock/` pour créer les images nécéssaires à la calibration.
+
+- Dans votre dossier opencv, utilisez le fichier `calibrate.py` qui se trouve dans `sample/python/` pour calibrer la caméra. N'oubliez pas de renseigner ligne 38 le chemin des images.
