@@ -19,11 +19,11 @@ from robairmain.msg import MotorsInfo
 # Robot Constants #
 ###################
 
-wheel_diameter = 125 				#Wheels diameter in mm
-wheels_distance = 400				#The distance between the two wheels in mm
+wheel_diameter = 125 			#Wheels diameter in mm
+wheels_distance = 400			#The distance between the two wheels in mm
 center_marker_distance = 0.185 		#The distance between the centre and the marker in m
 center_electrodes_distance = 0.25 	#The distance between the centre and the marker in m
-wheel_incrementation = 976 			#Number of incrementaion in one wheel
+wheel_incrementation = 976 		#Number of incrementaion in one wheel
 
 wheel_perimeter = pi*wheel_diameter 				#Wheel perimeter in mm
 robot_perimeter = pi*wheels_distance				#Robot perimeter in mm
@@ -42,7 +42,7 @@ FAST_ANGLE_SPEED = 0.2		#Angular speed when far from the objective
 DK_NOTDOCKED = 0	#Not docked state
 DK_WANTTODOCK = 1	#Want to dock state
 DK_NOTSEEN = 2		#Not seen state
-DK_SEEN = 3			#Seen state
+DK_SEEN = 3		#Seen state
 DK_DOCKED = 4		#Docked state
 
 dock_distance = 2*center_electrodes_distance	#The distance where the robot is too close to send a dock request
@@ -63,10 +63,10 @@ DockState = 0			#Actual RobAIR state for docking
 ##################
 
 def turn(angle):	#Turn over himself (angle in degrees)(- clockwise)(+ anti-clockwise)
-	global motors_cmd, DockState		#Use the global motors_cmd
+	global motors_cmd, DockState	#Use the global motors_cmd
 
-	motors_start = motors_info		#Get the initial motors informations
-	motors_cmd.linear.x = 0			#Reset the linear command
+	motors_start = motors_info	#Get the initial motors informations
+	motors_cmd.linear.x = 0		#Reset the linear command
 	error = angle*robot_perimeter*encoder_resolution/360 - ((motors_info.countR - motors_start.countR) - (motors_info.countL - motors_start.countL))/2	#Get the error between the reference and the system
 
 	while(error < (-wheel_incrementation/100) or (wheel_incrementation/100) < error) and (DockState != DK_NOTDOCKED):	#While the error is too big and the robot stay in the same dock state
@@ -143,54 +143,51 @@ def start_docking():	#Start docking function
 
 	if(DockState == DK_NOTSEEN):		#If the robot isn't seen yet
 		send_dockstate(DK_NOTDOCKED)	#Cancel docking operation
-		return False					#Return False
+		return False			#Return False
 
 	while(DockState != DK_NOTDOCKED and DockState != DK_DOCKED and robair_pos.position.z < dock_distance):	#If the robot is too close
 
 		rate.sleep()	#Wait for the next sampling
 
-		X = 0
-		Z = dock_distance * 2
+		X = 0			#Set the x objective
+		Z = dock_distance * 2	#Set the z objective
 
 		distance = sqrt((Z - robair_pos.position.z)**2+(X-robair_pos.position.x)**2)	#Get the distance between the objectif and the actual position
 		angle2 = -atan2(robair_pos.position.x, dock_distance - robair_pos.position.z)*180/pi	#Get the angle for the objectif
 		angle1 = -robair_pos.orientation.y*180/pi - angle2					#Get the angle for the actual
 
-		turn(-angle1)	#Turn
+		turn(angle1)	#Turn
 		move(distance)	#Move
-		turn(-angle2)	#Turn
+		turn(angle2)	#Turn
 
-	count = 0
+	count = 0	#Set count to 0
 
 	while(DockState != DK_NOTDOCKED and DockState != DK_DOCKED):	#While the robot is in progress
 
 		rate.sleep()	#Wait for the next sampling
 
-		if(DockState == DK_SEEN):
+		if(DockState == DK_SEEN):	#If the robot is seen
 
-			count = 0
+			count = 0		#Reset count
 
-			sat_angle = sat(3 - marker_pos.position.z*2,0.5235,1)
-			gain = sat(7 - marker_pos.position.z*2,1,5)
+			sat_angle = sat(3 - marker_pos.position.z*2,0.5235,1)	#Get the sat angle
+			gain = sat(7 - marker_pos.position.z*2,1,5)		#Get the gain
 			target_angle = -sat(marker_pos.position.x * gain, -sat_angle, sat_angle)	#Get the target angle
-			error_angle = target_angle - robair_pos.orientation.y
+			error_angle = target_angle - robair_pos.orientation.y	#Get the error
 
-			motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/2 + marker_pos.position.z*SLOW_DISTANCE_SPEED/2,0,SLOW_DISTANCE_SPEED)	#Backward
-			motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.52,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)
+			motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/2 + marker_pos.position.z*SLOW_DISTANCE_SPEED/2,0,SLOW_DISTANCE_SPEED)	#Linear enslavement
+			motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.52,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)			#Angular enslavement
 
-			pub_log.publish("target="+str(target_angle))
+		elif(DockState == DK_NOTSEEN):	#If the robot is not seen
+			count+=1		#Incrementation
 
-		elif(DockState == DK_NOTSEEN):
-			count+=1
-
-			if(count == 20):
-				motors_cmd.linear.x = 0
-				motors_cmd.angular.z = 0
-			pass
+			if(count == 20):	#If the robot is not seen since 2 sec
+				motors_cmd.linear.x = 0		#Stop
+				motors_cmd.angular.z = 0	#Stop
 
 		send_cmd_vel(motors_cmd)	#Send the command
 
-		if(marker_pos.position.z < (center_electrodes_distance-center_marker_distance)*3):
+		if(marker_pos.position.z < (center_electrodes_distance-center_marker_distance)*3):	#If the robot is close enough
 				
 			send_dockstate(DK_DOCKED)	#The robot is docked
 
@@ -200,16 +197,16 @@ def start_docking():	#Start docking function
 	pub_log.publish('Stop docking')	#Log info for ROS network
 
 	if(DockState == DK_DOCKED):	#If the robot is docked
-		return True				#Return True
-	else:						#If the robot is not docked
-		return False			#Return False
+		return True		#Return True
+	else:				#If the robot is not docked
+		return False		#Return False
 
 def sat(value, minimum, maximum):	#Saturation function
-	if(value < minimum):			#If the value is under the minimum
-		return minimum				#Set minimum
-	elif(value > maximum):			#If the value is over the maximum
-		return maximum				#Set maximum
-	return value					#Stay the same
+	if(value < minimum):		#If the value is under the minimum
+		return minimum		#Set minimum
+	elif(value > maximum):		#If the value is over the maximum
+		return maximum		#Set maximum
+	return value			#Stay the same
 
 #################
 # Send Funtions #
@@ -251,9 +248,8 @@ def receive_position(data):		#Receive RobAIR position in
 
 def receive_battery_level(data):	#Receive battery level information
 
-	if(DockState == DK_NOTDOCKED and data.data < 15):	#If we are not docked and low battery level	
-		#send_dockstate(DK_WANTTODOCK)			#Send a dock request
-		pass
+	if(DockState == DK_NOTDOCKED and data.data < 20):	#If we are not docked and low battery level	
+		send_dockstate(DK_WANTTODOCK)			#Send a dock request
 
 def receive_dockstate(data):		#Receive dock state
 	global DockState		#Use the global DockState and motors_cmd
@@ -285,7 +281,7 @@ if __name__ == '__main__':	#If the file is executed for the first time
 	
 	try:
 		rospy.init_node('dock_active', anonymous=True)	#Initialise the node
-		rate = rospy.Rate(10)		#Rate set to 10Hz
+		rate = rospy.Rate(10)				#Rate set to 10Hz
 
 		rospy.loginfo('Node "dock_active" initialized')		#Log info for computer only
 		pub_log.publish('Node "dock_active" initialized')	#Log info for ROS network
