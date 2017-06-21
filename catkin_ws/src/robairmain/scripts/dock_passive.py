@@ -153,7 +153,7 @@ def GetPose(cap):	#Get RobAIR position in screen coordinate
 		tvec = tvec[0][0]   		#Get the translation vector in meters
 		rvec = rvec[0][0]   		#Get the rotation vector in radians
 		rmat = cv2.Rodrigues(rvec)[0]	#Get the rotation matrix in radians	
-		tvec = np.linalg.inv(tvec)	#Get the camera position in the marker coordinate system
+		rmat = np.linalg.inv(rmat)*tvec	#Get the camera position in the marker coordinate system
 
 		camera_pos.orientation.y = atan2(-rmat[2][0],sqrt(rmat[2][1]**2 + rmat[2][2]**2))	#Get the y marker orientation (in radians)
 	
