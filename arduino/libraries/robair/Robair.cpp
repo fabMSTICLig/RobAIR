@@ -42,6 +42,8 @@ void Robair::cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK
   {
     cmd_msg_speedL = command_msg.speedL;
     cmd_msg_speedR = command_msg.speedR;
+    log(String("cmd_msg_speedL : " + (int)cmd_msg_speedL));
+    log(String("cmd_msg_speedR : " + (int)cmd_msg_speedR));
   }
 }
 
@@ -215,16 +217,14 @@ void Robair::log(String str)
 //////////////////////////////ARDUINO////////////////
 void Robair::begin()
 {
-
-  pinMode(PIN_RMD49,OUTPUT);
-  digitalWrite(PIN_RMD49,HIGH);
+	pinMode(PIN_RMD49,OUTPUT);
+	digitalWrite(PIN_RMD49,HIGH);
 
 	eyes.begin();
 
 	pinMode(PIN_RMD49,OUTPUT);
 	md49.init(9600);
-  powerMD49(true);
-
+  	powerMD49(true);
 
 	servoHead.attach(PIN_HEAD);
 	servoHead.write(90);
@@ -233,16 +233,15 @@ void Robair::begin()
 
 	eyes.setMatrice(EYESSTRAIGHT);
 
-  bumperFront=false;
-  bumperRear=false;
-  papBumperFront.init(float(analogRead(PIN_BUMPER_FRONT))/ONEK);
-  papBumperRear.init(float(analogRead(PIN_BUMPER_REAR))/ONEK);
+	bumperFront=false;
+	bumperRear=false;
+	papBumperFront.init(float(analogRead(PIN_BUMPER_FRONT))/ONEK);
+	papBumperRear.init(float(analogRead(PIN_BUMPER_REAR))/ONEK);
 
-
-  touchLeft=false;
-  touchLeft=false;
-  papTouchLeft.init(float(analogRead(PIN_TOUCH_LEFT))/ONEK);
-  papTouchRight.init(float(analogRead(PIN_TOUCH_RIGHT))/ONEK);
+	touchLeft=false;
+	touchLeft=false;
+	papTouchLeft.init(float(analogRead(PIN_TOUCH_LEFT))/ONEK);
+	papTouchRight.init(float(analogRead(PIN_TOUCH_RIGHT))/ONEK);
 
 	nh.subscribe(sub_cmdmotor);
 	nh.advertise(log_pub);
@@ -260,15 +259,14 @@ void Robair::begin()
 	nh.subscribe(sub_loadParams);
 	nh.spinOnce();
 
-
-  int ibuff;
-  nh.getParam("/bumpFTresh", &bumperFTresh);
-  nh.getParam("/bumpRTresh", &bumperRTresh);
-  nh.getParam("/touchLTresh", &touchLeftTresh);
-  nh.getParam("/touchRTresh", &touchRightTresh);
-  nh.getParam("/coefSmoothness", &coef_smoothness);
-  nh.getParam("/aruDelay", &ibuff);
-  timeoutARUDelay=ibuff;
+	int ibuff;
+	nh.getParam("/bumpFTresh", &bumperFTresh);
+	nh.getParam("/bumpRTresh", &bumperRTresh);
+	nh.getParam("/touchLTresh", &touchLeftTresh);
+	nh.getParam("/touchRTresh", &touchRightTresh);
+	nh.getParam("/coefSmoothness", &coef_smoothness);
+	nh.getParam("/aruDelay", &ibuff);
+	timeoutARUDelay=ibuff;
 
 }
 void Robair::spinOnce()
