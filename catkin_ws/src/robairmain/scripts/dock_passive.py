@@ -46,7 +46,6 @@ DK_NOTDOCKED = 0	#Not docked state
 DK_WANTTODOCK = 1	#Want to dock state
 DK_SEEN = 2		#Seen state
 DK_NOTSEEN = 3		#Not seen state
-DK_INPROGRESS
 DK_DOCKED = 4		#Docked state
 
 dock_distance = 1	#The distance where the robot is too close to send a dock request
