@@ -258,9 +258,13 @@ def receive_dockstate(data):		#Receive dock state
 	global DockState		#Use the global DockState and motors_cmd
 
 	if (data.data == DK_WANTTODOCK):	#If the robot want to dock
+
 		if(DockState == DK_NOTDOCKED):	#If the robot is not docked
 			DockState = data.data	#Get the dock state
 			start_docking()		#Start docking
+
+		else:
+			send_dockstate(DK_NOTDOCKED)	#Stop docking
 	else:
 		DockState = data.data		#Get the dock state
 
