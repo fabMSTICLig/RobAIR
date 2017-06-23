@@ -23,6 +23,8 @@ from robairmain.msg import MotorsInfo
 # Robot Constants #
 ###################
 
+MarkerWidth = 0.08      #Marker width in meters
+
 wheel_diameter = 125 		#Wheels diameter in mm
 wheels_distance = 400		#The distance between the tow wheels in mm
 camera_center_distance = 0.185 	#The distance between the centre en the marker in m
@@ -48,8 +50,9 @@ DK_SEEN = 2		#Seen state
 DK_NOTSEEN = 3		#Not seen state
 DK_DOCKED = 4		#Docked state
 
-dock_distance = 1	#The distance where the robot is too close to send a dock request
-MarkerWidth = 0.08      #Marker width in meters
+dock_distance = 1	#The distance where the robot is too close to dock
+
+dock_ID = 2		#The dock ID
 
 #Both are used to get the marker position in the camera coordinate system
 mtx = np.array([[635.35746725, 0, 330.33237895], [ 0, 636.86233192, 229.39423206], [0, 0, 1]])	#This is the camera callibration matrix 
@@ -146,12 +149,24 @@ def GetPose(cap):	#Get RobAIR position in screen coordinate
    	gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)	#Transform into grey scale image
 	corners, ids, rejectedImgPoints = aruco.detectMarkers(gray_image, aruco_dict, parameters=parameters)		#Detect markers on the picture and save IDs and cornes beloning to each ID
 	
-	if(isinstance(ids,np.ndarray)):		#If marker detected
-		
+	if(isinstance(ids,np.ndarray)):			#If marker detected
+	
+		if(dock_ID in ids):			#If the base ID is detected
+			index = ids.index(dock_ID)	#Find the index
+			print(ids)
+			print(rvec)
+			print(tvec)
+			print("")
+			print(index)
+			print("")
+			print(ids[index])
+			print(rvec[index])
+			print(tvec[index])
+	
 		rvec, tvec = aruco.estimatePoseSingleMarkers(corners, MarkerWidth, mtx, disp)[0:2]	#Get the translation and rotation vector
 		tvec = tvec[0][0]   		#Get the translation vector in meters
-		rvec = rvec[0][0]   		#Get the rotation vector in radians
-		rmat = cv2.Rodrigues(rvec)[0]	#Get the rotation matrix in radians	
+		rvec = rvec[0][0]   		#Get the rotation vector
+		rmat = cv2.Rodrigues(rvec)[0]	#Get the rotation matrix	
 		rmat = np.linalg.inv(rmat)*tvec	#Get the camera position in the marker coordinate system
 
 		camera_pos.orientation.y = atan2(-rmat[2][0],sqrt(rmat[2][1]**2 + rmat[2][2]**2))	#Get the y marker orientation (in radians)
