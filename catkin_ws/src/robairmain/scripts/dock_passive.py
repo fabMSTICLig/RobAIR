@@ -271,9 +271,12 @@ def start_docking_robair():	#Start docking function (robair part)
 			elif(DockState == DK_NOTSEEN):	#If the robot is not seen
 				count+=1		#Incrementation
 
-				if(count == 20):	#If the robot is not seen since 2 sec
+				if(count == 20):	#If the robot is not seen from 2 sec
 					motors_cmd.linear.x = 0		#Stop
 					motors_cmd.angular.z = 0	#Stop
+
+				if(count >= 120):	#If the robot is not seen from 12 sec
+					send_dockstate(DK_NOTDOCKED)	#Abort docking
 
 			send_cmd_vel(motors_cmd)	#Send the command
 
