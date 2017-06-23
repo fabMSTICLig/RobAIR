@@ -19,6 +19,7 @@ from geometry_msgs.msg import Pose
 ###################
 			
 MarkerWidth = 0.08             	#Marker width in meters
+robot_ID = 0
 
 ##################
 # Dock Constants #
@@ -32,7 +33,7 @@ DK_DOCKED = 4		#Docked state
 
 
 #For a RaspberryPi camera v2.1
-mtx =  np.array([[505.62638698, 0, 326.44665333], [0, 506.57448647, 228.39570037],[0, 0, 1]])	#Camera matrix
+mtx =  np.array([[505.62638698, 0, 326.44665333], [0, 506.57448647, 228.39570037],[0, 0, 1]])		#Camera matrix
 disp = np.array([1.55319525e-01, 4.30522297e-02, -2.08579382e-04, -3.47100297e-03, -1.37788831e+00])	#Distortion matrix
 
 aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)	#Declare the markers dictionnary
@@ -59,10 +60,22 @@ def GetPose(cap):		#Get RobAIR position in screen coordinate
 	
 	if(isinstance(ids,np.ndarray)):		#If marker detected
 		
+		if(dock_ID in ids):			#If the base ID is detected
+			index = ids.index(dock_ID)	#Find the index
+			print(ids)
+			print(rvec)
+			print(tvec)
+			print("")
+			print(index)
+			print("")
+			print(ids[index])
+			print(rvec[index])
+			print(tvec[index])
+
 		rvec, tvec = aruco.estimatePoseSingleMarkers(corners, MarkerWidth, mtx, disp)[0:2]	#Get the translation and rotation vector
 		tvec = tvec[0][0]   			#Get the translation vector in meters
-		rvec = rvec[0][0]   			#Get the rotation vector in radians
-		rmat = cv2.Rodrigues(rvec)[0]		#Get the rotation matrix in radians
+		rvec = rvec[0][0]   			#Get the rotation vector
+		rmat = cv2.Rodrigues(rvec)[0]		#Get the rotation matrix
 				
 		marker_pos.orientation.y = -atan2(-rmat[2][0],sqrt(rmat[2][1]**2 + rmat[2][2]**2))	#Get the y marker orientation (in radians)
 		marker_pos.position.x = tvec[0]	#Get the x marker position (in meters)
