@@ -152,32 +152,25 @@ def GetPose(cap):	#Get RobAIR position in screen coordinate
 	if(isinstance(ids,np.ndarray)):			#If marker detected
 	
 		if(dock_ID in ids):			#If the base ID is detected
-			index = ids.index(dock_ID)	#Find the index
-			print(ids)
-			print(rvec)
-			print(tvec)
-			print("")
-			print(index)
-			print("")
-			print(ids[index])
-			print(rvec[index])
-			print(tvec[index])
+			rvec, tvec = aruco.estimatePoseSingleMarkers(corners, MarkerWidth, mtx, disp)[0:2]	#Get the translation and rotation vector
+		
+			index = np.where(ids == dock_ID)[0][0]	#Get the robot index
+
+			tvec = tvec[index][0]   		#Get the translation vector in meters
+			rvec = rvec[index][0]   		#Get the rotation vector
 	
-		rvec, tvec = aruco.estimatePoseSingleMarkers(corners, MarkerWidth, mtx, disp)[0:2]	#Get the translation and rotation vector
-		tvec = tvec[0][0]   		#Get the translation vector in meters
-		rvec = rvec[0][0]   		#Get the rotation vector
-		rmat = cv2.Rodrigues(rvec)[0]	#Get the rotation matrix	
-		rmat = np.linalg.inv(rmat)*tvec	#Get the camera position in the marker coordinate system
+			rmat = cv2.Rodrigues(rvec)[0]	#Get the rotation matrix	
+			rmat = np.linalg.inv(rmat)*tvec	#Get the camera position in the marker coordinate system
 
-		camera_pos.orientation.y = atan2(-rmat[2][0],sqrt(rmat[2][1]**2 + rmat[2][2]**2))	#Get the y marker orientation (in radians)
+			camera_pos.orientation.y = atan2(-rmat[2][0],sqrt(rmat[2][1]**2 + rmat[2][2]**2))	#Get the y marker orientation (in radians)
 	
-		camera_pos.position.x = tvec[0]	#Get the x marker position (in meters)
-		camera_pos.position.z = tvec[2]	#Get the z marker position (in meters)
+			camera_pos.position.x = tvec[0]	#Get the x marker position (in meters)
+			camera_pos.position.z = tvec[2]	#Get the z marker position (in meters)
 
-		robair_pos.position.x = camera_pos.position.x + sin(camera_pos.orientation.y)*camera_center_distance	#Get the x robair position (in meters)
-		robair_pos.position.z = camera_pos.position.z + cos(camera_pos.orientation.y)*camera_center_distance	#Get the z robair position (in meters)
+			robair_pos.position.x = camera_pos.position.x + sin(camera_pos.orientation.y)*camera_center_distance	#Get the x robair position (in meters)
+			robair_pos.position.z = camera_pos.position.z + cos(camera_pos.orientation.y)*camera_center_distance	#Get the z robair position (in meters)
 
-		return True		#Return true because a marker have been detected
+			return True		#Return true because a marker have been detected
 
 	else:
 		return False		#Return false because no marker detected
@@ -335,13 +328,10 @@ def receive_dockstate(data):		#Receive dock state
 	global DockState		#Use the global DockState and motors_cmd
 
 	if (data.data == DK_WANTTODOCK):	#If the robot want to dock
-
 		if(DockState == DK_NOTDOCKED):	#If the robot is not docked
 			DockState = data.data	#Set the dock state
 			start_docking_camera()	#Start the docking algorithme for the camera
 
-		else:
-			send_dockstate(DK_NOTDOCKED)	#Stop docking
 	else:
 		DockState = data.data		#Get the dock state
 

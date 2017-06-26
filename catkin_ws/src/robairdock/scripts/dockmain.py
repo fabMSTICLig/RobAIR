@@ -60,28 +60,22 @@ def GetPose(cap):		#Get RobAIR position in screen coordinate
 	
 	if(isinstance(ids,np.ndarray)):		#If marker detected
 		
-		if(dock_ID in ids):			#If the base ID is detected
-			index = ids.index(dock_ID)	#Find the index
-			print(ids)
-			print(rvec)
-			print(tvec)
-			print("")
-			print(index)
-			print("")
-			print(ids[index])
-			print(rvec[index])
-			print(tvec[index])
+		if(robot_ID in ids):			#If the base ID is detected
 
-		rvec, tvec = aruco.estimatePoseSingleMarkers(corners, MarkerWidth, mtx, disp)[0:2]	#Get the translation and rotation vector
-		tvec = tvec[0][0]   			#Get the translation vector in meters
-		rvec = rvec[0][0]   			#Get the rotation vector
-		rmat = cv2.Rodrigues(rvec)[0]		#Get the rotation matrix
+			rvec, tvec = aruco.estimatePoseSingleMarkers(corners, MarkerWidth, mtx, disp)[0:2]	#Get the translation and rotation vector
+
+			index = np.where(ids == robot_ID)[0][0]	#Get the robot index
+
+			tvec = tvec[index][0]   		#Get the translation vector in meters
+			rvec = rvec[index][0]   		#Get the rotation vector
+
+			rmat = cv2.Rodrigues(rvec)[0]		#Get the rotation matrix
 				
-		marker_pos.orientation.y = -atan2(-rmat[2][0],sqrt(rmat[2][1]**2 + rmat[2][2]**2))	#Get the y marker orientation (in radians)
-		marker_pos.position.x = tvec[0]	#Get the x marker position (in meters)
-		marker_pos.position.z = tvec[2]	#Get the z marker position (in meters)
+			marker_pos.orientation.y = -atan2(-rmat[2][0],sqrt(rmat[2][1]**2 + rmat[2][2]**2))	#Get the y marker orientation (in radians)
+			marker_pos.position.x = tvec[0]	#Get the x marker position (in meters)
+			marker_pos.position.z = tvec[2]	#Get the z marker position (in meters)
 
-		return True		#Return true because a marker have been detected
+			return True		#Return true because a marker have been detected
 
 	else:	#If no marker detected
 		return False		#Return false because no marker detected
