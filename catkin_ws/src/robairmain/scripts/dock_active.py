@@ -67,61 +67,46 @@ def turn(angle):	#Turn over himself (angle in degrees)(- clockwise)(+ anti-clock
 
 	motors_start = motors_info	#Get the initial motors informations
 	motors_cmd.linear.x = 0		#Reset the linear command
-	error = angle*robot_perimeter*encoder_resolution/360 - ((motors_info.countR - motors_start.countR) - (motors_info.countL - motors_start.countL))/2	#Get the error between the reference and the system
 
-	while(error < (-wheel_incrementation/100) or (wheel_incrementation/100) < error) and (DockState != DK_NOTDOCKED):	#While the error is too big and the robot stay in the same dock state
+	while(DockState != DK_NOTDOCKED):	#While the error is too big and the robot stay in the same dock state
 		
 		rate.sleep()	#Wait for the next sampling
-		error = angle*robot_perimeter*encoder_resolution/360 - ((motors_info.countR - motors_start.countR) - (motors_info.countL - motors_start.countL))/2	#Get the error between the reference and the system
+		
+		system_angle = ((motors_info.countR - motors_start.countR) - (motors_info.countL - motors_start.countL))*180/robot_perimeter/encoder_resolution
+		error_angle = angle - system_angle	#Get the error between the reference and the system
+		motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/90,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)
 
-		if(wheel_incrementation/4 < error):			#If big error and positive
-			motors_cmd.angular.z = FAST_ANGLE_SPEED		#Turn anti-clockwise
-		elif(error < -wheel_incrementation/4):			#If big error and negative
-			motors_cmd.angular.z = -FAST_ANGLE_SPEED	#Turn clockwise
-		elif(0 < error and error < wheel_incrementation/4):	#If small error and positive
-			motors_cmd.angular.z = SLOW_ANGLE_SPEED		#Turn anti-clockwise
-		elif(-wheel_incrementation/4 < error and error < 0):	#If small error and negative
-			motors_cmd.angular.z = -SLOW_ANGLE_SPEED	#Turn clockwise
+		if(-5 < error_angle and error_angle < 5):
+			return True
 
-		send_cmd_vel(motors_cmd)	#Send the command
+		else:
+			send_cmd_vel(motors_cmd)	#Send the command
 
-	motors_cmd.angular.z = 0		#Reset the command
-
-	if (DockState == DK_NOTDOCKED):	#If the operation have been cancel
-		return False		#Return False
-	else:
-		return True		#Return True
+	return False		#Return False
 
 def move(distance):	#Move stright (distance in meters)(- backward)(+ forward)
 	global motors_cmd, DockState		#Use the global motors_cmd
 	distance = distance * 1000	#Get the distance in mm
-	motors_cmd.angular.z = 0	#Reset the angular command
 	
 	motors_start = motors_info		#Get the initial motors informations
-	error = (distance*encoder_resolution) - ((motors_info.countR - motors_start.countR) + (motors_info.countL - motors_start.countL))/2	#Get the error between the reference and the system
+	motors_cmd.angular.z = 0	#Reset the angular command
 
-	while((error < (-wheel_incrementation/50)) or ((wheel_incrementation/50) < error)) and (DockState != DK_NOTDOCKED and DockState != DK_DOCKED):	#While the error is too big and the robot stay in the same dock state
+	while(DockState != DK_NOTDOCKED):	#While the error is too big and the robot stay in the same dock state
 		
 		rate.sleep()	#Wait for the next sampling
-		error = (distance*encoder_resolution) - ((motors_info.countR - motors_start.countR) + (motors_info.countL - motors_start.countL))/2	#Get the error between the reference and the system
-		
-		if(wheel_incrementation < error):			#If big error and positive
-			motors_cmd.linear.x = FAST_DISTANCE_SPEED	#Move forward
-		elif(error < -wheel_incrementation):			#If big error and negative
-			motors_cmd.linear.x = -FAST_DISTANCE_SPEED	#Move backward
-		elif(0 < error and error < wheel_incrementation):	#If small error and positive
-			motors_cmd.linear.x = SLOW_DISTANCE_SPEED	#Move forward
-		elif(-wheel_incrementation < error and error < 0):	#If small error and negative
-			motors_cmd.linear.x = -SLOW_DISTANCE_SPEED	#Move backward
-		
-		send_cmd_vel(motors_cmd)	#Send the command
 
-	motors_cmd.linear.x = 0			#Reset the command
+		system_distance = ((motors_info.countR - motors_start.countR) + (motors_info.countL - motors_start.countL))/2/encoder_resolution
+		error_distance = distance - system_distance 	#Get the error between the reference and the system
+		motors_cmd.linear.x = sat(error_distance*FAST_DISTANCE_SPEED/1000,-FAST_DISTANCE_SPEED,FAST_DISTANCE_SPEED)	#Move backward
+		
+		pub_log.publish("error_distance = " + str(error_distance))
 
-	if (DockState == DK_NOTDOCKED):	#If the operation have been cancel
-		return False		#Return False
-	else:
-		return True		#Return True
+		if(-10 < error_distance and error_distance < 10):
+			return True
+		else:
+			send_cmd_vel(motors_cmd)	#Send the command
+
+	return False		#Return False
 
 
 def start_docking():	#Start docking function
