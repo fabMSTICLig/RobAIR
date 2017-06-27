@@ -73,6 +73,9 @@ motors_cmd = Twist()		#RobAIR motors command
 
 DockState = 0			#Actual RobAIR state for docking
 
+Last_Batt_Level = 255
+Last_ROBAIR_Start_Docking_Command = "NONE"
+
 ##################
 # MOVES Funtions #
 ##################
@@ -134,12 +137,13 @@ def GetPose(cap):	#Get RobAIR position in screen coordinate
    	gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)	#Transform into grey scale image
 	corners, ids, rejectedImgPoints = aruco.detectMarkers(gray_image, aruco_dict, parameters=parameters)		#Detect markers on the picture and save IDs and cornes beloning to each ID
 	
-	if(isinstance(ids,np.ndarray)):			#If marker detected
+	if(isinstance(ids,np.ndarray)):		#If marker detected
 	
-		if(dock_ID in ids):			#If the base ID is detected
+		if(dock_ID in ids):				#If the base ID is detected
+
 			rvec, tvec = aruco.estimatePoseSingleMarkers(corners, MarkerWidth, mtx, disp)[0:2]	#Get the translation and rotation vector
 		
-			index = np.where(ids == dock_ID)[0][0]	#Get the robot index
+			index = np.where(ids == robot_ID)[0][0]	#Get the robot index
 
 			tvec = tvec[index][0]   		#Get the translation vector in meters
 			rvec = rvec[index][0]   		#Get the rotation vector
@@ -176,7 +180,7 @@ def start_docking_camera():	#Start docking function (camera part)
 		rate.sleep()			#Wait for the next sampling
 
 		if(GetPose(cap) == True):	#If the marker is detected
-			State = DK_SEEN		#The next state will be DK_SEEN
+			State = DK_SEEN			#The next state will be DK_SEEN
 
 		else:
 			State = DK_NOTSEEN	#The next state will be DK_NOTSEEN
@@ -305,9 +309,20 @@ def receive_motors_info(data):	#Receive motors informations
 	motors_info = data		#Get motors info
 
 def receive_battery_level(data):	#Receive battery level information
+	global Last_Batt_Level
+
+	if(Last_Batt_Level != data.data):
+		
+		Last_Batt_Level = data.data
+
+		test = KeyValue()
+		test.key = "ROBAIR_Batt_Level"
+		test.value = str(data.data)
+		pub_iot.publish(test)
 
 	if(DockState == DK_NOTDOCKED and data.data < 20):	#If we are not docked and low battery level	
-		send_dockstate(DK_WANTTODOCK)			#Send a dock request
+		#send_dockstate(DK_WANTTODOCK)			#Send a dock request
+		pass
 
 def receive_dockstate(data):		#Receive dock state
 	global DockState		#Use the global DockState and motors_cmd
@@ -320,6 +335,19 @@ def receive_dockstate(data):		#Receive dock state
 	else:
 		DockState = data.data		#Get the dock state
 
+def receive_iot_updates(data):
+	global Last_ROBAIR_Start_Docking_Command
+
+	if(data.key == "ROBAIR_Start_Docking" and Last_ROBAIR_Start_Docking_Command != data.value):
+
+		Last_ROBAIR_Start_Docking_Command = data.value
+
+		if(data.value == "ON"):				#If receive ON
+			send_dockstate(DK_WANTTODOCK)	#Send a dock request
+			
+		elif(data.value == "OFF"):			#If receive OFF
+			send_dockstate(DK_NOTDOCKED)	#Cancel docking operation
+
 ############################
 # Subscribers & Publishers #
 ############################
@@ -327,6 +355,8 @@ def receive_dockstate(data):		#Receive dock state
 rospy.Subscriber("motors_info",MotorsInfo,receive_motors_info)	#Subscribe to "motors_info" topic
 rospy.Subscriber("battery_level",Int32,receive_battery_level)	#Subscribe to "motors_info" topic
 rospy.Subscriber("dockstate",Byte,receive_dockstate)		#Subscribe to "dockstate" topic
+rospy.Subscriber("iot_updates",KeyValue,receive_iot_updates)		#Subscribe to "iot_updates" topic
+pub_iot = rospy.Publisher('iot_command',KeyValue, queue_size=10)	#"dockstate" iot_command topic
 pub_dock = rospy.Publisher('dockstate',Byte, queue_size=10)	#"dockstate" topic object
 pub_vel = rospy.Publisher('cmd_vel',Twist, queue_size=10)	#"cmd_vel" topic object
 pub_log = rospy.Publisher('log',String, queue_size=10)		#"log" topic object

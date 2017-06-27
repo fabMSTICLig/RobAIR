@@ -13,7 +13,10 @@ from std_msgs.msg import Int32
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Pose
 
+from diagnostic_msgs.msg import KeyValue
+
 from robairmain.msg import MotorsInfo
+
 
 ###################
 # Robot Constants #
@@ -54,9 +57,12 @@ dock_distance = 2*center_electrodes_distance	#The distance where the robot is to
 motors_info = MotorsInfo()	#RobAIR motors informations
 marker_pos = Pose()		#Marker position in the camera coordinate system
 robair_pos = Pose()		#RobAIR position in the camera coordinate system
-motors_cmd = Twist()		#RobAIR motors command
+motors_cmd = Twist()	#RobAIR motors command
 
 DockState = 0			#Actual RobAIR state for docking
+
+Last_Batt_Level = 255
+Last_ROBAIR_Start_Docking_Command = "NONE"
 
 ##################
 # MOVES Funtions #
@@ -108,7 +114,6 @@ def move(distance):	#Move stright (distance in meters)(- backward)(+ forward)
 
 	return False		#Return False
 
-
 def start_docking():	#Start docking function
 	
 	pub_log.publish('Start docking')	#Log info for ROS network
@@ -158,13 +163,15 @@ def start_docking():	#Start docking function
 			sat_angle = sat(3 - marker_pos.position.z*2,0.5235,1)	#Get the sat angle
 			gain = sat(7 - marker_pos.position.z*2,1,5)		#Get the gain
 			target_angle = -sat(marker_pos.position.x * gain, -sat_angle, sat_angle)	#Get the target angle
+
 			error_angle = target_angle - robair_pos.orientation.y	#Get the error
 
-			motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/2 + marker_pos.position.z*SLOW_DISTANCE_SPEED/2,0,SLOW_DISTANCE_SPEED)	#Linear enslavement
+			#motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/2 + marker_pos.position.z*SLOW_DISTANCE_SPEED/2,0,SLOW_DISTANCE_SPEED)	#Linear enslavement
+			motors_cmd.linear.x = sat(error_angle*SLOW_DISTANCE_SPEED/0.3490,0,SLOW_DISTANCE_SPEED)-SLOW_DISTANCE_SPEED	#Linear enslavement
 			motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.52,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)			#Angular enslavement
 
 		elif(DockState == DK_NOTSEEN):	#If the robot is not seen
-			count+=1		#Incrementation
+			count+=1					#Incrementation
 
 			if(count >= 20):	#If the robot is not seen from 2 sec
 				motors_cmd.linear.x = 0		#Stop
@@ -235,19 +242,44 @@ def receive_position(data):		#Receive RobAIR position in
 	robair_pos.orientation.y = marker_pos.orientation.y	#Get the y robair orientation
 
 def receive_battery_level(data):	#Receive battery level information
+	global Last_Batt_Level
+
+	if(Last_Batt_Level != data.data):
+		
+		Last_Batt_Level = data.data
+
+		test = KeyValue()
+		test.key = "ROBAIR_Batt_Level"
+		test.value = str(data.data)
+		pub_iot.publish(test)
 
 	if(DockState == DK_NOTDOCKED and data.data < 20):	#If we are not docked and low battery level	
-		send_dockstate(DK_WANTTODOCK)			#Send a dock request
+		#send_dockstate(DK_WANTTODOCK)			#Send a dock request
+		pass
 
-def receive_dockstate(data):		#Receive dock state
-	global DockState		#Use the global DockState and motors_cmd
+def receive_dockstate(data):	#Receive dock state
+	global DockState			#Use the global DockState and motors_cmd
 
 	if (data.data == DK_WANTTODOCK):	#If the robot want to dock
 		if(DockState == DK_NOTDOCKED):	#If the robot is not docked
-			DockState = data.data	#Get the dock state
-			start_docking()		#Start docking
+			DockState = data.data		#Get the dock state
+			start_docking()				#Start docking
+
 	else:
 		DockState = data.data		#Get the dock state
+
+def receive_iot_updates(data):
+	global Last_ROBAIR_Start_Docking_Command
+
+	if(data.key == "ROBAIR_Start_Docking" and Last_ROBAIR_Start_Docking_Command != data.value):
+
+		Last_ROBAIR_Start_Docking_Command = data.value
+
+		if(data.value == "ON"):				#If receive ON
+			send_dockstate(DK_WANTTODOCK)	#Send a dock request
+			
+		elif(data.value == "OFF"):			#If receive OFF
+			send_dockstate(DK_NOTDOCKED)	#Cancel docking operation
 
 ############################
 # Subscribers & Publishers #
@@ -257,9 +289,11 @@ rospy.Subscriber("motors_info",MotorsInfo,receive_motors_info)	#Subscribe to "mo
 rospy.Subscriber("battery_level",Int32,receive_battery_level)	#Subscribe to "motors_info" topic
 rospy.Subscriber("position",Pose,receive_position)		#Subscribe to "position" topic
 rospy.Subscriber("dockstate",Byte,receive_dockstate)		#Subscribe to "dockstate" topic
-pub_dock = rospy.Publisher('dockstate',Byte, queue_size=10)	#"dockstate" topic object
-pub_vel = rospy.Publisher('cmd_vel',Twist, queue_size=10)	#"cmd_vel" topic object
-pub_log = rospy.Publisher('log',String, queue_size=10)		#"log" topic object
+rospy.Subscriber("iot_updates",KeyValue,receive_iot_updates)		#Subscribe to "iot_updates" topic
+pub_iot = rospy.Publisher('iot_command',KeyValue, queue_size=10)	#"dockstate" iot_command topic
+pub_dock = rospy.Publisher('dockstate',Byte, queue_size=10)	#"dockstate" topic topic
+pub_vel = rospy.Publisher('cmd_vel',Twist, queue_size=10)	#"cmd_vel" topic topic
+pub_log = rospy.Publisher('log',String, queue_size=10)		#"log" topic topic
 
 ########
 # MAIN #
@@ -270,8 +304,6 @@ if __name__ == '__main__':	#If the file is executed for the first time
 	try:
 		rospy.init_node('dock_active', anonymous=True)	#Initialise the node
 		rate = rospy.Rate(10)				#Rate set to 10Hz
-
-		rospy.loginfo('Node "dock_active" initialized')		#Log info for computer only
 		pub_log.publish('Node "dock_active" initialized')	#Log info for ROS network
 
 		rospy.spin()						#Wait for an event
