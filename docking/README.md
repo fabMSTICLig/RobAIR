@@ -47,6 +47,8 @@ export ROS_MASTER_URI = http://[adresse ip de RobAIR]:11311
 rosrun robairdock dockmain.py
 ```
 
+- Redémarrer le RaspberryPi.
+
 ###### Depuis le RaspberryPi de RobAIR :**
 
 - Adapter les constantes à votre RobAIR en modifiant le fichier `dock_active.py` qui se trouve dans `RobAIR/catkin_ws/src/robairmain/scripts/`.
@@ -54,6 +56,11 @@ rosrun robairdock dockmain.py
 - Executer la commande suivante pour passer en mode actif :
 ```
 $ robair dockmode active
+```
+
+- Redémarrer RobAIR :
+```
+$ robair restart
 ```
 
 ## Installation Docking Passif
@@ -71,9 +78,14 @@ Installer sur le RaspberryPi de RobAIR :
 
 - Adapter les constantes à votre RobAIR en modifiant le fichier `dock_passive.py` qui se trouve dans `RobAIR/catkin_ws/src/robairmain/scripts/`.
 
-- Executer la commande suivante pour passer en mode actif :
+- Executer la commande suivante pour passer en mode passif :
 ```
 $ robair dockmode passive
+```
+
+- Redémarrer RobAIR :
+```
+$ robair restart
 ```
 
 *Note : Le paquet ROS `robairdock` n'est pas utilisé.*
@@ -81,6 +93,8 @@ $ robair dockmode passive
 ## Utilisation
 
 ### Docking
+
+Les noeuds sont éxecutés à chaque démarrage de RobAIR. Vous pouvez aussi utiliser la commande `robair start`.
 
 Pour docker RobAIR indépendement de la solution choisie, il suffit de publier un `1` sur le topic `dockstate`. Si RobAIR est incapable de se docker, il repassera en état `0` de lui même.
 La procédure de docking peut-être annulée à tout moment en publiant un `0` sur le topic `dockstate`.
