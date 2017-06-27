@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+  <name>iot_bridge</name>
+  <version>0.9.0</version>
+  <description>The iot_bridge provides a bi-directional bridge between ROS and the OpenHAB Home Automation system. This allows a ROS robot to connect to a vast variety of IoT devices such as motion detectors, Z-Wave devices, lighting, door locks, etc. </description>
+
+  <maintainer email="corb@aol.com">mike</maintainer>
+  <maintainer email="iisaito@kinugarage.com">Isaac I. Y. Saito</maintainer>
+  <license>BSD</license>
+  <url type="website">http://wiki.ros.org/iot_bridge</url> 
+  <url type="repository">https://github.com/corb555/iot_bridge</url>
+  <url type="bugtracker">https://github.com/corb555/iot_bridge/issues</url>
+  <author email="corb@aol.com">M Herbert</author> 
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>diagnostic_msgs</build_depend>
+  <build_depend>python-catkin-pkg</build_depend>
+  <run_depend>diagnostic_msgs</run_depend>
+  <run_depend>python-requests</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>rostopic</run_depend>
+  <test_depend>rostest</test_depend>
+
+  <export>
+    <rosdoc config="rosdoc.yaml"/>  
+  </export>
+</package>

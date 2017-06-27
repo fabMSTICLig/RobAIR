@@ -1,0 +1,7 @@
+<launch>
+  <arg name="configfile" default="$(find iot_bridge)/config/items.yaml" />
+  
+  <node name="iot" pkg="iot_bridge" type="iot_bridge" output="screen">
+    <rosparam file="$(arg configfile)" command="load" />
+  </node>
+</launch>
