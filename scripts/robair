@@ -15,6 +15,9 @@ startme() {
   if [ ! -f $ROBAIR_HOME/interface/config.json ]; then
     cp $ROBAIR_HOME/interface/config.json.default $ROBAIR_HOME/interface/config.json
   fi
+
+  export ROS_IP=$ROBAIR_IP
+
   roslaunch robairmain robair.launch
 }
 
@@ -28,6 +31,20 @@ restart() {
   sleep 3
   startme
 }
+
+setdockmode() {
+	
+	if [ "$1" = "passive" ]; then
+		sed -i 's/dock_active/dock_passive/g' $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch
+	elif [ "$1" = "active" ]; then
+		sed -i 's/dock_passive/dock_active/g' $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch
+	else
+		echo "usage: $0 dockmode active|passive" >&2
+	fi
+
+}
+
+
 changeip() {
   if [ ! -z "$1" ]; then
   	export ROBAIR_IP=$1
@@ -80,13 +97,14 @@ update() {
 }
 
 case "$1" in
-    start)   startme ;;
-    stop)    stopme ;;
-    restart) restart ;;
-    update) update ;;
-    arduino) changearduino ;;
-    ip)     changeip $2 ;;
-    *) echo "usage: $0 start|stop|restart|update|ip" >&2
+    start)   	startme ;;
+    stop)    	stopme ;;
+    restart) 	restart ;;
+    update) 	update ;;
+    arduino) 	changearduino ;;
+    ip)     	changeip $2 ;;
+    dockmode)  	setdockmode $2 ;;
+    *) echo "usage: $0 start|stop|restart|update|ip|dockmode" >&2
        exit 1
        ;;
 esac
