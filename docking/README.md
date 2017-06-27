@@ -51,11 +51,9 @@ rosrun robairdock dockmain.py
 
 - Adapter les constantes à votre RobAIR en modifiant le fichier `dock_active.py` qui se trouve dans `RobAIR/catkin_ws/src/robairmain/scripts/`.
 
-- Ajouter à la fin du fichier `.bashrc` de RobAIR la ligne suivante :
-```bash
-export ROS_IP=[adresse ip de RobAIR]
-export ROS_MASTER_URI=http://localhost:11311
-rosrun robairmain dock_active.py
+- Executer la commande suivante pour passer en mode actif :
+```
+$ robair dockmode active
 ```
 
 ## Installation Docking Passif
@@ -73,9 +71,9 @@ Installer sur le RaspberryPi de RobAIR :
 
 - Adapter les constantes à votre RobAIR en modifiant le fichier `dock_passive.py` qui se trouve dans `RobAIR/catkin_ws/src/robairmain/scripts/`.
 
-- Ajouter à la fin du fichier `.bashrc` de RobAIR la ligne suivante :
-```bash
-rosrun robairmain dock_passive.py
+- Executer la commande suivante pour passer en mode actif :
+```
+$ robair dockmode passive
 ```
 
 *Note : Le paquet ROS `robairdock` n'est pas utilisé.*
