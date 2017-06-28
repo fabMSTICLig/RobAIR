@@ -1,5 +1,7 @@
 #include "Robair.h"
 
+#include <limits.h>
+
 #define ONEK 1024
 
 //TODO: use params instead
@@ -51,6 +53,7 @@ void Robair::cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK
     smooth = true;
     cmd_msg_speedL = command_msg.speedL;
     cmd_msg_speedR = command_msg.speedR;
+    last_cmdvel = ULONG_MAX - 500;
   }
 }
 
@@ -93,6 +96,8 @@ void Robair::cmdvelCb(const geometry_msgs::Twist& command_msg)
       cmd_msg_speedR = -100;
     else if(cmd_msg_speedR > 100)
       cmd_msg_speedR = 100;
+
+    last_cmdvel = millis();
   }
 }
 
@@ -104,7 +109,8 @@ void Robair::stop_motors(){
 void Robair::speed_control(){
   if(aru ||
       (cmd_msg_speedR > 0 && cmd_msg_speedL > 0 && bumperFront) ||
-      (cmd_msg_speedR < 0 && cmd_msg_speedL < 0 && bumperRear) ) {
+      (cmd_msg_speedR < 0 && cmd_msg_speedL < 0 && bumperRear) ||
+      last_cmdvel + 500 < millis() ) {
     cmd_speedL=0;
     cmd_speedR=0;
   } else if(smooth) {
