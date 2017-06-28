@@ -48,6 +48,7 @@ void Robair::cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK
 
   if(!aru)
   {
+    smooth = true;
     cmd_msg_speedL = command_msg.speedL;
     cmd_msg_speedR = command_msg.speedR;
   }
@@ -56,6 +57,8 @@ void Robair::cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK
 void Robair::cmdvelCb(const geometry_msgs::Twist& command_msg)
 {
   if(!aru) {
+    smooth = false;
+
     // Compute requested speed
 
     double angular_comp = command_msg.angular.z * (ENTRAX / 2.0);
@@ -99,20 +102,22 @@ void Robair::stop_motors(){
 }
 
 void Robair::speed_control(){
-	if(aru ||
-  (cmd_msg_speedR > 0 && cmd_msg_speedL > 0 && bumperFront) ||
-  (cmd_msg_speedR < 0 && cmd_msg_speedL < 0 && bumperRear) )
-	{
-		cmd_speedL=0;
-		cmd_speedR=0;
-	}
-	else
-	{
+  if(aru ||
+      (cmd_msg_speedR > 0 && cmd_msg_speedL > 0 && bumperFront) ||
+      (cmd_msg_speedR < 0 && cmd_msg_speedL < 0 && bumperRear) ) {
+    cmd_speedL=0;
+    cmd_speedR=0;
+  } else if(smooth) {
     //low filter for smooth acceleration
-    cmd_speedL =(int)( (float)(cmd_speedL)*coef_smoothness+(1.0-coef_smoothness)*(float)(cmd_msg_speedL));
-    cmd_speedR = (float)(cmd_speedR)*coef_smoothness+(1.0-coef_smoothness)*(float)(cmd_msg_speedR);
+    cmd_speedL = (float)(cmd_speedL) * coef_smoothness
+      + (1.0-coef_smoothness) * (float)(cmd_msg_speedL);
+    cmd_speedR = (float)(cmd_speedR)*coef_smoothness
+      + (1.0-coef_smoothness) * (float)(cmd_msg_speedR);
 
-	}
+  } else {
+    cmd_speedL = cmd_msg_speedL;
+    cmd_speedR = cmd_msg_speedR;
+  }
   md49.setSpeed1(map(cmd_speedR, -100, 100, -127, 127));
   md49.setSpeed2(map(cmd_speedL, -100, 100, -127, 127));
 

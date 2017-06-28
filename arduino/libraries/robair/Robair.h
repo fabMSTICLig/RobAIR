@@ -37,6 +37,7 @@ private:
   int cmd_speedR = 0;
   int cmd_msg_speedL = 0; //current command send by user
   int cmd_msg_speedR = 0;
+  bool smooth = true;
   float coef_smoothness = 0.90;
   MD49 md49;
   const uint8_t PIN_RMD49=5;
