@@ -4,8 +4,8 @@
         "maxClients": 0
     }, 
     "server": {
-        "cert": null, 
-        "key": null, 
+        "cert": "../ssl/device.crt",
+        "key": "../ssl/device.key",
         "password": null, 
         "port": 6060, 
         "secure": true

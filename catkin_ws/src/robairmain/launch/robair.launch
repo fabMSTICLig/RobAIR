@@ -6,8 +6,8 @@
   <param name="bumpRTresh" value="0.15" />
   <param name="aruDelay" value="5000" />
   <param name="coefSmoothness" value="0.90" />
-  <node pkg="rosserial_python" type="serial_node.py" name="serial_node">
-    <param name="port" value="/dev/serial/by-id/usb-Arduino__www.arduino.cc__Arduino_Mega_2560_649323439383519062C1-if00" />
+  <node pkg="rosserial_python" type="serial_node.py" name="serial_node" unless="$(optenv SKIP_ARDUINO false)">
+    <param name="port" value="$(env ROBAIR_ARDUINO)" />
   </node>
   <node pkg="robairmain" type="webserver.sh" name="webserver">
   </node>
@@ -16,7 +16,7 @@
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
      <arg name="port" value="6777"/>
      <arg name="ssl" value="true"/>
-     <arg name="certfile" value="/home/robair/RobAIR/ssl/device.crt"/>
-     <arg name="keyfile" value="/home/robair/RobAIR/ssl/device.key"/>
+     <arg name="certfile" value="$(env ROBAIR_HOME)/ssl/device.crt"/>
+     <arg name="keyfile" value="$(env ROBAIR_HOME)/ssl/device.key"/>
   </include>
 </launch>
