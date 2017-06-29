@@ -95,7 +95,7 @@ $ robair restart
 ### Sous ROS
 
 Pour docker RobAIR depuis le réseau ROS, il suffit de publier un `1` sur le topic `dockstate`. Si RobAIR est incapable de se docker, il repassera en état `0` de lui même.
-La procédure de docking peut-être annulée à tout moment en publiant un `0` sur le topic `dockstate`.
+La procédure de docking peut-être annulée à tout moment en publiant un `0` sur ce même topic.
 
 #### Les états
 
@@ -106,6 +106,8 @@ La procédure de docking peut-être annulée à tout moment en publiant un `0` s
 - 4 = Amarré
 
 ### Sous OpenHab
+
+Créer l'item `ROBAIR_Start_Docking` de type `SwitchItem`.
 
 Pour docker RobAIR depuis le réseau OpenHab, il suffit de passer l'item `ROBAIR_Start_Docking` à `ON`.
 La procédure de docking peut-être annulée à tout moment en passant ce même item à `OFF`.
