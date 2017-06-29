@@ -94,14 +94,12 @@ $ robair restart
 
 ## Utilisation
 
-### Docking
+### Sous ROS
 
-Les noeuds sont éxecutés à chaque démarrage de RobAIR. Vous pouvez aussi utiliser la commande `robair start`.
-
-Pour docker RobAIR indépendement de la solution choisie, il suffit de publier un `1` sur le topic `dockstate`. Si RobAIR est incapable de se docker, il repassera en état `0` de lui même.
+Pour docker RobAIR depuis le réseau ROS, il suffit de publier un `1` sur le topic `dockstate`. Si RobAIR est incapable de se docker, il repassera en état `0` de lui même.
 La procédure de docking peut-être annulée à tout moment en publiant un `0` sur le topic `dockstate`.
 
-### Les états
+#### Les états
 
 - 0 = Non amarré
 - 1 = Demande d'amarrage
@@ -109,11 +107,15 @@ La procédure de docking peut-être annulée à tout moment en publiant un `0` s
 - 3 = Vu
 - 4 = Amarré
 
+### Sous OpenHab
+
+Pour docker RobAIR depuis le réseau OpenHab, il suffit de passer l'item `ROBAIR_Start_Docking` à `ON`.
+La procédure de docking peut-être annulée à tout moment en passant ce même item à `OFF`.
+
 ## Marqueurs OpenCV
 
 Vous trouverez dans le répertoire `RobAIR/docking/Marker/` quelques marqueurs utilisés pour le docking.
 Vous pouvez facilement générer des marqueurs avec le script `Aruco Marker Creator.py` et tester la détection de marqueur avec le script `Aruco Detection.py` qui se trouvent dans `RobAIR/docking/`.
-
 
 ## Calibration de la caméra
 
