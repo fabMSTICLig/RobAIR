@@ -2,6 +2,7 @@
 
 DisplayIntro()
 {
+	echo "===================================="
 	echo "______      _      ___  ___________"
 	echo "| ___ \    | |    / _ \|_   _| ___ \ "
 	echo "| |_/ /___ | |__ / /_\ \ | | | |_/ /"
@@ -9,7 +10,7 @@ DisplayIntro()
 	echo "| |\ \ (_) | |_) | | | |_| |_| |\ \ "
 	echo "\_| \_\___/|_.__/\_| |_/\___/\_| \_|"
 	echo "===================================="
-	echo           "DOCKING SETUP"
+	echo "          DOCKING SETUP"
 	echo "===================================="
 	echo "Welcom !"
 	echo "This setup is intended to simplify docking's installation"
