@@ -165,9 +165,7 @@ def start_docking():	#Start docking function
 
 			error_angle = target_angle - robair_pos.orientation.y	#Get the error
 
-			linear1 = sat(error_angle*SLOW_DISTANCE_SPEED/0.3490,0,SLOW_DISTANCE_SPEED)-SLOW_DISTANCE_SPEED		#Linear enslavement with angle
-			linear2 = -sat(marker_pos.position.z/10,0,SLOW_DISTANCE_SPEED)										#Linear enslavement with position
-			motors_cmd.linear.x = max(linear1,linear2)															#Get the slowest
+			motors_cmd.linear.x = sat(error_angle*SLOW_DISTANCE_SPEED/0.3490,0,SLOW_DISTANCE_SPEED)-SLOW_DISTANCE_SPEED		#Linear enslavement with angle														#Get the slowest
 			motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.52,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)	#Angular enslavement
 
 		elif(DockState == DK_NOTSEEN):	#If the robot is not seen
@@ -181,9 +179,6 @@ def start_docking():	#Start docking function
 				send_dockstate(DK_NOTDOCKED)	#Abort docking				
 
 		send_cmd_vel(motors_cmd)	#Send the command
-
-		if( not GPIO.input(IN)):
-			break
 
 		if(marker_pos.position.z < (center_electrodes_distance-center_marker_distance)*3):	#If the robot is close enough
 				
