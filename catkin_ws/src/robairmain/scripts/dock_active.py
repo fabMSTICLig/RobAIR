@@ -17,7 +17,6 @@ from diagnostic_msgs.msg import KeyValue
 
 from robairmain.msg import MotorsInfo
 
-
 ###################
 # Robot Constants #
 ###################
@@ -166,28 +165,32 @@ def start_docking():	#Start docking function
 
 			error_angle = target_angle - robair_pos.orientation.y	#Get the error
 
-			#motors_cmd.linear.x = -sat(SLOW_DISTANCE_SPEED/2 + marker_pos.position.z*SLOW_DISTANCE_SPEED/2,0,SLOW_DISTANCE_SPEED)	#Linear enslavement
-			motors_cmd.linear.x = sat(error_angle*SLOW_DISTANCE_SPEED/0.3490,0,SLOW_DISTANCE_SPEED)-SLOW_DISTANCE_SPEED	#Linear enslavement
-			motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.52,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)			#Angular enslavement
+			linear1 = sat(error_angle*SLOW_DISTANCE_SPEED/0.3490,0,SLOW_DISTANCE_SPEED)-SLOW_DISTANCE_SPEED		#Linear enslavement with angle
+			linear2 = -sat(marker_pos.position.z/10,0,SLOW_DISTANCE_SPEED)										#Linear enslavement with position
+			motors_cmd.linear.x = max(linear1,linear2)															#Get the slowest
+			motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.52,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)	#Angular enslavement
 
 		elif(DockState == DK_NOTSEEN):	#If the robot is not seen
 			count+=1					#Incrementation
 
-			if(count >= 20):	#If the robot is not seen from 2 sec
+			if(count >= 10):	#If the robot is not seen from more than 1 sec
 				motors_cmd.linear.x = 0		#Stop
 				motors_cmd.angular.z = 0	#Stop
 
-			if(count >= 120):	#If the robot is not seen from 12 sec
+			if(count >= 100):	#If the robot is not seen from more than 10 sec
 				send_dockstate(DK_NOTDOCKED)	#Abort docking				
 
 		send_cmd_vel(motors_cmd)	#Send the command
 
+		if( not GPIO.input(IN)):
+			break
+
 		if(marker_pos.position.z < (center_electrodes_distance-center_marker_distance)*3):	#If the robot is close enough
 				
-			send_dockstate(DK_DOCKED)	#The robot is docked
+				send_dockstate(DK_DOCKED)	#The robot is docked
 
 	motors_cmd.linear.x = 0		#Reset the linear command 
-	motors_cmd.angular.z = 0	#Reset the angular command 
+	motors_cmd.angular.z = 0	#Reset the angular command
 
 	pub_log.publish('Stop docking')	#Log info for ROS network
 
