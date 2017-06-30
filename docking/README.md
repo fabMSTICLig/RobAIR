@@ -44,7 +44,7 @@ $ . devel/setup.bash
 ```bash
 export ROS_IP = 'hostname -I'
 export ROS_MASTER_URI = http://[adresse ip de RobAIR]:11311
-rosrun robairdock dockmain.py
+roslaunch robairdock robairdock.launch
 ```
 
 - Redémarrer le RaspberryPi.
