@@ -42,7 +42,7 @@ $ . devel/setup.bash
 
 - Ajouter à la fin du fichier `.bashrc` les lignes suivantes :
 ```bash
-export ROS_IP = [adresse ip de la base]
+export ROS_IP = 'hostname -I'
 export ROS_MASTER_URI = http://[adresse ip de RobAIR]:11311
 rosrun robairdock dockmain.py
 ```
