@@ -17,7 +17,9 @@ from std_msgs.msg import Int32
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Pose
 
-from robairmain.msg import MotorsInfo
+from diagnostic_msgs.msg import KeyValue
+
+from robairdock.msg import MotorsInfo
 
 ###################
 # Robot Constants #
@@ -27,7 +29,8 @@ MarkerWidth = 0.08      #Marker width in meters
 
 wheel_diameter = 125 		#Wheels diameter in mm
 wheels_distance = 400		#The distance between the tow wheels in mm
-camera_center_distance = 0.185 	#The distance between the centre en the marker in m
+center_camera_distance = 0.185 	#The distance between the centre en the marker in m
+center_electrodes_distance = 0.25 	#The distance between the centre and the marker in m
 wheel_incrementation = 976 	#Number of incrementaion in one wheel
 
 wheel_perimeter = pi*wheel_diameter 				#Wheel perimeter in mm
@@ -46,13 +49,13 @@ FAST_ANGLE_SPEED = 0.2		#Angular speed when far from the objective
 
 DK_NOTDOCKED = 0	#Not docked state
 DK_WANTTODOCK = 1	#Want to dock state
-DK_SEEN = 2		#Seen state
-DK_NOTSEEN = 3		#Not seen state
+DK_NOTSEEN = 2		#Not seen state
+DK_SEEN = 3			#Seen state
 DK_DOCKED = 4		#Docked state
 
-dock_distance = 1	#The distance where the robot is too close to dock
+dock_distance = 2*center_electrodes_distance	#The distance where the robot is too close to dock
 
-dock_ID = 2		#The dock ID
+dock_ID = 1		#The dock ID
 
 #Both are used to get the marker position in the camera coordinate system
 mtx = np.array([[635.35746725, 0, 330.33237895], [ 0, 636.86233192, 229.39423206], [0, 0, 1]])	#This is the camera callibration matrix 
@@ -68,7 +71,7 @@ parameters =  aruco.DetectorParameters_create()		#Declare the aruco parameters
 motors_info = MotorsInfo()	#RobAIR motors informations
 marker_pos = Pose()		#Marker position in the camera coordinate system
 camera_pos = Pose()		#Camera position in the marker coordinate system
-robair_pose = Pose()		#RobAIR position in the marker coordinate system
+robair_pos = Pose()		#RobAIR position in the marker coordinate system
 motors_cmd = Twist()		#RobAIR motors command
 
 DockState = 0			#Actual RobAIR state for docking
@@ -116,8 +119,6 @@ def move(distance):	#Move stright (distance in meters)(- backward)(+ forward)
 		system_distance = ((motors_info.countR - motors_start.countR) + (motors_info.countL - motors_start.countL))/2/encoder_resolution
 		error_distance = distance - system_distance 	#Get the error between the reference and the system
 		motors_cmd.linear.x = sat(error_distance*FAST_DISTANCE_SPEED/1000,-FAST_DISTANCE_SPEED,FAST_DISTANCE_SPEED)	#Move backward
-		
-		pub_log.publish("error_distance = " + str(error_distance))
 
 		if(-10 < error_distance and error_distance < 10):
 			return True
@@ -136,28 +137,36 @@ def GetPose(cap):	#Get RobAIR position in screen coordinate
 	ret, image = cap.read()					#Save a picture from the video capture
    	gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)	#Transform into grey scale image
 	corners, ids, rejectedImgPoints = aruco.detectMarkers(gray_image, aruco_dict, parameters=parameters)		#Detect markers on the picture and save IDs and cornes beloning to each ID
-	
+
 	if(isinstance(ids,np.ndarray)):		#If marker detected
 	
 		if(dock_ID in ids):				#If the base ID is detected
 
 			rvec, tvec = aruco.estimatePoseSingleMarkers(corners, MarkerWidth, mtx, disp)[0:2]	#Get the translation and rotation vector
-		
-			index = np.where(ids == robot_ID)[0][0]	#Get the robot index
+			
+			index = np.where(ids == dock_ID)[0][0]	#Get the robot index
 
-			tvec = tvec[index][0]   		#Get the translation vector in meters
-			rvec = rvec[index][0]   		#Get the rotation vector
-	
-			rmat = cv2.Rodrigues(rvec)[0]	#Get the rotation matrix	
-			rmat = np.linalg.inv(rmat)*tvec	#Get the camera position in the marker coordinate system
+			tvec = tvec[index][0]			#Get the translation vector in meters
+			rvec = rvec[index][0]			#Get the rotation vector
+			
+			rmat = cv2.Rodrigues(rvec)[0]	#Get the rotation matrix
 
-			camera_pos.orientation.y = atan2(-rmat[2][0],sqrt(rmat[2][1]**2 + rmat[2][2]**2))	#Get the y marker orientation (in radians)
-	
-			camera_pos.position.x = tvec[0]	#Get the x marker position (in meters)
-			camera_pos.position.z = tvec[2]	#Get the z marker position (in meters)
+			module = sqrt(tvec[0]**2+tvec[1]**2 + tvec[2]**2)          #Get the module
+			alpha = -atan2(-rmat[2][0],sqrt(rmat[2][1]**2+rmat[2][2]**2)) #Get the y orientation
+			
+			beta = atan2(tvec[0],tvec[2])
+			teta = alpha+beta
 
-			robair_pos.position.x = camera_pos.position.x + sin(camera_pos.orientation.y)*camera_center_distance	#Get the x robair position (in meters)
-			robair_pos.position.z = camera_pos.position.z + cos(camera_pos.orientation.y)*camera_center_distance	#Get the z robair position (in meters)
+			tvec[0] = sin(teta) * module
+			tvec[2] = cos(teta) * module
+			
+			camera_pos.orientation.y = -alpha	#Get the y marker orientation (in radians)
+			camera_pos.position.x = tvec[0]		#Get the x marker position (in meters)
+			camera_pos.position.z = tvec[2]		#Get the z marker position (in meters)
+
+			robair_pos.orientation.y = -alpha	#Get the y marker orientation (in radians)
+			robair_pos.position.x = camera_pos.position.x + sin(camera_pos.orientation.y)*center_camera_distance	#Get the x robair position (in meters)
+			robair_pos.position.z = camera_pos.position.z + cos(camera_pos.orientation.y)*center_camera_distance	#Get the z robair position (in meters)
 
 			return True		#Return true because a marker have been detected
 
@@ -173,7 +182,7 @@ def start_docking_camera():	#Start docking function (camera part)
 	cap = cv2.VideoCapture(0)	#Start a video frame
 
 	State = DockState	#Set the dock state
-	lastState = DockState	#Set the dockstate
+	LastState = DockState	#Set the dockstate
 
 	while(DockState != DK_NOTDOCKED and DockState != DK_DOCKED):	#While the robot is docking
 		
@@ -186,7 +195,7 @@ def start_docking_camera():	#Start docking function (camera part)
 			State = DK_NOTSEEN	#The next state will be DK_NOTSEEN
 
 		if(LastState != State):		#If the new state is differtent from the last state
-			send_dockstate(NOT_DOCKED)	#Send dock state
+			send_dockstate(State)	#Send dock state
 			LastState = State		#Save the last state
 
 	cap.release()				#Stop the video frame
@@ -209,9 +218,9 @@ def start_docking_robair():	#Start docking function (robair part)
 	
 		while(DockState == DK_NOTSEEN and count < 200):	#While the robot is not seen and no timeout
 
-			rate.sleep()			#Wait for the next sampling
+			rate.sleep()				#Wait for the next sampling
 			send_cmd_vel(motors_cmd)	#Send the command
-			count += 1			#Incrementation
+			count += 1					#Incrementation
 
 		if(DockState == DK_NOTSEEN):		#If the robot isn't seen yet
 			send_dockstate(DK_NOTDOCKED)	#Cancel docking operation
@@ -228,6 +237,10 @@ def start_docking_robair():	#Start docking function (robair part)
 			angle2 = -atan2(robair_pos.position.x, dock_distance - robair_pos.position.z)*180/pi	#Get the angle for the objectif
 			angle1 = -robair_pos.orientation.y*180/pi - angle2					#Get the angle for the actual
 
+			print(angle1)	#Turn
+			print(distance)	#Move
+			print(angle2)	#Turn
+
 			turn(angle1)	#Turn
 			move(distance)	#Move
 			turn(angle2)	#Turn
@@ -242,10 +255,15 @@ def start_docking_robair():	#Start docking function (robair part)
 
 				count = 0		#Reset count
 
-				sat_angle = sat(3 - marker_pos.position.z*2,0.5235,1)	#Get the sat angle
-				gain = sat(7 - marker_pos.position.z*2,1,5)		#Get the gain
-				target_angle = -sat(marker_pos.position.x * gain, -sat_angle, sat_angle)	#Get the target angle
-				error_angle = target_angle - robair_pos.orientation.y	#Get the error
+				sat_angle = sat(3 - camera_pos.position.z*2,0.1745,0.5235)	#Get the sat angle
+				gain = sat(7 - camera_pos.position.z*2,1,5)		#Get the gain
+				target_angle = -sat(camera_pos.position.x * gain, -sat_angle, sat_angle)	#Get the target angle
+				
+				print(target_angle*180/pi)
+				print(camera_pos.orientation.y*180/pi)
+				print("")
+
+				error_angle = target_angle - camera_pos.orientation.y	#Get the error
 
 				motors_cmd.linear.x = sat(error_angle*SLOW_DISTANCE_SPEED/0.3490,0,SLOW_DISTANCE_SPEED)-SLOW_DISTANCE_SPEED		#Linear enslavement with angle									#Linear enslavement with position														#Get the slowest
 				motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.52,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)	#Angular enslavement
@@ -253,7 +271,7 @@ def start_docking_robair():	#Start docking function (robair part)
 			elif(DockState == DK_NOTSEEN):	#If the robot is not seen
 				count+=1		#Incrementation
 
-				if(count == 10):	#If the robot is not seen from 2 sec
+				if(count >= 10):	#If the robot is not seen from 2 sec
 					motors_cmd.linear.x = 0		#Stop
 					motors_cmd.angular.z = 0	#Stop
 
@@ -262,7 +280,7 @@ def start_docking_robair():	#Start docking function (robair part)
 
 			send_cmd_vel(motors_cmd)	#Send the command
 
-			if(marker_pos.position.z < (center_electrodes_distance-center_marker_distance)*3):	#If the robot is close enough
+			if(camera_pos.position.z < (center_electrodes_distance-center_camera_distance)*3):	#If the robot is close enough
 				
 				send_dockstate(DK_DOCKED)	#The robot is docked
 

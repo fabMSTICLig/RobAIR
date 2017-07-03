@@ -103,8 +103,6 @@ def move(distance):	#Move stright (distance in meters)(- backward)(+ forward)
 		system_distance = ((motors_info.countR - motors_start.countR) + (motors_info.countL - motors_start.countL))/2/encoder_resolution
 		error_distance = distance - system_distance 	#Get the error between the reference and the system
 		motors_cmd.linear.x = sat(error_distance*FAST_DISTANCE_SPEED/1000,-FAST_DISTANCE_SPEED,FAST_DISTANCE_SPEED)	#Move backward
-		
-		pub_log.publish("error_distance = " + str(error_distance))
 
 		if(-10 < error_distance and error_distance < 10):
 			return True
