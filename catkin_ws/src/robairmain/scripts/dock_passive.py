@@ -265,8 +265,8 @@ def start_docking_robair():	#Start docking function (robair part)
 
 				error_angle = target_angle - camera_pos.orientation.y	#Get the error
 
-				motors_cmd.linear.x = sat(error_angle*SLOW_DISTANCE_SPEED/0.3490,0,SLOW_DISTANCE_SPEED)-SLOW_DISTANCE_SPEED		#Linear enslavement with angle									#Linear enslavement with position														#Get the slowest
-				motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.52,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)	#Angular enslavement
+				motors_cmd.linear.x = sat(error_angle*SLOW_DISTANCE_SPEED/0.5235,0,SLOW_DISTANCE_SPEED)-SLOW_DISTANCE_SPEED		#Linear enslavement with angle									#Linear enslavement with position														#Get the slowest
+				motors_cmd.angular.z = sat(error_angle*FAST_ANGLE_SPEED/0.5235,-FAST_ANGLE_SPEED,FAST_ANGLE_SPEED)	#Angular enslavement
 
 			elif(DockState == DK_NOTSEEN):	#If the robot is not seen
 				count+=1		#Incrementation
