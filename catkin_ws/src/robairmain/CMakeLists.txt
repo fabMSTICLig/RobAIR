@@ -56,6 +56,7 @@ add_message_files(
   FILES
   MotorsCmd.msg
   EyesMat.msg
+  Distance.msg
 )
 
 ## Generate services in the 'srv' folder
