@@ -19,6 +19,7 @@ bumperRear_pub("bumper_rear", &bumperRear_msg),
 bumperFront_pub("bumper_front", &bumperFront_msg),
 touchLeft_pub("touch_left", &touchLeft_msg),
 touchRight_pub("touch_right", &touchRight_msg),
+distance_pub("distance", &distance_msg),
 sub_loadParams("load_params", &Robair::loadParamsCb, this)
 {
 
@@ -203,6 +204,101 @@ void Robair::checkTouch()
       }
 }
 
+//////////////////DISTANCE SENSORS//////////////////
+
+unsigned int Robair::count_active_distance_sensors()
+{
+    unsigned int res = 0;
+    int active = active_distance_sensors;
+
+    while (active > 0) {
+        if (active & 1)
+            res++;
+        active >>= 1;
+    }
+
+    return res;
+}
+
+int Robair::next_xshut_pin(int pin, int *active)
+{
+    if (pin == -1) {
+        pin = PIN_DISTANCE_XSHUT_FIRST;
+    } else {
+        pin += PIN_DISTANCE_XSHUT_STEP;
+        *active >>= 1;
+    }
+
+    while (*active > 0 && (*active & 1) == 0) {
+        pin += PIN_DISTANCE_XSHUT_STEP;
+        *active >>= 1;
+    }
+
+    return pin;
+}
+
+void Robair::distance_sensors_init()
+{
+    nh.getParam("/distance-sensors", &active_distance_sensors);
+    distance_sensors_count = count_active_distance_sensors();
+
+    if (distance_sensors_count == 0)
+        return;
+
+    distance_msg.mask = active_distance_sensors;
+    distance_msg.distances_length = distance_sensors_count;
+    distance_msg.distances = new uint16_t[distance_sensors_count];
+
+    Wire.begin();
+
+    distance_sensors = new VL53L0X[distance_sensors_count];
+
+    // Initialize sensors one by one and configure their I²C addresses
+
+    int active = active_distance_sensors;
+
+    for (int pin = next_xshut_pin(-1, &active), i = 0 ;
+            i < distance_sensors_count ;
+            pin = next_xshut_pin(pin, &active), i += 1) {
+        pinMode(pin, OUTPUT);
+        digitalWrite(pin, LOW);
+    }
+
+    active = active_distance_sensors;
+
+    for (int pin = next_xshut_pin(-1, &active), i = 0 ;
+            i < distance_sensors_count ;
+            pin = next_xshut_pin(pin, &active), i += 1) {
+        digitalWrite(pin, HIGH);
+        delay(2);
+        distance_sensors[i].init();
+        distance_sensors[i].setAddress(DISTANCE_SENSORS_ADDR_FIRST + i);
+        distance_sensors[i].setTimeout(50);
+        distance_sensors[i].startContinuous();
+    }
+}
+
+void Robair::check_distances()
+{
+    if (distance_sensors_count == 0)
+        return;
+
+    int range;
+
+    for (int i = 0 ; i < distance_sensors_count ; ++i) {
+        range = distance_sensors[i].readRangeContinuousMillimeters();
+
+        if (distance_sensors[i].timeoutOccurred())
+            distance_msg.distances[i] = DISTANCE_TIMEOUT;
+        else if (range >= DISTANCE_NORANGE_THRESHOLD)
+            distance_msg.distances[i] = DISTANCE_NORANGE;
+        else
+            distance_msg.distances[i] = range;
+    }
+
+    distance_pub.publish(&distance_msg);
+}
+
 ////////////////////////////LOG/////////////////////
 
 void Robair::log(String str)
@@ -233,6 +329,8 @@ void Robair::begin()
 
 	eyes.setMatrice(EYESSTRAIGHT);
 
+	distance_sensors_init();
+
   bumperFront=false;
   bumperRear=false;
   papBumperFront.init(float(analogRead(PIN_BUMPER_FRONT))/ONEK);
@@ -256,6 +354,7 @@ void Robair::begin()
 	nh.advertise(bumperFront_pub);
 	nh.advertise(touchLeft_pub);
 	nh.advertise(touchRight_pub);
+	nh.advertise(distance_pub);
 	nh.advertise(aru_pub);
 	nh.subscribe(sub_loadParams);
 	nh.spinOnce();
@@ -287,4 +386,5 @@ void Robair::spinOnce()
 	check_battery(5000);
 	speed_control();
 
+    check_distances();
 }

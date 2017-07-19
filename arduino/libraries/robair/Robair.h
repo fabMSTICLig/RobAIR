@@ -1,6 +1,7 @@
 #ifndef ROBAIR_H
 #define ROBAIR_H
 
+#include <limits.h>
 
 // ROS INCLUDE
 #include <ros.h>
@@ -13,11 +14,14 @@
 #include <std_msgs/String.h>
 #include <robairmain/MotorsCmd.h>
 #include <robairmain/EyesMat.h>
+#include <robairmain/Distance.h>
 //ARDUINO InCUDE
 #include <Servo.h>
 #include <Adafruit_NeoPixel.h>
 #include <Eyes.h>
 #include <md49.h>
+#include <Wire.h>
+#include <VL53L0X.h>
 #include "Papierlogik.h"
 
 class Robair{
@@ -132,6 +136,28 @@ private:
     unsigned long touchDelay = 100;
 
     void checkTouch();
+
+    ///////////////DISTANCE SENSORS///////////////////////////
+
+    const uint8_t PIN_DISTANCE_XSHUT_FIRST = 23;
+    const uint8_t PIN_DISTANCE_XSHUT_STEP = 2;
+    const uint8_t DISTANCE_SENSORS_ADDR_FIRST = 0x10;
+
+    const int DISTANCE_NORANGE_THRESHOLD = 8190;
+    const uint16_t DISTANCE_NORANGE = USHRT_MAX;
+    const uint16_t DISTANCE_TIMEOUT = USHRT_MAX - 1;
+
+    int active_distance_sensors;
+    unsigned int distance_sensors_count;
+
+    VL53L0X *distance_sensors;
+    ros::Publisher distance_pub;
+    robairmain::Distance distance_msg;
+
+    unsigned int count_active_distance_sensors(void);
+    int next_xshut_pin(int pin, int *active);
+    void distance_sensors_init(void);
+    void check_distances(void);
 
 ///////////////////////REBOOT//////////////////////////////////
 
