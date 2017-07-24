@@ -7,6 +7,27 @@
     <link rel="stylesheet" href="common/libs/bootstrap.min.css">
     <link rel="stylesheet" href="common/libs/font-awesome.min.css">
     <link rel="stylesheet" href="client/index.css">
+
+	<style type="text/css">
+        .distance-none, .distance-nearest, .distance-near, .distance-far, .distance-farthest {
+            --visible-nearest:  hidden;
+            --visible-near:     hidden;
+            --visible-far:      hidden;
+            --visible-farthest: hidden;
+        }
+        .distance-nearest {
+            --visible-nearest:  visible;
+        }
+        .distance-near {
+            --visible-near:     visible;
+        }
+        .distance-far {
+            --visible-far:      visible;
+        }
+        .distance-farthest {
+            --visible-farthest: visible;
+        }
+	</style>
 </head>
 
 <body>
@@ -36,7 +57,7 @@
                             <tr>
                               <td colspan="2">
                                   <span class="fa fa-hand-paper-o" id="touchRight"></span>
-                                  <svg id="headCanvas" width="100" height="100" viewBox="0 0 200 200">
+                                  <svg id="headCanvas" width="185" height="185" viewBox="-70 -70 340 340">
                                     <circle cx="100" cy="100" r="90" stroke="black" stroke-width="3"  fill-opacity="0.0"/>
                                     <circle cx="100" cy="100" r="40" stroke="black" stroke-width="3" fill-opacity="0.0"/>
                                     <path id="head" d="M 60,100 A 40 40 0 0 1 140,100" stroke="green" fill-opacity="0.0" stroke-width="10"/>
@@ -45,6 +66,26 @@
                                     <rect x="50" y="40" height="10" width="100" rx="10" ry="10" stroke="black" stroke-width="3" fill-opacity="0.0"/>
                                     <rect x="5" y="70" height="60" width="10" rx="10" ry="10" stroke="black" stroke-width="3" fill="white"/>
                                     <rect x="185" y="70" height="60" width="10" rx="10" ry="10" stroke="black" stroke-width="3" fill="white"/>
+
+                                    <defs>
+                                    <g id="distance-bars">
+                                        <path name="distance_nearest"  d="M 80,0 A 100 100 0 0 1 120,0"     stroke="red" fill-opacity="0.0" stroke-width="10" style="visibility: var(--visible-nearest)" />
+                                        <path name="distance_near"     d="M 70,-15 A 100 100 0 0 1 130,-15" stroke="#eb9000" fill-opacity="0.0" stroke-width="10" style="visibility: var(--visible-near)" />
+                                        <path name="distance_far"      d="M 60,-30 A 100 100 0 0 1 140,-30" stroke="#ebc800" fill-opacity="0.0" stroke-width="10" style="visibility: var(--visible-far)" />
+                                        <path name="distance_farthest" d="M 50,-45 A 100 100 0 0 1 150,-45" stroke="#c9c300" fill-opacity="0.0" stroke-width="10" style="visibility: var(--visible-farthest)" />
+                                    </g>
+                                    </defs>
+
+                                    <g id="distances">
+                                        <use xlink:href="#distance-bars" transform="" class="distance-none" />
+                                        <use xlink:href="#distance-bars" transform="rotate(45 100,100)" class="distance-none" />
+                                        <use xlink:href="#distance-bars" transform="rotate(90 100,100)" class="distance-none" />
+                                        <use xlink:href="#distance-bars" transform="rotate(135 100,100)" class="distance-none" />
+                                        <use xlink:href="#distance-bars" transform="rotate(180 100,100)" class="distance-none" />
+                                        <use xlink:href="#distance-bars" transform="rotate(225 100,100)" class="distance-none" />
+                                        <use xlink:href="#distance-bars" transform="rotate(270 100,100)" class="distance-none" />
+                                        <use xlink:href="#distance-bars" transform="rotate(315 100,100)" class="distance-none" />
+                                    </g>
                                   </svg>
                                   <span class="fa fa-hand-paper-o" id="touchLeft"></span>
                               </td>

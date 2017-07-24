@@ -410,3 +410,32 @@ robairros.touch_right_change =function (on){
   if(on) $('#touchRight').addClass('touched');
   else $('#touchRight').removeClass('touched');
 }
+
+//////////////////////////Distance//////////////////////////
+
+var DISTANCE_FARTHEST_THRESH = 1200;
+var DISTANCE_FAR_THRESH      = 900;
+var DISTANCE_NEAR_THRESH     = 600;
+var DISTANCE_NEAREST_THRESH  = 300;
+
+robairros.distance_change = function(mask, values) {
+	var iD = 0, iV = 0, active;
+
+	for (iD = 0 ; mask > 0 ; mask >>= 1, iD++) {
+		if ((mask & 1) == 0)
+			continue;
+
+		if (values[iV] <= DISTANCE_NEAREST_THRESH)
+			$('#distances').children()[iD].setAttribute('class', 'distance-nearest');
+		else if (values[iV] <= DISTANCE_NEAR_THRESH)
+			$('#distances').children()[iD].setAttribute('class', 'distance-near');
+		else if (values[iV] <= DISTANCE_FAR_THRESH)
+			$('#distances').children()[iD].setAttribute('class', 'distance-far');
+		else if (values[iV] <= DISTANCE_FARTHEST_THRESH)
+			$('#distances').children()[iD].setAttribute('class', 'distance-farthest');
+		else
+			$('#distances').children()[iD].setAttribute('class', 'distance-none');
+
+		iV++;
+	}
+};

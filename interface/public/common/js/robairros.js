@@ -267,3 +267,17 @@ topic_touch_left.subscribe(function(message) {
 topic_touch_right.subscribe(function(message) {
     robairros.touch_right_change(message.data);
 });
+
+/////////Distance///////////
+
+var topic_distance = new ROSLIB.Topic({
+    ros: ros,
+    name: '/distance',
+    messageType: 'robairmain/Distance'
+})
+
+robairros.distance_change = function(mask, values) {}
+
+topic_distance.subscribe(function(message) {
+	robairros.distance_change(message.mask, message.distances);
+});
