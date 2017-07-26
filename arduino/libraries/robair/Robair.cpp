@@ -239,7 +239,6 @@ int Robair::next_xshut_pin(int pin, int *active)
 
 void Robair::distance_sensors_init()
 {
-    nh.getParam("/distance-sensors", &active_distance_sensors);
     distance_sensors_count = count_active_distance_sensors();
 
     if (distance_sensors_count == 0)
@@ -329,6 +328,7 @@ void Robair::begin()
 
 	eyes.setMatrice(EYESSTRAIGHT);
 
+	while (!nh.getParam("/distance-sensors", &active_distance_sensors));
 	distance_sensors_init();
 
   bumperFront=false;
