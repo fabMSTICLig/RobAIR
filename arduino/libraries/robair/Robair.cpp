@@ -254,7 +254,7 @@ void Robair::distance_sensors_init()
 
     // Initialize sensors one by one and configure their I²C addresses
 
-    int active = active_distance_sensors;
+    int active = 0xff;
 
     for (int pin = next_xshut_pin(-1, &active), i = 0 ;
             i < distance_sensors_count ;
