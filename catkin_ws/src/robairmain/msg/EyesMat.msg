@@ -1,1 +1,1 @@
-int8[] mat
+uint32[] mat
