@@ -1,7 +1,8 @@
 #include "Arduino.h"
 #include "Eyes.h"
 
-#define PUISS 40
+#define MAX_POWER 40
+
 
 uint8_t vide[] = {
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -134,29 +135,57 @@ int Eyes::display_void()
 	return EYESVIDE;
 }
 
+int Eyes::mat_id_to_pixel_id(int i)
+{
+	int ligne = (i / LINEWIDTH);
+
+	if (ligne % 2 == 0)
+		return ligne * LINEWIDTH + (i % LINEWIDTH);
+	else
+		return ligne * LINEWIDTH + (LINEWIDTH - (i % LINEWIDTH)) - 1;
+}
+
+uint32_t Eyes::scale_color(uint32_t color, int max_power)
+{
+	uint32_t channel;
+	uint32_t mask;
+	int shift;
+
+	for (mask = 0xff, shift = 0 ; shift <= 16 ; mask <<= 8, shift += 8) {
+		channel = (color & mask) >> shift;
+		channel = (uint32_t)((double)channel
+				     * (double)max_power / (double)0xff);
+		color &= ~mask;
+		color |= channel << shift;
+	}
+
+	return color;
+}
+
 int Eyes::setMatrice(uint8_t *mat)
 {
-
 	int id = 0;
-	int mir = 0;
 
-	for (int i = 0 ; i < NUMPIXELS ; i++) {
-		int ligne = i / LINEWIDTH;
-		if (ligne % 2 == 0) {
-			id = i;
-		} else {
-			int col = LINEWIDTH - (i % LINEWIDTH) - 1;
-			id = ligne * LINEWIDTH + col;
-		}
-
-		uint32_t color = pixels->Color(((mat[i] & 1) == 1 ? PUISS : 0),
-					       ((mat[i] & 2) == 2 ? PUISS : 0),
-					       ((mat[i] & 4) == 4 ? PUISS : 0));
+	for(int i=0; i<NUMPIXELS; i++) {
+		id = mat_id_to_pixel_id(i);
+		uint32_t color = pixels->Color(
+					((mat[i] & 1) == 1 ? MAX_POWER : 0),
+					((mat[i] & 2) == 2 ? MAX_POWER : 0),
+					((mat[i] & 4) == 4 ? MAX_POWER : 0));
 		pixels->setPixelColor(id, color);
 	}
 
 	pixels->show();
+}
 
+void Eyes::setMatrice(uint32_t *mat)
+{
+	for (int i = 0 ; i < NUMPIXELS ; ++i) {
+		int id = mat_id_to_pixel_id(i);
+		pixels->setPixelColor(id, scale_color(mat[i], MAX_POWER));
+	}
+
+	pixels->show();
 }
 
 int Eyes::setMatrice(int id)

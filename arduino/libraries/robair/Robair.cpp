@@ -157,8 +157,7 @@ void Robair::cmdEyesCb(const std_msgs::UInt8 &eyes_msg)
 }
 
 void Robair::eyesMatCb(const robairmain::EyesMat &mat_msg) {
-	//FIXME: doesn't work, messages are too long for serial interface
-	//eyes.setMatrice(&mat_msg.mat);
+	eyes.setMatrice(mat_msg.mat);
 }
 
 

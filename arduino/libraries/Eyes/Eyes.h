@@ -23,15 +23,18 @@
 class Eyes {
 public:
 	Eyes(int pin);
-	~Eyes(void);
-	void begin(void);
-	int display_void(void);
-	int display_stop(void);
+	~Eyes();
+	void begin();
+	int display_void();
+	int display_stop();
 	int setMatrice(uint8_t *mat);
+	void setMatrice(uint32_t *mat);
 	int setMatrice(int id);
 
 private:
 	Adafruit_NeoPixel *pixels;
+	int mat_id_to_pixel_id(int i);
+	uint32_t scale_color(uint32_t color, int max_power);
 };
 
 #endif
