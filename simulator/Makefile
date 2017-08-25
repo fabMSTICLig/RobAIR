@@ -1,7 +1,7 @@
 .PHONY: clean distclean
 
 EXE = robairsim
-OBJS = main.o
+OBJS = main.o arduino.o
 
 CC = gcc
 
