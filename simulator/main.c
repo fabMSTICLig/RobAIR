@@ -40,6 +40,7 @@ int main(int argc, char **argv)
 
 	elf_firmware_t elf;
 	elf_read_firmware(elf_path, &elf);
+	elf.frequency = 16000000;
 
 	avr_t *avr;
 	avr = avr_make_mcu_by_name("atmega2560");
