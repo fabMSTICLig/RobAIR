@@ -10,9 +10,20 @@
 #include "simavr/avr_ioport.h"
 #include "simavr/parts/uart_pty.h"
 
+#include "servo.h"
+
+#define PIN_HEAD 3
+
+struct servo *head;
+
 void print_usage(char *argv0)
 {
 	fprintf(stderr, "Usage: %s [-g] path/to/robairarduino.elf\n", argv0);
+}
+
+void robair_setup(struct avr_t *avr)
+{
+	head = servo_attach(avr, PIN_HEAD);
 }
 
 int main(int argc, char **argv)
@@ -46,6 +57,8 @@ int main(int argc, char **argv)
 	avr = avr_make_mcu_by_name("atmega2560");
 	avr_init(avr);
 	avr_load_firmware(avr, &elf);
+
+	robair_setup(avr);
 
 	if (debug) {
 		avr->gdb_port = 1234;
