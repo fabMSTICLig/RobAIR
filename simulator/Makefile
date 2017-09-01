@@ -1,7 +1,7 @@
 .PHONY: clean distclean
 
 EXE = robairsim
-OBJS = main.o arduino.o servo.o
+OBJS = main.o gui.o arduino.o servo.o
 
 CC = gcc
 
@@ -13,7 +13,7 @@ SIMAVR_LIBS = .simavr-intermediate
 
 CFLAGS = -I$(SIMAVR_OUT)/include -I$(SIMAVR_OUT)/include/simavr
 LDFLAGS = -L$(SIMAVR_OUT)/lib -lsimavr -lsimavrparts \
-		  -lpthread -lelf -lGL -lglut -lutil
+		  -lpthread -lelf -lm -lGL -lglut -lutil -lSDL2 -lSDL2_gfx
 
 $(EXE): $(OBJS)
 	$(CC) $^ $(LDFLAGS) -o $@

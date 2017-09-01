@@ -10,6 +10,7 @@
 #include "simavr/avr_ioport.h"
 #include "simavr/parts/uart_pty.h"
 
+#include "gui.h"
 #include "servo.h"
 
 #define PIN_HEAD 3
@@ -70,7 +71,19 @@ int main(int argc, char **argv)
 	uart_pty_init(avr, &uart_pty);
 	uart_pty_connect(&uart_pty, '0');
 
+	gui_init();
+
+	struct gui_data_sources gui_srcs = {
+		.head = head
+	};
+
+	gui_attach(&gui_srcs);
+
 	int state = cpu_Running;
-	while (state != cpu_Done && state != cpu_Crashed)
+	while (state != cpu_Done && state != cpu_Crashed) {
 		state = avr_run(avr);
+		gui_update();
+	}
+
+	gui_deinit();
 }
