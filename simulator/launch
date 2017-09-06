@@ -1,2 +1,5 @@
 #!/bin/sh
-LD_LIBRARY_PATH=simavr-out/lib ./robairsim "$@" ../arduino/robairarduino/build-*/robairarduino.elf
+if [ -n "$DEBUG" ]; then
+	DEBUG="gdb --args"
+fi
+LD_LIBRARY_PATH=simavr-out/lib $DEBUG ./robairsim "$@" ../arduino/robairarduino/build-*/robairarduino.elf
