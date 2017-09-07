@@ -8,6 +8,7 @@ struct gui_data_sources {
 int gui_init(void);
 void gui_update(void);
 void gui_deinit(void);
+int gui_is_active(void);
 
 void gui_attach(struct gui_data_sources *srcs);
 

@@ -124,9 +124,14 @@ void gui_deinit()
 	if (win != NULL) {
 		SDL_DestroyWindow(win);
 		win = NULL;
-	}
 
-	SDL_Quit();
+		SDL_Quit();
+	}
+}
+
+int gui_is_active()
+{
+	return win != NULL;
 }
 
 static void gui_head_cb(int angle)
