@@ -34,7 +34,11 @@ static void servo_onirq(struct avr_irq_t *irq, uint32_t value, void *param)
 		else if (usec > MAX_WIDTH)
 			usec = MAX_WIDTH;
 
-		s->callback((usec - MIN_WIDTH) * 180 / (MAX_WIDTH - MIN_WIDTH));
+		int angle = (usec - MIN_WIDTH) * 180 / (MAX_WIDTH - MIN_WIDTH);
+		if (angle != s->last_angle) {
+			s->last_angle = angle;
+			s->callback(angle);
+		}
 	}
 }
 
@@ -46,6 +50,7 @@ struct servo *servo_attach(struct avr_t *avr, uint8_t pin)
 	s->avr = avr;
 	s->callback = NULL;
 	s->started = 0;
+	s->last_angle = -1;
 
 	char irq_name[10];
 	sprintf(irq_name, "SERVO_%d", s->id);

@@ -14,6 +14,7 @@ struct servo {
 	avr_irq_t *irq;
 	int started;
 	avr_cycle_count_t pulse_start;
+	int last_angle;
 };
 
 struct servo *servo_attach(struct avr_t *avr, uint8_t pin);
