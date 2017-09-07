@@ -80,10 +80,8 @@ int main(int argc, char **argv)
 	gui_attach(&gui_srcs);
 
 	int state = cpu_Running;
-	while (state != cpu_Done && state != cpu_Crashed && gui_is_active()) {
+	while (state != cpu_Done && state != cpu_Crashed && gui_is_active())
 		state = avr_run(avr);
-		gui_update();
-	}
 
 	gui_deinit();
 }

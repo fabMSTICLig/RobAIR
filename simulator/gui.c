@@ -1,10 +1,15 @@
 #include "gui.h"
 
 #include <math.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <time.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 #include "servo.h"
+
+#define REFRESH_MS 50
 
 #define DEG_TO_RAD(x) ((double)(x) * M_PI / 180.)
 
@@ -23,6 +28,9 @@ SDL_Texture *canvas = NULL;
 int needs_redrawing = 0;
 
 int head_angle = 0;
+
+
+static void on_timer(union sigval);
 
 
 static void gui_draw_head()
@@ -84,6 +92,26 @@ int gui_init()
 	gui_draw();
 	gui_display();
 
+	struct sigevent alarm_action = {
+		.sigev_notify = SIGEV_THREAD,
+		.sigev_notify_function = on_timer
+	};
+
+	struct itimerspec update_period = {
+		.it_interval = {
+			.tv_sec = 0,
+			.tv_nsec = REFRESH_MS * 1000000
+		},
+		.it_value = {
+			.tv_sec = 0,
+			.tv_nsec = REFRESH_MS * 1000000
+		}
+	};
+
+	timer_t timer;
+	timer_create(CLOCK_REALTIME, &alarm_action, &timer);
+	timer_settime(timer, 0, &update_period, NULL);
+
 	return 0;
 }
 
@@ -144,4 +172,16 @@ void gui_attach(struct gui_data_sources *srcs)
 {
 	if (srcs->head != NULL)
 		servo_set_callback(srcs->head, gui_head_cb);
+}
+
+
+static int updating = 0;
+
+static void on_timer(union sigval val)
+{
+	if (updating)
+		return;
+	updating = 1;
+	gui_update();
+	updating = 0;
 }

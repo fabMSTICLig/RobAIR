@@ -13,7 +13,7 @@ SIMAVR_LIBS = .simavr-intermediate
 
 CFLAGS = -I$(SIMAVR_OUT)/include -I$(SIMAVR_OUT)/include/simavr
 LDFLAGS = -L$(SIMAVR_OUT)/lib -lsimavr -lsimavrparts \
-		  -lpthread -lelf -lm -lGL -lglut -lutil -lSDL2 -lSDL2_gfx
+		  -lpthread -lelf -lm -lGL -lglut -lutil -lSDL2 -lSDL2_gfx -lrt
 
 $(EXE): $(OBJS)
 	$(CC) $^ $(LDFLAGS) -o $@
