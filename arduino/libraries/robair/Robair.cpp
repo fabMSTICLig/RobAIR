@@ -328,9 +328,6 @@ void Robair::begin()
 
 	eyes.setMatrice(EYESSTRAIGHT);
 
-	while (!nh.getParam("/distance-sensors", &active_distance_sensors));
-	distance_sensors_init();
-
   bumperFront=false;
   bumperRear=false;
   papBumperFront.init(float(analogRead(PIN_BUMPER_FRONT))/ONEK);
@@ -357,6 +354,10 @@ void Robair::begin()
 	nh.advertise(distance_pub);
 	nh.advertise(aru_pub);
 	nh.subscribe(sub_loadParams);
+
+	while (!nh.getParam("/distance-sensors", &active_distance_sensors));
+	distance_sensors_init();
+
 	nh.spinOnce();
 
 
