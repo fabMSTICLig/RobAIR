@@ -1,96 +1,100 @@
-# Rob-AIR
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/fr/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/3.0/fr/88x31.png" /></a><br />Les différentes partie de ce projet sont mise à disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/fr/">Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 3.0 France</a>.
 
-##INSTALL
+# RobAIR
 
-### Prérequis
+## Installation
 
-OS : Ubuntu 16.04 LTS
+### Pré-requis
 
-Vous devez préalablement installer l'utilitaire `git`.
+- Ubuntu 16.04 LTS
+- Git
+- L'utilisateur courant doit avoir les droits root via `sudo`
 
-###Installation
+### Procédure
 
-Clone du repository
+- Téléchargez le dépôt
 ```bash
 $ git clone https://github.com/FabmsticLig/RobAIR.git
 ```
-
-Installation par le script
+- Lancez le script d'installation
 ```bash
 $ cd RobAIR
 $ ./scripts/install.bash
 ```
-
-Le script utilise sudo pour installer plusieurs packages. Il faudra rentrer votre mot de passe utilisateur.
-
-Le script rajoute deux variable d'environnement à votre `.bashrc`. `ROBAIR_HOME` qui correspond au dossier racine de ce repository. `ROBAIR_IP` l'IPV4 de l'ordinateur utilisé pour configurer les différents programmes de Robair. Le script `$ROBAIR_HOME/scripts/env.bash` est sourcé.
-
-A la fin de l'installation veuillez exécuter `source ~/.bashrc`afin de prendre en compte ces modifications.
-
-##CONFIGURATION
-Différents scripts permettent de faciliter l'utilisation de Robair.
-
-### Changement d'IP
-
-Lorsque Robair change de réseau, son IP change. Il est nécessaire de mettre à jour différents fichiers de configuration. Ceci est effectué par le script `changeip.bash`. Il met à jour les fichiers de configuration de l'interface web et génère le certificat SSL correspondant. 
-
-
-###SSL/TLS
-Robair est piloté par une interface web. Afin de sécuriser la connexion et d'être compatible avec les navigateurs, les différentes connexions utilisent un certificat SSL.
-
-Le certificat dois être accepté par une autorité de certification. Ces autorités de certification sont généralement payantes. La solution adotpée est de créer soi-même cette autorité. Cette autorité devra être importée dans le ou les navigateur(s) pilotant RobAIR.
-A partir de cette autorité, vous pouvez générer des certificats SSL qui seront accepté par votre navigateur.
-Une autorité peut donc être utilisé pour générer les certificats de plusieurs RobAIR.
-
-####Création de l'autorité de certification
-
-Si vous avez déjà généré une autorité de certification sur un autre ordinateur par exemple, veuillez copier les fichiers rootCA.crt  rootCA.key  rootCA.srl dans `$ROBAIR_HOME/ssl`
-
-Sinon exécutez :
-
+- Si l'utilisateur courant n'était préalablement pas dans le groupe `dialout`
+(autrement dit, si le script d'installation a affiché "donne à l'utilisateur
+l'accès aux ports série"), redémarrez votre session
+- Avec la carte Arduino branchée, lancez le chargement des programmes
 ```bash
-$ createRootCA.sh
+$ robair reload
 ```
 
-####Création du certificat du Robair
-Une fois l'autorité de certificat créé, il faut créer le certificat de RobAIR. Cette opération est à effectuer à chaque changement d'addresse IP pour plus de facilité le script `changeip.bash` peut également être utilisé .
-```bash
-$ createDeviceCRT.sh
-```
+Le script d'installation récupérera des dépôts les paquets nécessaires et
+effectuera la configuration initiale de RobAIR. Quelques variables seront aussi
+ajoutées au bashrc de l'utilisateur, en plus d'un service systemd permettant de
+démarrer et arrêter les programmes.
 
-###Changement carte arduino
-Le script `changearduino.bash` permet de configurer le fichier `robair.launch` afin que ROS se connecte à la bonne carte Arduino.
-Une seule carte disposant d'une laison serie doit être connecté à l'ordinateur avant de lancer ce script. 
-Ce script n'est utile que la carte arduino est changée.
 
-##Utilisation
+## Utilisation
 
-###Première utilisation
+### Procédure
 
-- Allumez RobAIR
+Sur RobAIR
+- Allumez le robot
+- Allumez la tablette
 - Branchez la tablette
-- Allumer la tablette
-- Connectez vous au réseau wifi. Si votre RobAIR dispose d'une carte wifi externe pensez à déconnecté la carte wifi interne (INTEL).
-- Ouvrez un terminal et lancez la commande `changeip.bash`, notez l'adresse IP indiqué (ROBAIR_IP).
-- Lancer la commande `robair start`
-- Sur la machine utilisateur, allez à l'adresse http://ROBAIR_IP:6081 (remplacez ROBAIR_IP par l'actuelle adresse IP)
-- Récupérez l'autorité de certification et installez la sur le navigateur utilisateur.
+- Connectez vous au réseau wifi. Si votre RobAIR dispose d'une carte wifi
+externe pensez à déconnecter la carte wifi interne (INTEL).
+- Ouvrez un terminal et lancez la commande `robair ip`, notez l'adresse IP indiquée (ROBAIR_IP)
+- Lancez la commande `robair start`
+- Ouvrez chromium et allez à l'adresse https://ROBAIR_IP:6080 (en remplaçant
+ROBAIR_IP par l'adresse notée précédemment)
+
+Sur la machine utilisateur
+- Allez à l'adresse http://ROBAIR_IP:6081
+- Récupérez l'autorité de certification et installez-la sur le navigateur client
 - Allez à l'adresse https://ROBAIR_IP:6080
 
 
-###Environnement RobAIR
-Le script `robair` vous permet de lancer, arreter ou relancer les différents programme de RobAIR.
-Le programme sous-jacent utiliser est l'utilitaire `roslaunch` de ROS
+### Gestion
 
+La partie logicielle de RobAIR peut être contrôlée depuis la tablette via le
+programme `robair`. Utilisez les commandes suivantes pour respectivement lancer,
+arrêter ou redémarrer le logiciel.
 ```bash
 $ robair start
-```
-La commande  `robair start` lance les différents programmes de RobAIR. Vous pouvez ensuite utilisé Ctrl+C pour l'arrêter. 
-```bash
 $ robair stop
-```
-La commande  `robair stop` arrête l'ensemble des programmes. Utile quand vous n'avez plus acces au terminal qui a lancer le programme. 
-```bash
 $ robair restart
 ```
-La commande  `robair restart` arrête l'ensemble des programmes puis les relance après 3 secondes. 
+
+Si `systemd` est installé (par défaut sous Ubuntu), ces commandes pilotent
+RobAIR via un service systemd en session utilisateur. L'intérêt est
+essentiellement de permettre le lancement de RobAIR au démarrage, puis de gérer
+automatiquement les erreurs (`systemd` relancera le logiciel s'il venait à
+planter). Avec quelques modifications il serait aussi possible de
+configurer l'activation par socket.
+
+Le programme `robair` permet aussi la mise à jour du logiciel via cette commande
+```bash
+$ robair update
+```
+Cela récupérera la dernière version de RobAIR via Git, recompilera les
+programmes et mettra à jour la carte Arduino.
+
+
+## Développement
+
+RobAIR est développé au-dessus de l'architecture [ROS][1].
+
+L'essentiel du code du robot se trouve dans `arduino/libraries`, avec le point
+d'entrée dans `arduino/robairarduino`.
+
+L'interface est servie par un serveur `nodejs` résidant dans `interface`.
+
+Si vous souhaitez tester des modifications locales, vous pouvez recompiler les
+programmes et recharger la carte Arduino via cette commande
+```bash
+$ robair reload
+```
+
+ [1]: http://www.ros.org/

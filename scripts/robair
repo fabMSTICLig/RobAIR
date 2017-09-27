@@ -1,92 +1,253 @@
 #!/bin/bash
 
+PIDFILE="/run/user/$UID/robair.pid"
+
 if [ -z $ROBAIR_HOME ]; then
-	echo "$(tput setaf 1)La variable ROBAIR_HOME doit être définie.$(tput sgr0)"
-	exit
+  export ROBAIR_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  source "$ROBAIR_HOME/scripts/env.bash"
 fi
 
+source "$ROBAIR_HOME/scripts/helpers.sh"
+
+
 startme() {
-  if [ ! -f $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch ]; then
-    if [ ! -d $ROBAIR_HOME/catkin_ws/src/robairmain/launch ]; then
-      mkdir $ROBAIR_HOME/catkin_ws/src/robairmain/launch
-    fi
-    cp $ROBAIR_HOME/configs/robair.launch $ROBAIR_HOME/catkin_ws/src/robairmain/launch/
+  if is_running; then
+    echo "RobAIR est déjà en cours d'exécution"
+    exit 0
   fi
+
+  if should_run_systemd "$@"; then
+    exec systemctl --user start robair.service
+  fi
+
   if [ ! -f $ROBAIR_HOME/interface/config.json ]; then
     cp $ROBAIR_HOME/interface/config.json.default $ROBAIR_HOME/interface/config.json
   fi
-  roslaunch robairmain robair.launch
+
+  find_ip
+
+  if ! find_arduino; then
+    echo "Aucune carte Arduino trouvée" >> /dev/stderr
+    export SKIP_ARDUINO=true
+  fi
+
+  export ROS_IP=$ROBAIR_IP
+
+  echo $$ > "$PIDFILE"
+  exec roslaunch robairmain robair.launch
+}
+
+should_run_systemd() {
+  [ "$1" = '--systemd' ] && return 1
+  state="$(systemctl --user is-enabled robair.service 2>>/dev/null)"
+  [ "$state" = 'enabled' -o "$state" = 'linked' ] && return 0
+  return 1
+}
+
+is_running_systemd() {
+  systemctl --user --quiet is-active robair.service
+}
+
+is_running() {
+  [ -f "$PIDFILE" ] || return 1
+  cmd=$(ps --no-headers --pid $(< "$PIDFILE") -o comm)
+  test "$cmd" = "roslaunch"
 }
 
 stopme() {
-  pkill -SIGINT -f roslaunch
+  [ -f "$PIDFILE" ] || return 1
+
+  if is_running_systemd; then
+    systemctl --user stop robair.service
+  else
+    kill -SIGINT $(< "$PIDFILE")
+    while is_running; do
+      sleep 0.5
+    done
+    rm -f "$PIDFILE"
+  fi
+}
+
+status() {
+  if is_running; then
+    echo "$(tput setaf 2)RobAIR est activé$(tput sgr0)"
+    exit 0
+  else
+    echo "$(tput setaf 1)RobAIR est arrêté$(tput sgr0)"
+    exit 1
+  fi
 }
 
 restart() {
-  pkill -9 -f "robairmain/proxy"
-  stopme
-  sleep 3
-  startme
-}
-changeip() {
-  if [ ! -z "$1" ]; then
-  	export ROBAIR_IP=$1
+  if is_running_systemd; then
+    systemctl --user restart robair.service
   else
-    ROBAIR_IP_LOCAL=`ifconfig | grep 192.168 | awk -F'[: ]+' '{print $4}'`
-    if [[ -z $ROBAIR_IP_LOCAL ]]; then
-    	export ROBAIR_IP_LOCAL="localhost"
-    fi
-    if [ "$ROBAIR_IP" != "$ROBAIR_IP_LOCAL" ]; then
-      echo "$(tput setaf 1)ROBAIR_IP diffère de votre IP actuel '$ROBAIR_IP_LOCAL'. Veuillez exécuter:$(tput sgr0)"
-      echo "$(tput setaf 2)source ~/.bashrc$(tput sgr0)"
-      exit 1
-    fi
+    stopme
+    startme
+  fi
+}
+
+find_ip() {
+  ROBAIR_IP=$(ip route get 8.8.8.8 2>>/dev/null | awk 'NR==1 {print $NF}')
+  if [ "x$ROBAIR_IP" = 'x' ]; then
+    ROBAIR_IP=localhost
   fi
 
-  $ROBAIR_HOME/scripts/createDeviceCRT.bash
+  export ROBAIR_IP
+
+  last_ip_file="$ROBAIR_HOME/configs/.last_ip"
+
+  if [ -f "$last_ip_file" ] &&
+    [ "$ROBAIR_IP" = "$(< "$last_ip_file")" ]; then
+    return 0
+  fi
+
+
+  # The address changed since last time
+
+  start_job "Génère un nouveau certificat SSL"
+  $ROBAIR_HOME/scripts/createDeviceCRT.bash &>/dev/null
+  end_job noexit
+
   if [[ ! -f  $ROBAIR_HOME/interface/public/common/js/config.js ]]; then
-  	cp $ROBAIR_HOME/interface/public/common/js/config.js.default $ROBAIR_HOME/interface/public/common/js/config.js
+    cp $ROBAIR_HOME/interface/public/common/js/config.js.default \
+      $ROBAIR_HOME/interface/public/common/js/config.js
   fi
-  sed -i -e 's#\(.*serverurl : \).*#\1"'"$ROBAIR_IP"'",#' $ROBAIR_HOME/interface/public/common/js/config.js
-  sed -i -e 's/\r$//g' $ROBAIR_HOME/interface/public/common/js/config.js
-  sed -i -e '/Robair/,/https/{s#\(.*"url":\).*#\1"https://'"$ROBAIR_IP"':6080/"#}' ~/.config/chromium/Default/Bookmarks
-  echo "$(tput setaf 2)L'IP de RobAIR est $ROBAIR_IP$(tput sgr0)"
+
+  sed -i -e 's#\(.*serverurl *: \).*#\1"'"$ROBAIR_IP"'",#' \
+    $ROBAIR_HOME/interface/public/common/js/config.js
+
+  [ -f ~/.config/chromium/Default/Bookmarks ] &&
+    sed -i -e '/Robair/,/https/{s#\(.*"url":\).*#\1"https://'"$ROBAIR_IP"':6080/"#}' \
+      ~/.config/chromium/Default/Bookmarks
+
+  echo "$ROBAIR_IP" > "$last_ip_file"
 }
 
-changearduino()
+find_arduino()
 {
-  PORT=`ls /dev/serial/by-id/`
-  if [ -z $PORT ]; then
-  	echo "Aucune carte arduino connectée"
-  else
-  	sed -i -e 's#".*Arduino[^"]*"#"port" value="/dev/serial/by-id/'"$PORT"'"#g' $ROBAIR_HOME/catkin_ws/src/robairmain/launch/robair.launch
+  ROBAIR_ARDUINO="$(ls /dev/serial/by-id/*Arduino* 2>>/dev/null)"
+  if [ $? -ne 0 ]; then
+    return 1;
   fi
+  export ROBAIR_ARDUINO
+}
+
+do_reload() {
+  start_job "Compile les paquets ROS locaux"
+  (cd catkin_ws && catkin_make install)
+  end_job
+
+  start_job "Génère la bibliothèque ros_lib pour Arduino"
+  rm -rf arduino/libraries/ros_lib
+  rosrun rosserial_arduino make_libraries.py arduino/libraries
+  end_job
+
+  if ! find_arduino; then
+    echo "Aucune carte Arduino trouvée" 1>&2
+    return 1
+  fi
+  export MONITOR_PORT="$ROBAIR_ARDUINO"
+
+  start_job "Met à jour la carte Arduino"
+  (cd arduino/robairarduino && make upload)
+  end_job
+}
+
+reload() {
+  cd "$ROBAIR_HOME"
+  start_quiet_mode reload.log
+
+  is_running
+  running=$?
+  is_running_systemd
+  running_systemd=$?
+  if [ "$running" -eq 0 ]; then
+    start_job "Arrête RobAIR"
+    stopme
+    end_job
+  fi
+
+  do_reload
+
+  if [ "$running" -eq 0 ]; then
+    start_job "Relance RobAIR"
+    if [ "$running_systemd" -eq 0 ]; then
+      systemctl --user start robair.service
+    else
+      startme
+    fi
+    end_job
+  fi
+
+  stop_quiet_mode
+  rm -f reload.log
+  echo
+  echo "$(tput setab 2)RobAIR a été rechargé$(tput sgr0)"
 }
 
 update() {
-  stopme
-  cd $ROBAIR_HOME
-  git pull
-  cd catkin_ws
-  catkin_make
-  catkin_make install
-  cd $ROBAIR_HOME/arduino/libraries
-  rm -rf ros_lib
-  rosrun rosserial_arduino make_libraries.py .
-  cd $ROBAIR_HOME/arduino/robairarduino
-  arduino --upload robairarduino.ino
-  cd $ROBAIR_HOME
-  echo "$(tput setaf 2)RobAIR a été mis à jour$(tput sgr0)"
+  cd "$ROBAIR_HOME"
+  start_quiet_mode update.log
+
+  is_running
+  running=$?
+  is_running_systemd
+  running_systemd=$?
+  if [ "$running" -eq 0 ]; then
+    start_job "Arrête RobAIR"
+    stopme
+    end_job
+  fi
+
+  start_job "Met à jour le dépôt Git"
+  (git fetch && git reset --hard origin/master) >>/dev/null 2>&1
+  end_job
+
+  start_job "Met à jour les dépendances du dépôt Git"
+  git submodule update --init >>/dev/null 2>&1
+  end_job
+
+  if ! ./scripts/run-migrations; then
+    exit $?
+  fi
+
+  do_reload
+
+  if [ "$running" -eq 0 ]; then
+    start_job "Relance RobAIR"
+    if [ "$running_systemd" -eq 0 ]; then
+      systemctl --user start robair.service
+    else
+      startme
+    fi
+    end_job
+  fi
+
+  stop_quiet_mode
+  rm -f update.log
+  echo
+  echo "$(tput setab 2)RobAIR a été mis à jour$(tput sgr0)"
 }
 
-case "$1" in
-    start)   startme ;;
+print_ip() {
+  find_ip
+  echo "$ROBAIR_IP"
+}
+
+
+command="$1"
+shift
+
+case "$command" in
+    start)   startme "$@" ;;
     stop)    stopme ;;
     restart) restart ;;
+    status)  status ;;
+    reload) reload ;;
     update) update ;;
-    arduino) changearduino ;;
-    ip)     changeip $2 ;;
-    *) echo "usage: $0 start|stop|restart|update|ip" >&2
+    ip) print_ip ;;
+    *) echo "usage: $0 start|stop|restart|status|reload|update" >&2
        exit 1
        ;;
 esac

@@ -2,21 +2,28 @@ ssl/*.crt
 ssl/*.key
 ssl/*.srl
 ssl/*.csr
-signalmaster
 
 *.gbr
 *.drl
 *bak
+*.sw[op]
+#*#
+*~
 
 catkin_ws/install
 catkin_ws/build
 catkin_ws/devel
-catkin_ws/src/rosserial
+catkin_ws/src/CMakeLists.txt
 
 arduino/libraries/ros_lib
 interface/node_modules
+interface/config.json
 interface/public/common/js/config.js
-catkin_ws/src/robairmain/launch/robair.launch
 
 arduino/*/paths.mk
 arduino/*/build-*/
+
+/configs/robair.service
+/configs/.last_ip
+
+/*.log
