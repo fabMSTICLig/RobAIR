@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name "ROBOTNIK_Empruntes_v2(2)")(type Legacy)(uri "C:\\Users\\Germain\\Projets\\Fablab\\Rob-AIR\\docs\\elec\\ROBOTNIK_Empruntes_v2(2).mod")(options "")(descr ""))
+  (lib (name sikulaEmpruntes)(type Legacy)(uri C:\Users\Germain\Projets\Fablab\Rob-AIR\docs\elec\sikulaEmpruntes.mod)(options "")(descr ""))
+)
