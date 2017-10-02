@@ -21,6 +21,11 @@
 #define HEAD_RADIUS    50
 #define HEAD_ARROW_LEN 60
 
+#define EYES_ROWS  5
+#define EYES_COLS  14
+#define EYES_NUM   (EYES_ROWS * EYES_COLS)
+#define EYES_TOP_Y 100
+
 SDL_Window *win = NULL;
 SDL_Renderer *ren = NULL;
 SDL_Texture *canvas = NULL;
@@ -28,6 +33,8 @@ SDL_Texture *canvas = NULL;
 int needs_redrawing = 0;
 
 int head_angle = 0;
+int eyes_leds = 0;
+struct ws2812_color eyes_colors[EYES_NUM];
 
 
 static void on_timer(union sigval);
@@ -48,6 +55,41 @@ static void gui_draw_head()
 			arrow_head[0], arrow_head[1]);
 }
 
+static void gui_draw_eyes()
+{
+	int i = 0;
+	int pos_y = EYES_TOP_Y;
+
+	for (int y = 0 ; y < EYES_ROWS ; ++y) {
+		int pos_x;
+		if (y % 2)
+			pos_x = (WIN_WIDTH / 2) + ((EYES_COLS - 1) * 30 / 2);
+		else
+			pos_x = (WIN_WIDTH / 2) - ((EYES_COLS - 1) * 30 / 2);
+
+		for (int x = 0 ; x < EYES_COLS ; ++x) {
+			unsigned int r, g, b;
+			r = eyes_colors[i].r * 6;
+			g = eyes_colors[i].g * 6;
+			b = eyes_colors[i].b * 6;
+			if (r > 255)
+				r = 255;
+			if (g > 255)
+				g = 255;
+			if (b > 255)
+				b = 255;
+
+			filledCircleRGBA(ren, pos_x, pos_y, 10, r, g, b, 0xff);
+			circleRGBA(ren, pos_x, pos_y, 10, 0, 0, 0, 0xff);
+
+			i++;
+			pos_x += (y % 2) ? -30 : 30;
+		}
+
+		pos_y += 25;
+	}
+}
+
 static void gui_clear()
 {
 	boxRGBA(ren, 0, 0, WIN_WIDTH, WIN_HEIGHT, 0xff, 0xff, 0xff, 0xff);
@@ -57,6 +99,7 @@ static void gui_draw()
 {
 	gui_clear();
 	gui_draw_head();
+	gui_draw_eyes();
 	SDL_RenderPresent(ren);
 }
 
@@ -88,6 +131,8 @@ int gui_init()
 	canvas = SDL_CreateTexture(ren, SDL_PIXELFORMAT_RGBA8888,
 			SDL_TEXTUREACCESS_TARGET, WIN_WIDTH, WIN_HEIGHT);
 	SDL_SetRenderTarget(ren, canvas);
+
+	memset(eyes_colors, 0, EYES_NUM * sizeof(*eyes_colors));
 
 	gui_draw();
 	gui_display();
@@ -168,10 +213,25 @@ static void gui_head_cb(int angle)
 	needs_redrawing = 1;
 }
 
+static void gui_eyes_cb(unsigned int num_leds, struct ws2812_color *colors)
+{
+	if (num_leds > EYES_NUM)
+		num_leds = EYES_NUM;
+
+	unsigned int rem_leds = EYES_NUM - num_leds;
+
+	memcpy(eyes_colors, colors, num_leds * sizeof(*colors));
+	memset(eyes_colors + num_leds, 0, rem_leds * sizeof(*colors));
+
+	needs_redrawing = 1;
+}
+
 void gui_attach(struct gui_data_sources *srcs)
 {
 	if (srcs->head != NULL)
 		servo_set_callback(srcs->head, gui_head_cb);
+	if (srcs->eyes != NULL)
+		ws2812_set_callback(srcs->eyes, gui_eyes_cb);
 }
 
 

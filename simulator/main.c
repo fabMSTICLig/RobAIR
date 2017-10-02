@@ -14,8 +14,10 @@
 #include "servo.h"
 
 #define PIN_HEAD 3
+#define PIN_EYES 4
 
 struct servo *head;
+struct ws2812 *eyes;
 
 void print_usage(char *argv0)
 {
@@ -25,6 +27,7 @@ void print_usage(char *argv0)
 void robair_setup(struct avr_t *avr)
 {
 	head = servo_attach(avr, PIN_HEAD);
+	eyes = ws2812_attach(avr, PIN_EYES);
 }
 
 int main(int argc, char **argv)
@@ -74,7 +77,8 @@ int main(int argc, char **argv)
 	gui_init();
 
 	struct gui_data_sources gui_srcs = {
-		.head = head
+		.head = head,
+		.eyes = eyes
 	};
 
 	gui_attach(&gui_srcs);

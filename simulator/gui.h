@@ -1,8 +1,12 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include "servo.h"
+#include "ws2812.h"
+
 struct gui_data_sources {
 	struct servo *head;
+	struct ws2812 *eyes;
 };
 
 int gui_init(void);
