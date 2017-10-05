@@ -59,7 +59,8 @@ struct servo *servo_attach(struct avr_t *avr, uint8_t pin)
 
 	s->irq = avr_alloc_irq(&avr->irq_pool, 0, 1, irq_names);
 	avr_irq_register_notify(s->irq, servo_onirq, s);
-	avr_connect_irq(arduino_mega_digital_getirq(avr, pin), s->irq);
+	s->pin_irq = arduino_mega_digital_getirq(avr, pin);
+	avr_connect_irq(s->pin_irq, s->irq);
 
 	return s;
 }
@@ -71,5 +72,8 @@ void servo_set_callback(struct servo *s, servo_callback_t callback)
 
 void servo_destroy(struct servo *s)
 {
-	//TODO
+	avr_unconnect_irq(s->pin_irq, s->irq);
+	avr_irq_unregister_notify(s->irq, servo_onirq, s);
+	avr_free_irq(s->irq, 1);
+	free(s);
 }

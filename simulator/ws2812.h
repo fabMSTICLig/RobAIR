@@ -19,7 +19,7 @@ struct ws2812 {
 	ws2812_callback_t callback;
 
 	avr_t *avr;
-	avr_irq_t *irq;
+	avr_irq_t *irq, *pin_irq;
 
 	int sent;
 	avr_cycle_count_t pulse_start;

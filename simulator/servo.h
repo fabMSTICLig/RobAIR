@@ -11,7 +11,7 @@ struct servo {
 	servo_callback_t callback;
 
 	avr_t *avr;
-	avr_irq_t *irq;
+	avr_irq_t *irq, *pin_irq;
 	int started;
 	avr_cycle_count_t pulse_start;
 	int last_angle;

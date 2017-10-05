@@ -30,6 +30,12 @@ void robair_setup(struct avr_t *avr)
 	eyes = ws2812_attach(avr, PIN_EYES);
 }
 
+void robair_clean(void)
+{
+	servo_destroy(head);
+	ws2812_destroy(eyes);
+}
+
 int main(int argc, char **argv)
 {
 	int debug = 0;
@@ -88,4 +94,6 @@ int main(int argc, char **argv)
 		state = avr_run(avr);
 
 	gui_deinit();
+
+	robair_clean();
 }

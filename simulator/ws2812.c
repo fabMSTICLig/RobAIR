@@ -147,7 +147,8 @@ struct ws2812 *ws2812_attach(struct avr_t *avr, uint8_t pin)
 
 	w->irq = avr_alloc_irq(&avr->irq_pool, 0, 1, irq_names);
 	avr_irq_register_notify(w->irq, ws2812_onirq, w);
-	avr_connect_irq(arduino_mega_digital_getirq(avr, pin), w->irq);
+	w->pin_irq = arduino_mega_digital_getirq(avr, pin);
+	avr_connect_irq(w->pin_irq, w->irq);
 
 	avr_cycle_timer_register_usec(avr,
 			RESET_THRESH / 1000,
@@ -164,5 +165,9 @@ void ws2812_set_callback(struct ws2812 *w, ws2812_callback_t callback)
 
 void ws2812_destroy(struct ws2812 *w)
 {
-	//TODO
+	avr_cycle_timer_cancel(w->avr, ws2812_ontimer, w);
+	avr_unconnect_irq(w->pin_irq, w->irq);
+	avr_irq_unregister_notify(w->irq, ws2812_onirq, w);
+	avr_free_irq(w->irq, 1);
+	free(w);
 }
