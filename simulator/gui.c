@@ -79,15 +79,20 @@ static void gui_draw_eyes()
 			r = eyes_colors[i].r * 6;
 			g = eyes_colors[i].g * 6;
 			b = eyes_colors[i].b * 6;
-			if (r > 255)
-				r = 255;
-			if (g > 255)
-				g = 255;
-			if (b > 255)
-				b = 255;
 
-			filledCircleRGBA(ren, pos_x, pos_y, 10, r, g, b, 0xff);
-			circleRGBA(ren, pos_x, pos_y, 10, 0, 0, 0, 0xff);
+			if (r != 0 || g != 0 || b != 0) {
+				if (r > 255)
+					r = 255;
+				if (g > 255)
+					g = 255;
+				if (b > 255)
+					b = 255;
+
+				filledCircleRGBA(ren, pos_x, pos_y, 10,
+						r, g, b, 0xff);
+				circleRGBA(ren, pos_x, pos_y, 10,
+						0, 0, 0, 0xff);
+			}
 
 			i++;
 			pos_x += (y % 2) ? -30 : 30;
