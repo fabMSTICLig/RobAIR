@@ -12,12 +12,15 @@
 
 #include "gui.h"
 #include "servo.h"
+#include "md49.h"
 
 #define PIN_HEAD 3
 #define PIN_EYES 4
+#define SERIAL_MOTORS 1
 
 struct servo *head;
 struct ws2812 *eyes;
+struct md49 *motors;
 
 void print_usage(char *argv0)
 {
@@ -28,12 +31,14 @@ void robair_setup(struct avr_t *avr)
 {
 	head = servo_attach(avr, PIN_HEAD);
 	eyes = ws2812_attach(avr, PIN_EYES);
+	motors = md49_attach(avr, SERIAL_MOTORS);
 }
 
 void robair_clean(void)
 {
 	servo_destroy(head);
 	ws2812_destroy(eyes);
+	md49_destroy(motors);
 }
 
 int main(int argc, char **argv)
@@ -84,7 +89,8 @@ int main(int argc, char **argv)
 
 	struct gui_data_sources gui_srcs = {
 		.head = head,
-		.eyes = eyes
+		.eyes = eyes,
+		.motors = motors
 	};
 
 	gui_attach(&gui_srcs);

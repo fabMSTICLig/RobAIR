@@ -3,10 +3,12 @@
 
 #include "servo.h"
 #include "ws2812.h"
+#include "md49.h"
 
 struct gui_data_sources {
 	struct servo *head;
 	struct ws2812 *eyes;
+	struct md49 *motors;
 };
 
 int gui_init(void);

@@ -17,7 +17,7 @@
 #define WIN_HEIGHT 700
 
 #define HEAD_CENTER_X  (WIN_WIDTH / 2)
-#define HEAD_CENTER_Y  (WIN_HEIGHT / 2)
+#define HEAD_CENTER_Y  (2 * WIN_HEIGHT / 3)
 #define HEAD_RADIUS    50
 #define HEAD_ARROW_LEN 60
 
@@ -25,6 +25,12 @@
 #define EYES_COLS  14
 #define EYES_NUM   (EYES_ROWS * EYES_COLS)
 #define EYES_TOP_Y 100
+
+#define SPEED_LEFT_X        (HEAD_CENTER_X - HEAD_ARROW_LEN - 30)
+#define SPEED_RIGHT_X       (HEAD_CENTER_X + HEAD_ARROW_LEN + 30)
+#define SPEED_Y             HEAD_CENTER_Y
+#define SPEED_LEN_MAX       100
+#define SPEED_ARROWHEAD_LEN 5
 
 SDL_Window *win = NULL;
 SDL_Renderer *ren = NULL;
@@ -35,6 +41,7 @@ int needs_redrawing = 0;
 int head_angle = 0;
 int eyes_leds = 0;
 struct ws2812_color eyes_colors[EYES_NUM];
+int8_t speed_left, speed_right;
 
 
 static void on_timer(union sigval);
@@ -90,6 +97,52 @@ static void gui_draw_eyes()
 	}
 }
 
+static void gui_draw_speed()
+{
+	double len_left = speed_left * SPEED_LEN_MAX / INT8_MAX,
+	       len_right = speed_right * SPEED_LEN_MAX / INT8_MAX;
+
+	SDL_RenderDrawLine(ren, SPEED_LEFT_X, SPEED_Y,
+			SPEED_LEFT_X, SPEED_Y - len_left);
+	SDL_RenderDrawLine(ren, SPEED_RIGHT_X, SPEED_Y,
+			SPEED_RIGHT_X, SPEED_Y - len_right);
+
+	double head_len;
+
+	if (len_left < SPEED_ARROWHEAD_LEN * 2
+			&& len_left > -SPEED_ARROWHEAD_LEN * 2)
+		head_len = -len_left / 2;
+	else if (len_left > 0)
+		head_len = -SPEED_ARROWHEAD_LEN;
+	else
+		head_len = SPEED_ARROWHEAD_LEN;
+
+	SDL_RenderDrawLine(ren, SPEED_LEFT_X, SPEED_Y - len_left,
+			SPEED_LEFT_X - head_len,
+			SPEED_Y - len_left - head_len);
+
+	SDL_RenderDrawLine(ren, SPEED_LEFT_X, SPEED_Y - len_left,
+			SPEED_LEFT_X + head_len,
+			SPEED_Y - len_left - head_len);
+
+
+	if (len_right < SPEED_ARROWHEAD_LEN * 2
+			&& len_right > -SPEED_ARROWHEAD_LEN * 2)
+		head_len = -len_right / 2;
+	else if (len_right > 0)
+		head_len = -SPEED_ARROWHEAD_LEN;
+	else
+		head_len = SPEED_ARROWHEAD_LEN;
+
+	SDL_RenderDrawLine(ren, SPEED_RIGHT_X, SPEED_Y - len_right,
+			SPEED_RIGHT_X - head_len,
+			SPEED_Y - len_right - head_len);
+
+	SDL_RenderDrawLine(ren, SPEED_RIGHT_X, SPEED_Y - len_right,
+			SPEED_RIGHT_X + head_len,
+			SPEED_Y - len_right - head_len);
+}
+
 static void gui_clear()
 {
 	boxRGBA(ren, 0, 0, WIN_WIDTH, WIN_HEIGHT, 0xff, 0xff, 0xff, 0xff);
@@ -100,6 +153,7 @@ static void gui_draw()
 	gui_clear();
 	gui_draw_head();
 	gui_draw_eyes();
+	gui_draw_speed();
 	SDL_RenderPresent(ren);
 }
 
@@ -226,12 +280,21 @@ static void gui_eyes_cb(unsigned int num_leds, struct ws2812_color *colors)
 	needs_redrawing = 1;
 }
 
+static void gui_motors_cb(int8_t speed1, int8_t speed2)
+{
+	speed_left = speed1;
+	speed_right = speed2;
+	needs_redrawing = 1;
+}
+
 void gui_attach(struct gui_data_sources *srcs)
 {
 	if (srcs->head != NULL)
 		servo_set_callback(srcs->head, gui_head_cb);
 	if (srcs->eyes != NULL)
 		ws2812_set_callback(srcs->eyes, gui_eyes_cb);
+	if (srcs->motors != NULL)
+		md49_set_callback(srcs->motors, gui_motors_cb);
 }
 
 
