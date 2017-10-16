@@ -1,0 +1,8 @@
+directory ../arduino/robairarduino
+directory ../arduino/libraries/robair
+directory ../arduino/libraries/Eyes
+directory ../arduino/libraries/Papierlogik
+directory ../arduino/libraries/md49
+directory ../arduino/libraries/ros_lib
+directory ../arduino/libraries/Adafruit_NeoPixel
+target remote :1234

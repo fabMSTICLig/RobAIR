@@ -1,0 +1,112 @@
+
+                                   Robairsim
+
+================================================================================
+
+Ce programme simule un RobAIR avec sa carte Arduino (ou plus exactement son
+processeur) et ses différents périphériques. Il récupère et interprète le
+binaire robairarduino, qui doit être préalablement compilé. Cela permet le test
+et le déboguage sans disposer de robot RobAIR opérationnel.
+
+
+
+I/ Compilation
+--------------
+
+Récupérez la bonne version de simavr via le sous-module du dépôt :
+$ git submodule update --init
+
+Installez les paquets Debian / Ubuntu suivants :
+ - freeglut3-dev
+ - libelf-dev
+ - libsdl2-dev
+ - libsdl2-gfx-dev
+
+Compilez robairsim :
+$ make
+
+
+Afin de faire fonctionner la liaison série virtuelle connectant le simulateur à
+l'architecture ROS, vous aurez besoin de modifier le module rosserial.
+
+Ouvrez ce fichier :
+catkin_ws/src/rosserial/rosserial_python/src/rosserial_python/SerialClient.py
+
+Vers la ligne 344, vous devriez trouver le code suivant :
+                self.port = Serial(port, baud, timeout=self.timeout*0.5)
+
+Modifiez cette ligne ainsi :
+                self.port = Serial(port, baud, timeout=self.timeout*0.5, rtscts=True, dsrdtr=True)
+
+Recompilez ensuite les modules ROS. Dans le répertoire catkin_ws :
+$ catkin_make install
+
+
+
+II/ Utilisation de base
+-----------------------
+
+Assurez-vous d'abord que le programme Arduino a été recompilé depuis les
+dernières modifications. Pour le compiler, depuis le répertoire
+arduino/robairarduino, lancez :
+$ make
+
+Depuis le répertoire simulator, lancez ensuite robairsim :
+$ ./launch
+Une fenêtre devrait apparaître, affichant l'état actuel du robot.
+
+Lancez ou relancez ensuite ROS, dans un autre terminal :
+$ robair restart
+
+Patientez quelques instants que le processeur virtuel se réinitialise et que le
+programme de la ros_lib publie les informations sur les topics émis et écoutés.
+Tout devrait ensuite fonctionner comme sur un véritable RobAIR.
+
+
+
+III/ Déboguage
+--------------
+
+Pour déboguer le programme de RobAIR via le simulateur, quelques étapes
+supplémentaires sont nécessaires.
+
+Vous aurez besoin du paquet Debian / Ubuntu nommé gdb-avr.
+
+Tout d'abord, robairarduino doit être compilé avec les informations de débug.
+Dans un fichier arduino/robairarduino/paths.mk, ajoutez les lignes suivantes :
+---------8<--------
+DEBUG = 1
+OPTIMIZATION_LEVEL = 0 -g
+--------->8--------
+
+Puis recompilez le programme, dans arduino/robairarduino :
+$ make clean
+$ make
+
+Lancez le simulateur en mode déboguage, dans simulator/ :
+$ ./launch -g
+
+Le simulateur va attendre une connexion gdb. Dans un autre terminal, lancez :
+$ avr-gdb ../arduino/robairarduino/build-*/robairarduino.elf
+> source gdbinit
+
+Vous pourrez alors utiliser gdb normalement.
+
+
+
+================================================================================
+
+IV/ Fonctionnement interne
+--------------------------
+
+Robairsim est basé sur simavr, configuré pour simuler une Atmega2560. Il s'agit
+du processeur de l'Arduino Mega.
+
+Les périphériques sont émulés à bas niveau grâce au système d'irq de simavr, qui
+permet de placer des hooks lors de l'écriture de certains registres,
+l'expiration de timers, etc.
+
+Le programme crée au démarrage une liaison série virtuelle sous le nom
+/tmp/simavr-uart0. Si aucune carte Arduino n'est connectée lors du démarrage de
+ROS (avec robair start) et que ce fichier existe, il est utilisé pour la
+connexion avec rosserial.

@@ -11,3 +11,9 @@
 [submodule "arduino/libraries/Adafruit_TiCoServo"]
 	path = arduino/libraries/Adafruit_TiCoServo
 	url = https://github.com/adafruit/Adafruit_TiCoServo.git
+[submodule "arduino/libraries/Adafruit_NeoPixel"]
+	path = arduino/libraries/Adafruit_NeoPixel
+	url = https://github.com/adafruit/Adafruit_NeoPixel.git
+[submodule "simulator/simavr"]
+	path = simulator/simavr
+	url = https://github.com/buserror/simavr.git

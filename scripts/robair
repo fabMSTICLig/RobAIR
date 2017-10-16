@@ -128,7 +128,11 @@ find_arduino()
 {
   ROBAIR_ARDUINO="$(ls /dev/serial/by-id/*Arduino* 2>>/dev/null)"
   if [ $? -ne 0 ]; then
-    return 1;
+    if [ -c "/tmp/simavr-uart0" ]; then
+      ROBAIR_ARDUINO="/tmp/simavr-uart0"
+    else
+      return 1;
+    fi
   fi
   export ROBAIR_ARDUINO
 }
