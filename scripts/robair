@@ -154,7 +154,7 @@ do_reload() {
   export MONITOR_PORT="$ROBAIR_ARDUINO"
 
   start_job "Met à jour la carte Arduino"
-  (cd arduino/robairarduino && make upload)
+  (cd arduino/robairarduino && make clean && make upload)
   end_job
 }
 
