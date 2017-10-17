@@ -87,10 +87,10 @@ $(document).keydown(function(e) {
                 lastkeydown = e.which;
                 break;
             case 107: // down
-                setSpeed(robairros.speed + 5);
+                setSpeed(robairros.speed + 0.05);
                 break;
             case 109: // down
-                setSpeed(robairros.speed - 5);
+                setSpeed(robairros.speed - 0.05);
                 break;
             case 79: // down
                 robairros.setHead(5);
