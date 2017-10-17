@@ -149,13 +149,15 @@ do_reload() {
 
   if ! find_arduino; then
     echo "Aucune carte Arduino trouvée" 1>&2
-    return 1
+    start_job "Recompile le code Arduino"
+    (cd arduino/robairarduino && make clean && make)
+    end_job
+  else
+    export MONITOR_PORT="$ROBAIR_ARDUINO"
+    start_job "Met à jour la carte Arduino"
+    (cd arduino/robairarduino && make clean && make upload)
+    end_job
   fi
-  export MONITOR_PORT="$ROBAIR_ARDUINO"
-
-  start_job "Met à jour la carte Arduino"
-  (cd arduino/robairarduino && make clean && make upload)
-  end_job
 }
 
 reload() {
