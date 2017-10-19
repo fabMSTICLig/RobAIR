@@ -2,9 +2,9 @@
   "httpPort":6081,
   "httpsPort":6080,
   "ssl":{
-    "key":"/home/robair/Rob-AIR/ssl/device.key",
-    "crt":"/home/robair/Rob-AIR/ssl/device.crt",
-    "ca":"/home/robair/Rob-AIR/ssl/rootCA.crt"
+    "key":"../ssl/device.key",
+    "crt":"../ssl/device.crt",
+    "ca":"../ssl/rootCA.crt"
   },
   "login" : "robair",
   "mdp" : "fabmstic"

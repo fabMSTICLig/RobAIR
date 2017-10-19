@@ -1,144 +1,234 @@
 #!/bin/bash
 
+################################################################################
+# Tests d'intégrité, variables d'environnement, setup pour l'install           #
+################################################################################
+
+# Tests
+
 if [ ! -f .robair ]; then
 	echo "Vous devez être dans le répertoire root du dépot"
 	echo "Et exécuter scripts/install.sh"
-	exit
+	exit 1
 fi
 
+
+# Variables
+
 export ROBAIR_HOME=`pwd`
+
+
+# Mise en place du logging et de l'affichage
+
+source "$ROBAIR_HOME/scripts/helpers.sh"
+start_quiet_mode install.log
+
+
+################################################################################
+# Questions à l'utilisateur                                                    #
+################################################################################
+
+# Fonctions d'aide
+
+ask() {
+	typeset -n conf_var=$1
+	read -r -p "$2" conf_var 1>&3 2>&4
+	unset -n conf_var
+}
+
+ask_yn() {
+	typeset -n conf_var=$1
+
+	res=x
+	while [ "$res" = 'x' ]; do
+		read -r -p "$2" res 1>&3 2>&4
+		case "$res" in
+			[OoYy])
+				res=y
+				;;
+			[Nn])
+				res=n
+				;;
+			'')
+				res=$conf_var
+				;;
+			*)
+				res=x
+				;;
+		esac
+	done
+
+	conf_var=$res
+	unset -n conf_var
+}
+
+
+echo "$(tput setab 2)Configuration$(tput sgr0)" >&3
+
+# Bashrc
+
+if grep ROBAIR ~/.bashrc >>/dev/null 2>&1; then
+	do_bashrc=n
+else
+	do_bashrc=y
+	ask_yn do_bashrc "Faut-il configurer votre ~/.bashrc ? [O/n] "
+fi
+
+
+# Proxies
+
+if [ -z "$http_proxy" ]; then
+	ask http_proxy "Si vous avez un proxy, veuillez l'indiquer. Sinon laissez vide. [] "
+	if [ -n "$http_proxy" ]; then
+		same_proxy=y
+		ask_yn same_proxy "Votre proxy HTTPS est-il identique ? [O/n] "
+		[ "$same_proxy" = 'y' ] && https_proxy="$http_proxy"
+	fi
+fi
+export http_proxy
+export https_proxy
+
+
+# Autorité de certification
+
+do_authority=y
+ask_yn do_authority "Faut-il générer une autorité de certification ? [O/n] "
+
+
+# Lancement au démarrage par systemd
+
+do_enable_systemd_unit=n
+if which systemctl >>/dev/null 2>&1; then
+	do_enable_systemd_unit=y
+	ask_yn do_enable_systemd_unit "Voulez-vous lancer RobAIR au démarrage ? [O/n] "
+fi
+
+
 
 ##########################################
 # Configuration du ~/bashrc
 # et création des variables d'environement correspondantes
 ##########################################
 
-testbash=`cat ~/.bashrc | grep ROBAIR`
-if [[ -z $testbash ]]; then
-	read -r -p "Configurer ~/bashrc ? [O/n] "
-	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-		echo "" >> ~/.bashrc
-		echo "#ROBAIR SETTINGS" >> ~/.bashrc
-		echo "export ROBAIR_HOME=$ROBAIR_HOME" >> ~/.bashrc
-		echo "source \$ROBAIR_HOME/scripts/env.bash"  >> ~/.bashrc
-	fi
+echo >&3
+echo "$(tput setab 2)Installation$(tput sgr0)" >&3
+
+# Demande le mot de passe pour les prochaines invocations de sudo
+sudo true
+if [ "$?" -ne 0 ]; then
+	echo "[$(tput setaf 1)ERREUR$(tput sgr0)]" \
+		"Vous devez avoir les droits superutilisateur pour installer RobAIR" >&4
+	exit 1
 fi
 
-# Récupère l'IP actuel du Robair
-export ROBAIR_IP=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
+# Bashrc
+if [ "$do_bashrc" = 'y' ]; then
+	start_job "Configure le bashrc"
+	echo "" >> ~/.bashrc
+	echo "#ROBAIR SETTINGS" >> ~/.bashrc
+	echo "export ROBAIR_HOME=$ROBAIR_HOME" >> ~/.bashrc
+	echo "source \$ROBAIR_HOME/scripts/env.bash"  >> ~/.bashrc
+	end_job
+fi
+
 export PATH="$PATH:$ROBAIR_HOME/scripts/"
 
-# Met à jour ROBAIR_HOME dans les fichiers de configuration
-./scripts/changehome.bash
-
-if [ -z $http_proxy ]; then
-	read -r -p "Veuillez entrer votre proxy ou tapez entrée si vous n'en avez pas:" response
-	if [ ! -z "$response" ]; then
-		export http_proxy=$response
-		git config --global http.proxy $http_proxy
-	fi
+# Droits d'accès au port série
+if ! groups | grep dialout &>/dev/null; then
+	start_job "Donne à l'utilisateur l'accès aux ports série"
+	sudo adduser "$USER" dialout
+	end_job
 fi
 
-if [ -z $https_proxy] && [ ! -z $http_proxy ]; then
-	read -r -p "Votre proxy https est identique au proxy http ? [O/n] "
-	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-        	export https_proxy=$http_proxy
-	fi
+# Ajoute une règle pour que ModemManager ne considère pas les Arduino pour sa
+# recherche de modems (évite que le périphérique soit temporairement utilisé au
+# démarrage)
+if [ ! -f /etc/udev/rules.d/77-arduino.rules ]; then
+	start_job "Ajoute les règles udev pour Arduino"
+	sudo sh -c "echo 'ATTRS{idVendor}==\"2a03\", ENV{ID_MM_DEVICE_IGNORE}=\"1\"' > /etc/udev/rules.d/77-arduino.rules"
+	end_job
 fi
 
+# Installation des paquets
+start_job "Ajoute les dépôts ROS"
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo -E apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116
+end_job
 
-echo "Veuillez entrer votre mot de passe pour installer les packages (sudo)"
-
+start_job "Met à jour les listes de paquets"
 sudo -E apt-get update
+end_job
 
 
+start_job "Installe les paquets nécessaires"
+sudo -E apt-get -y install coturn nodejs-legacy npm chromium-browser arduino \
+	ros-kinetic-ros-base ros-kinetic-rosbridge-suite ros-kinetic-urg-node \
+	ros-kinetic-tf
+end_job
+
+start_job "Met à jour les dépendances ROS"
+source /opt/ros/kinetic/setup.bash
+sudo -E rosdep init
+rosdep update
+end_job
 
 
-echo "$(tput setaf 1)Installation $(tput setab 7)coturn nodejs npm $(tput sgr0)"
-sudo -E apt-get install coturn nodejs-legacy npm chromium-browser
+# Autorité de certification
+if [ "$do_authority" = 'y' ]; then
+	start_job "Génère l'autorité de certification"
+	./scripts/createRootCA.bash
+	end_job
+fi
 
-if [[ ! -d signalmaster ]]; then
-	read -r -p "Installation signalmaster ? [O/n] "
-	if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-		git clone https://github.com/andyet/signalmaster.git
-		#Copie et edition de la configuration de signalmaster
-		cp $ROBAIR_HOME/configs/signalmaster.json $ROBAIR_HOME/signalmaster/config/development.json
-		python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:key $ROBAIR_HOME/ssl/device.key
-		python $ROBAIR_HOME/scripts/editjson.py $ROBAIR_HOME/signalmaster/config/development.json server:cert $ROBAIR_HOME/ssl/device.crt
-		cd $ROBAIR_HOME/signalmaster
-		npm install
+
+start_job "Génère le certificat SSL"
+./scripts/createDeviceCRT.bash
+end_job
+
+
+# Récupère les sous-modules
+start_job "Récupère les dépendances du dépôt Git"
+git submodule update --init
+end_job
+
+# Compile les packages ROS
+start_job "Compile les paquets ROS locaux"
+(cd "$ROBAIR_HOME/catkin_ws" && catkin_make install)
+end_job
+
+source "$ROBAIR_HOME/catkin_ws/devel/setup.bash"
+
+# Récupère les dépendances pour l'interface web
+start_job "Récupère les dépendances pour l'interface web"
+(cd $ROBAIR_HOME/interface && npm install)
+end_job
+
+# Configure signalmaster
+start_job "Récupère les dépendances pour signalmaster"
+(cd "$ROBAIR_HOME/signalmaster" && npm install)
+end_job
+
+# Génère la ros_lib
+start_job "Génère la bibliothèque ros_lib pour Arduino"
+rm -rf "$ROBAIR_HOME/arduino/libraries/ros_lib"
+rosrun rosserial_arduino make_libraries.py "$ROBAIR_HOME/arduino/libraries"
+end_job
+
+# Génère le service systemd et l'ajoute au système
+start_job "Génère le service systemd"
+sed "s#<ROBAIR_HOME>#$ROBAIR_HOME#g ; s#<UID>#$UID#g" \
+	"$ROBAIR_HOME/configs/robair.service.template" \
+	> "$ROBAIR_HOME/configs/robair.service"
+
+if which systemctl >>/dev/null 2>&1; then
+	if [ "$do_enable_systemd_unit" = 'n' ]; then
+		systemctl --user link "$ROBAIR_HOME/configs/robair.service"
+	else
+		systemctl --user enable "$ROBAIR_HOME/configs/robair-wait-online.service"
+		systemctl --user enable "$ROBAIR_HOME/configs/robair.service"
 	fi
 fi
+end_job
 
-cd $ROBAIR_HOME/interface
-npm install
-
-cd $ROBAIR_HOME
-
-read -r -p "Voulez vous générer une autorité de certification ? [O/n] " response
-case $response in
-	[nN])
-		read -r -p "Copier les fichiers rootCA.crt rootCA.key dans $ROBAIR_HOME/ssl puis appuyer sur entrer " response
-		;;
- 	*)
-		./scripts/createRootCA.bash
-		;;
-esac
-
-
-read -r -p "Voulez vous générer un certificat ssl ? [O/n] "
-if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-	./scripts/createDeviceCRT.bash
-fi
-
-
-read -r -p "Installation ros kinetic ? [O/n] "
-if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-
-	echo "$(tput setaf 1)Installation $(tput setab 7)ros kinetic$(tput sgr0)"
-
-	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-	sudo -E apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116
-	sudo -E apt-get update
-	sudo -E apt-get install ros-kinetic-ros-base
-	source /opt/ros/kinetic/setup.bash
-	sudo -E rosdep init
-	rosdep update
-	sudo -E apt-get install ros-kinetic-rosbridge-suite ros-kinetic-urg-node ros-kinetic-tf
-	source /opt/ros/kinetic/setup.bash
-
-fi
-
-
-
-
-read -r -p "Installation rosserial ? [O/n] "
-if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-
-
-	sudo -E apt-get install ros-kinetic-rosserial-arduino
-	sudo -E apt-get install ros-kinetic-rosserial
-	cd $ROBAIR_HOME/catkin_ws/src
-	git clone https://github.com/ros-drivers/rosserial.git
-	cd $ROBAIR_HOME/catkin_ws
-	catkin_make
-	catkin_make install
-	source $ROBAIR_HOME/catkin_ws/devel/setup.bash
-
-fi
-
-echo "$(tput setaf 1)Installation $(tput setab 7) Arduino$(tput sgr0)"
-echo "Veuillez vous rendre à l'adresse https://www.arduino.cc/en/Main/Software et télécharger la dernière version de arduino"
-echo "Une fois téléchargé veulliez modifier l'emplacement du carnet des croquis dans Fichier->Préférences par $ROBAIR_HOME/arduino"
-read -r -p "Veuillez appuyer sur ENTRER une fois l'installation effectuée."
-read -r -p "Voulez vous générer la librairie ros_lib pour arduino ? [O/n] "
-if [[ $REPLY  =~ ^[Oo]$ ||  $REPLY =~ ^$ ]]; then
-	echo "$(tput setaf 1)Genère $ROBAIR_HOME/arduino/libraries/ros_lib$(tput sgr0)"
-	mkdir -p $ROBAIR_HOME/arduino/libraries
-	cd $ROBAIR_HOME/arduino/libraries
-	rm -rf ros_lib
-	rosrun rosserial_arduino make_libraries.py .
-fi
-
-
-echo "$(tput setaf 1)Instalation terminé$(tput sgr0)"
+echo >&3
+echo "$(tput setab 2)Installation terminée$(tput sgr0)" >&3

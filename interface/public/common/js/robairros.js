@@ -179,11 +179,11 @@ robairros.analogGamepad = function (dx, dy) {
         //console.log(""+speed1+" "+speed2);
 
         var msg = new ROSLIB.Message({
-            speedL: parseInt(speed1*100),
-            speedR: parseInt(speed2*100)
+            speedL: speedL,
+            speedR: speedR
         });
         topic_cmd.publish(msg);
-}
+};
 
 robairros.setSpeed = function(speed) {
         if (typeof speed == 'string')

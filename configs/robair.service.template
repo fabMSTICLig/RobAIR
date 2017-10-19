@@ -1,0 +1,12 @@
+[Unit]
+Description=RobAIR
+Wants=robair-wait-online.service
+After=robair-wait-online.service
+
+[Service]
+Type=simple
+PIDFile=/run/user/<UID>/robair.pid
+ExecStart=<ROBAIR_HOME>/scripts/robair start --systemd
+
+[Install]
+WantedBy=default.target

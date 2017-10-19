@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source "./scripts/helpers.sh"
+
+( git ls-tree --full-tree --name-only 'HEAD@{1}' scripts/migrations/
+git ls-tree --full-tree --name-only 'HEAD' scripts/migrations/ ) | \
+	sort | uniq -u | \
+	while read m; do
+		[ ! -x "$m" ] && continue
+		start_job "Lance le script de migration $(basename "$m")"
+		"$m"
+		end_job
+	done
