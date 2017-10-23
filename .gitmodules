@@ -20,3 +20,6 @@
 [submodule "interface/public/common/libs/fisheye"]
 	path = interface/public/common/libs/fisheye
 	url = https://github.com/ericleong/fisheye.js.git
+[submodule "catkin_ws/src/mongodb_store"]
+	path = catkin_ws/src/mongodb_store
+	url = https://github.com/strands-project/mongodb_store.git

@@ -162,7 +162,8 @@ end_job
 
 start_job "Installe les paquets nécessaires"
 sudo -E apt-get -y install coturn nodejs-legacy npm chromium-browser \
-	ros-kinetic-ros-base ros-kinetic-rosbridge-suite arduino
+	ros-kinetic-ros-base ros-kinetic-rosbridge-suite \
+	arduino mongodb python-pymongo
 end_job
 
 start_job "Met à jour les dépendances ROS"
