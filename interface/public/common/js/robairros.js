@@ -267,3 +267,47 @@ topic_touch_left.subscribe(function(message) {
 topic_touch_right.subscribe(function(message) {
     robairros.touch_right_change(message.data);
 });
+
+
+/////////// Persistent config /////////////
+
+var set_param_srv = new ROSLIB.Service({
+    ros: ros,
+    name: "/config_manager/set_param",
+    serviceType: "mongodb_store/SetParam"
+});
+
+
+//TODO: make a helper to create these
+
+robairros.enable_fisheye_correction = function(val) {
+    var req = new ROSLIB.ServiceRequest({
+        param: JSON.stringify({
+            path: "/enable_fisheye_correction",
+            value: !!val
+        })
+    });
+
+    if (arguments[2])
+        set_param_srv.callService(req, arguments[1], arguments[2]);
+    else if (arguments[1])
+        set_param_srv.callService(req, arguments[1]);
+    else
+        set_param_srv.callService(req, function(res) { });
+};
+
+robairros.set_fisheye_correction = function(val) {
+    var req = new ROSLIB.ServiceRequest({
+        param: JSON.stringify({
+            path: "/fisheye_correction",
+            value: val
+        })
+    });
+
+    if (arguments[2])
+        set_param_srv.callService(req, arguments[1], arguments[2]);
+    else if (arguments[1])
+        set_param_srv.callService(req, arguments[1]);
+    else
+        set_param_srv.callService(req, function(res) { });
+};

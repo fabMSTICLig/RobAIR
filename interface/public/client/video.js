@@ -12,6 +12,12 @@ var init_video_funcs = function() {
 			if ($('#fix-distortion')[0].checked && video_active)
 				start_correction();
 		}, false);
+
+		$('#fix-distortion')[0].addEventListener(
+			'change', save_correction_pref, false);
+
+		$('#distortion-value')[0].addEventListener(
+			'change', save_correction_val, false);
 	}
 }
 
@@ -20,10 +26,10 @@ var enable_video_controls = function() {
 };
 
 var start_correction = function() {
-	update_video();
 	$('#undistorted-video')[0].style.display = '';
 	$('#remoteVideos')[0].style.display = 'none';
 	$('#distortion-value')[0].disabled = false;
+	update_video();
 };
 
 var stop_correction = function() {
@@ -61,5 +67,16 @@ webrtc.on('videoAdded', function() {
 webrtc.on('videoRemoved', function() {
 	video_active = false;
 });
+
+
+var save_correction_pref = function() {
+	var val = $('#fix-distortion')[0].checked;
+	robairros.enable_fisheye_correction(val);
+};
+
+var save_correction_val = function() {
+	var val = parseFloat($('#distortion-value')[0].value);
+	robairros.set_fisheye_correction(val);
+};
 
 window.addEventListener('load', init_video_funcs, false);
