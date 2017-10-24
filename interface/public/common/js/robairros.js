@@ -277,6 +277,33 @@ var set_param_srv = new ROSLIB.Service({
     serviceType: "mongodb_store/SetParam"
 });
 
+var fisheye_enable_param = new ROSLIB.Param({
+    ros: ros,
+    name: "/enable_fisheye_correction"
+});
+
+var fisheye_correction_param = new ROSLIB.Param({
+    ros: ros,
+    name: "/fisheye_correction"
+});
+
+
+robairros.get_fisheye_params = function(cb) {
+    var res = {
+        enable: null,
+        value: null
+    };
+
+    var retrieve_cb = function(param, val) {
+        res[param] = val;
+        if (res.enable != null && res.value != null)
+            cb(res);
+    };
+
+    fisheye_enable_param.get(retrieve_cb.bind(null, "enable"));
+    fisheye_correction_param.get(retrieve_cb.bind(null, "value"));
+};
+
 
 //TODO: make a helper to create these
 

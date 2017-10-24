@@ -1,6 +1,19 @@
 var fisheye;
 var video_active = false;
 
+var fetch_fisheye_params = function() {
+	if (!fisheye.gl)
+		return;
+
+	robairros.get_fisheye_params(function(res) {
+		$('#fix-distortion')[0].checked = res.enable;
+		$('#distortion-value')[0].value = res.value;
+
+		if ($('#fix-distortion')[0].checked && video_active)
+			start_correction();
+	});
+};
+
 var init_video_funcs = function() {
 	var undistorted_video = $('#undistorted-video')[0];
 	fisheye = new Fisheye(undistorted_video);
@@ -80,3 +93,4 @@ var save_correction_val = function() {
 };
 
 window.addEventListener('load', init_video_funcs, false);
+window.addEventListener('load', fetch_fisheye_params, false);
