@@ -12,6 +12,8 @@
   <node pkg="mongodb_store" type="mongodb_server.py" name="mongodb_server">
     <param name="database_path" value="$(env ROBAIR_HOME)/data/mongodb" />
   </node>
+  <node pkg="mongodb_store" type="config_manager.py" name="config_manager">
+  </node>
 
   <node pkg="rosserial_python" type="serial_node.py" name="serial_node" unless="$(optenv SKIP_ARDUINO false)">
     <param name="port" value="$(env ROBAIR_ARDUINO)" />
