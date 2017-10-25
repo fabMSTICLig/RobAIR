@@ -126,7 +126,7 @@ find_ip() {
 
 find_arduino()
 {
-  ROBAIR_ARDUINO="$(ls /dev/serial/by-id/*Arduino* 2>>/dev/null)"
+  ROBAIR_ARDUINO="$(ls --color=never /dev/serial/by-id/*Arduino*Mega* 2>>/dev/null)"
   if [ $? -ne 0 ]; then
     if [ -c "/tmp/simavr-uart0" ]; then
       ROBAIR_ARDUINO="/tmp/simavr-uart0"
