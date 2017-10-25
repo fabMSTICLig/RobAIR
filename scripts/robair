@@ -134,6 +134,18 @@ find_arduino()
       return 1;
     fi
   fi
+
+  last_arduino_file="$ROBAIR_HOME/configs/.last_arduino"
+
+  if [ "$(echo "$ROBAIR_ARDUINO" | wc -l)" -gt 1 ]; then
+	  if [ -f "$last_arduino_file" ] && [ -c "$(< "$last_arduino_file")" ]; then
+		  ROBAIR_ARDUINO="$(< "$last_arduino_file")"
+	  else
+		  ROBAIR_ARDUINO="$(echo "$ROBAIR_ARDUINO" | head -n1)"
+	  fi
+  fi
+
+  echo "$ROBAIR_ARDUINO" > "$last_arduino_file"
   export ROBAIR_ARDUINO
 }
 
