@@ -33,7 +33,8 @@ window.onunload = function (e) {
 
 
 var robairros = {
-    speed: 0.5
+    speed: 0.5,
+	radius: 0.2
 }
 
 
@@ -73,11 +74,11 @@ robairros.backward = function() {
 
 
 robairros.left = function() {
-    robairros.move(0, robairros.speed);
+    robairros.move(0, robairros.speed / robairros.radius);
 }
 
 robairros.right = function() {
-    robairros.move(0, -robairros.speed);
+    robairros.move(0, -robairros.speed / robairros.radius);
 }
 
 robairros.stop = function() {
