@@ -126,8 +126,8 @@ void Robair::speed_control(){
     cmd_speedL = cmd_msg_speedL;
     cmd_speedR = cmd_msg_speedR;
   }
-  md49.setSpeed1(map(cmd_speedR, -100, 100, -127, 127));
-  md49.setSpeed2(map(cmd_speedL, -100, 100, -127, 127));
+  md49.setSpeed1(map(cmd_speedL, -100, 100, -127, 127));
+  md49.setSpeed2(map(cmd_speedR, -100, 100, -127, 127));
 
   int encs[2];
   motors_msg.speedL = cmd_speedL;
