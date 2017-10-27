@@ -4,6 +4,8 @@
 
 #define ONEK 1024
 
+#define MOVE_TIMEOUT 1000
+
 //TODO: use params instead
 #define ENTRAX 0.40
 #define MPS_TO_PERCENT_A 90.0
@@ -53,7 +55,7 @@ void Robair::cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK
     smooth = true;
     cmd_msg_speedL = command_msg.speedL;
     cmd_msg_speedR = command_msg.speedR;
-    last_cmdvel = ULONG_MAX - 500;
+    last_cmdvel = ULONG_MAX - MOVE_TIMEOUT;
   }
 }
 
@@ -110,7 +112,7 @@ void Robair::speed_control(){
   if(aru ||
       (cmd_msg_speedR > 0 && cmd_msg_speedL > 0 && bumperFront) ||
       (cmd_msg_speedR < 0 && cmd_msg_speedL < 0 && bumperRear) ||
-      last_cmdvel + 500 < millis() ) {
+      last_cmdvel + MOVE_TIMEOUT < millis() ) {
     cmd_speedL=0;
     cmd_speedR=0;
   } else if(smooth) {
