@@ -15,7 +15,6 @@ Robair::Robair(ros::NodeHandle & nh):nh(nh),
 battery_pub("battery_level",&battery_msg),
 log_pub("log",&log_msg),
 md49(Serial1),
-sub_cmdmotor("cmdmotors", &Robair::cmdmotorsCb, this),
 sub_cmdvel("cmd_vel", &Robair::cmdvelCb, this),
 motors_pub("motors_info", &motors_msg),
 eyes_pub("eyes",&eyes_msg),
@@ -48,22 +47,9 @@ void Robair::powerMD49(bool on)
   }
 }
 
-void Robair::cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK FUNCTION
-
-  if(!aru)
-  {
-    smooth = true;
-    cmd_msg_speedL = command_msg.speedL;
-    cmd_msg_speedR = command_msg.speedR;
-    last_cmdvel = ULONG_MAX - MOVE_TIMEOUT;
-  }
-}
-
 void Robair::cmdvelCb(const geometry_msgs::Twist& command_msg)
 {
   if(!aru) {
-    smooth = false;
-
     // Compute requested speed
 
     double angular_comp = command_msg.angular.z * (ENTRAX / 2.0);
@@ -115,13 +101,6 @@ void Robair::speed_control(){
       last_cmdvel + MOVE_TIMEOUT < millis() ) {
     cmd_speedL=0;
     cmd_speedR=0;
-  } else if(smooth) {
-    //low filter for smooth acceleration
-    cmd_speedL = (float)(cmd_speedL) * coef_smoothness
-      + (1.0-coef_smoothness) * (float)(cmd_msg_speedL);
-    cmd_speedR = (float)(cmd_speedR)*coef_smoothness
-      + (1.0-coef_smoothness) * (float)(cmd_msg_speedR);
-
   } else {
     cmd_speedL = cmd_msg_speedL;
     cmd_speedR = cmd_msg_speedR;
@@ -243,7 +222,6 @@ void Robair::loadParamsCb(const std_msgs::Empty& msgemp){
     nh.getParam("/bumpRTresh", &bumperRTresh);
     nh.getParam("/touchLTresh", &touchLeftTresh);
     nh.getParam("/touchRTresh", &touchRightTresh);
-    nh.getParam("/coefSmoothness", &coef_smoothness);
     nh.getParam("/aruDelay", &ibuff);
     timeoutARUDelay=ibuff;
 
@@ -313,7 +291,6 @@ void Robair::begin()
   papTouchLeft.init(float(analogRead(PIN_TOUCH_LEFT))/ONEK);
   papTouchRight.init(float(analogRead(PIN_TOUCH_RIGHT))/ONEK);
 
-	nh.subscribe(sub_cmdmotor);
 	nh.subscribe(sub_cmdvel);
 	nh.advertise(motors_pub);
 	nh.advertise(log_pub);
@@ -337,7 +314,6 @@ void Robair::begin()
   nh.getParam("/bumpRTresh", &bumperRTresh);
   nh.getParam("/touchLTresh", &touchLeftTresh);
   nh.getParam("/touchRTresh", &touchRightTresh);
-  nh.getParam("/coefSmoothness", &coef_smoothness);
   nh.getParam("/aruDelay", &ibuff);
   timeoutARUDelay=ibuff;
 

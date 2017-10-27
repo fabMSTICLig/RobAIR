@@ -38,18 +38,14 @@ private:
   int cmd_msg_speedL = 0; //current command send by user
   int cmd_msg_speedR = 0;
   unsigned long last_cmdvel = 0;
-  bool smooth = true;
-  float coef_smoothness = 0.90;
   MD49 md49;
   const uint8_t PIN_RMD49=5;
 
-  ros::Subscriber<robairmain::MotorsCmd,Robair> sub_cmdmotor;
   ros::Subscriber<geometry_msgs::Twist,Robair> sub_cmdvel;
 
   robairmain::MotorsInfo motors_msg;
   ros::Publisher motors_pub;
 
-  void cmdmotorsCb(const robairmain::MotorsCmd& command_msg);
   void cmdvelCb(const geometry_msgs::Twist& command_msg);
   void stop_motors();
   void speed_control();
