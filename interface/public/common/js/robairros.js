@@ -262,8 +262,3 @@ topic_touch_left.subscribe(function(message) {
 topic_touch_right.subscribe(function(message) {
     robairros.touch_right_change(message.data);
 });
-
-
-window.addEventListener('load', function() {
-	setInterval(robairros.send_speed_command, 100);
-}, false);

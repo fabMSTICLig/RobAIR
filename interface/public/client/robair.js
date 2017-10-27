@@ -348,3 +348,6 @@ robairros.touch_right_change =function (on){
   if(on) $('#touchRight').addClass('touched');
   else $('#touchRight').removeClass('touched');
 }
+
+
+setInterval(robairros.send_speed_command, 100);
