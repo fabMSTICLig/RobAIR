@@ -67,8 +67,8 @@ void Robair::cmdvelCb(const geometry_msgs::Twist& command_msg)
     // Compute requested speed
 
     double angular_comp = command_msg.angular.z * (ENTRAX / 2.0);
-    double mps_speedL = command_msg.linear.x + angular_comp,
-           mps_speedR = command_msg.linear.x - angular_comp;
+    double mps_speedL = command_msg.linear.x - angular_comp,
+           mps_speedR = command_msg.linear.x + angular_comp;
 
 
     // Convert to percents
