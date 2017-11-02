@@ -34,7 +34,7 @@ window.onunload = function (e) {
 
 var robairros = {
     speed: 0.5,
-	radius: 0.2
+    wheel_radius: 0.2
 }
 
 
@@ -46,7 +46,7 @@ var topic_cmd = new ROSLIB.Topic({
 });
 
 robairros.send_speed_command = function() {
-	topic_cmd.publish(robairros._speed_msg);
+    topic_cmd.publish(robairros._speed_msg);
 };
 
 robairros.move = function(linear, angular) {
@@ -56,7 +56,7 @@ robairros.move = function(linear, angular) {
             y: 0,
             z: 0
         },
-		angular: {
+        angular: {
             x: 0,
             y: 0,
             z: angular
@@ -74,11 +74,11 @@ robairros.backward = function() {
 
 
 robairros.left = function() {
-    robairros.move(0, robairros.speed / robairros.radius);
+    robairros.move(0, robairros.speed / robairros.wheel_radius);
 }
 
 robairros.right = function() {
-    robairros.move(0, -robairros.speed / robairros.radius);
+    robairros.move(0, -robairros.speed / robairros.wheel_radius);
 }
 
 robairros.stop = function() {
