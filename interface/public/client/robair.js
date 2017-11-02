@@ -87,10 +87,10 @@ $(document).keydown(function(e) {
                 lastkeydown = e.which;
                 break;
             case 107: // down
-                setSpeed(robairros.speed + 5);
+                setSpeed(robairros.speed + 0.05);
                 break;
             case 109: // down
-                setSpeed(robairros.speed - 5);
+                setSpeed(robairros.speed - 0.05);
                 break;
             case 79: // down
                 robairros.setHead(5);
@@ -257,88 +257,27 @@ var turnheadstop = function() {
 }
 
 var analogGamepad = function (dx, dy) {
+    var norm = Math.sqrt(dx*dx + dy*dy);
+    if (norm < 0.01)
+        return [0, 0];
+    if (norm > 1) {
+        dx = dx / norm;
+        dy = dy / norm;
+        norm = 1;
+    }
 
-    var kx = robairros.speed / 100;
-    var ky = robairros.speed / 100;
-
-    var v, speed1, speed2;
-
-    speed1 = 0;
-    speed2 = 0;
-
-    dx=-dx;
-    var theta = Math.atan(dy / dx); // En radian
-    if (dx <= 0 && dy >= 0) {
+    var theta = Math.atan(dy / dx);
+    if (dx < 0) {
         theta = theta + Math.PI;
-    } else if (dx <= 0 && dy <= 0) {
-        theta = theta + Math.PI;
-    } else if (dx >= 0 && dy <= 0) {
+    } else if (dy < 0) {
         theta = theta + 2 * Math.PI;
     }
 
-    if (theta >= 0 && theta <= Math.PI / 2) { // 1er cadran
-        if (theta <= Math.PI / 4) { // 1ère moitié du 1er cadran
-            v = dx * kx;
-            speed1 = v * Math.sin(theta + Math.PI / 4);
-            speed2 = v * Math.sin(theta * 2 - Math.PI / 4);
-        } else {
-            v = dy * ky;
-            speed1 = v;
-            speed2 = v * Math.sin(theta);
-        }
+    var linear = Math.sin(theta) * norm * robairros.speed;
+    var angular = -Math.cos(theta) * norm * robairros.speed
+        * robairros.turn_factor / robairros.wheel_radius;
 
-    } else if (theta > Math.PI / 2 && theta <= Math.PI) { // 2ème cadran
-        if (theta <= 3 * Math.PI / 4) { // 1ère moitié du 2ème cadran
-            v = dy * ky;
-            speed1 = v * Math.sin(theta);
-            speed2 = v;
-        } else {
-            v = -dx * kx;
-            speed1 = v * Math.sin(theta * 2 - 3 * Math.PI / 4);
-            speed2 = v * Math.sin(theta - Math.PI / 4);
-        }
-
-    } else if (theta > Math.PI && theta <= 3 * Math.PI / 2) { // 3ème cadran
-        if (theta <= 5 * Math.PI / 4) { // 1ère moitié du 3ème cadran
-            v = dx * kx;
-            speed2 = v * Math.sin(theta * 3 - 5 * Math.PI / 4);
-            speed1 = v * Math.sin(Math.PI / 4);
-        } else {
-            v = dy * ky;
-            speed1 = -v * Math.sin(theta);
-            speed2 = v;
-        }
-
-    } else { // 4ème cadran
-        if (theta <= 7 * Math.PI / 4) { // 1ère moitié du 4ème cadran
-            v = dy * ky;
-            speed1 = v;
-            speed2 = -v * Math.sin(theta);
-        } else {
-            v = -dx * kx;
-            speed1 = -v * Math.sin(theta * 3 - 7 * Math.PI / 4);
-            speed2 = v * Math.sin(Math.PI / 4);
-        }
-
-    }
-
-    if (speed1 >= robairros.speed) {
-        speed1 = robairros.speed;
-    }
-
-    if (speed1 <= -robairros.speed) {
-        speed1 = -robairros.speed;
-    }
-
-    if (speed2 >= robairros.speed) {
-        speed2 = robairros.speed;
-    }
-
-    if (speed2 <= -robairros.speed) {
-        speed2 = -robairros.speed;
-    }
-
-    return [Math.round(speed1*100), Math.round(speed2*100)];
+    return [linear, angular];
 }
 
 
@@ -363,7 +302,7 @@ headCanvas.on("mousedown touchstart", function(e) {
             posY = (posY * 2 - 1)*-1;
 
         var speeds = analogGamepad(posX, posY);
-        robairros.sendSpeed(speeds[0], speeds[1]);
+        robairros.move(speeds[0], speeds[1]);
 });
 headCanvas.on("mousemove touchmove", function(e) {
     if (headMouseDown) {
@@ -373,7 +312,7 @@ headCanvas.on("mousemove touchmove", function(e) {
             posY = (posY * 2 - 1)*-1;
 
         var speeds = analogGamepad(posX, posY);
-        robairros.sendSpeed(speeds[0], speeds[1]);
+        robairros.move(speeds[0], speeds[1]);
     }
     e.preventDefault();
     e.stopPropagation();
@@ -410,3 +349,6 @@ robairros.touch_right_change =function (on){
   if(on) $('#touchRight').addClass('touched');
   else $('#touchRight').removeClass('touched');
 }
+
+
+setInterval(robairros.send_speed_command, 100);

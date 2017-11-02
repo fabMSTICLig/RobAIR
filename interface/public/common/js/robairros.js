@@ -33,74 +33,72 @@ window.onunload = function (e) {
 
 
 var robairros = {
-    speed: 50
+    speed: 0.5,
+    wheel_radius: 0.2,
+    turn_factor: 0.5
 }
 
 
 //Command motor
 var topic_cmd = new ROSLIB.Topic({
     ros: ros,
-    name: '/cmdmotors',
-    messageType: 'robairmain/MotorsCmd'
+    name: '/cmd_vel',
+    messageType: 'geometry_msgs/Twist'
 });
 
-robairros.foward = function() {
+robairros.send_speed_command = function() {
+    topic_cmd.publish(robairros._speed_msg);
+};
 
-    var msg = new ROSLIB.Message({
-        speedL: robairros.speed,
-        speedR: robairros.speed
+robairros.move = function(linear, angular) {
+    robairros._speed_msg = new ROSLIB.Message({
+        linear: {
+            x: linear,
+            y: 0,
+            z: 0
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: angular
+        }
     });
-    topic_cmd.publish(msg);
+};
+
+robairros.foward = function() {
+    robairros.move(robairros.speed, 0);
 }
 
 robairros.backward = function() {
-
-    var msg = new ROSLIB.Message({
-        speedL: -robairros.speed,
-        speedR: -robairros.speed
-    });
-    topic_cmd.publish(msg);
+    robairros.move(-robairros.speed, 0);
 }
 
 
 robairros.left = function() {
-
-    var msg = new ROSLIB.Message({
-        speedL: robairros.speed,
-        speedR: -robairros.speed
-    });
-    topic_cmd.publish(msg);
+    robairros.move(0, robairros.speed
+            * robairros.turn_factor / robairros.wheel_radius);
 }
 
 robairros.right = function() {
-
-    var msg = new ROSLIB.Message({
-        speedL: -robairros.speed,
-        speedR: robairros.speed
-    });
-    topic_cmd.publish(msg);
+    robairros.move(0, -robairros.speed
+            * robairros.turn_factor / robairros.wheel_radius);
 }
+
 robairros.stop = function() {
-
-    var msg = new ROSLIB.Message({
-        speedL: 0,
-        speedR: 0
-    });
-    topic_cmd.publish(msg);
+    robairros.move(0, 0);
 }
 
-robairros.sendSpeed = function(speedL, speedR) {
-        var msg = new ROSLIB.Message({
-            speedL: speedL,
-            speedR: speedR
-        });
-        topic_cmd.publish(msg);
-};
+robairros.stop();
+
 
 robairros.setSpeed = function(speed) {
-        if (speed < 0) speed = 0;
-        else if (speed > 100) speed = 100;
-        robairros.speed = parseInt(speed);
+        if (typeof speed == 'string')
+                speed = parseFloat(speed);
+        if (speed < 0)
+                speed = 0;
+        else if (speed > 1)
+                speed = 1;
+        robairros.speed = speed;
 }
 
 ////PING

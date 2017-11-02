@@ -1,12 +1,22 @@
 #include "Robair.h"
 
+#include <limits.h>
+
 #define ONEK 1024
+
+#define MOVE_TIMEOUT 1000
+
+//TODO: use params instead
+#define ENTRAX 0.40
+#define MPS_TO_PERCENT_A 90.0
+#define MPS_TO_PERCENT_B 8.0
 
 Robair::Robair(ros::NodeHandle & nh):nh(nh),
 battery_pub("battery_level",&battery_msg),
 log_pub("log",&log_msg),
 md49(Serial1),
-sub_cmdmotor("cmdmotors", &Robair::cmdmotorsCb, this),
+sub_cmdvel("cmd_vel", &Robair::cmdvelCb, this),
+motors_pub("motors_info", &motors_msg),
 eyes_pub("eyes",&eyes_msg),
 eyes(PIN_EYES),
 sub_cmdeyes("cmdeyes", &Robair::cmdEyesCb, this),
@@ -32,16 +42,50 @@ void Robair::powerMD49(bool on)
   if(on)
   {
   	md49.setMode(MD49_MODE1);
-  	md49.setAccel(3);
+  	md49.setAccel(2);
+    md49.resetEncoder();
   }
 }
 
-void Robair::cmdmotorsCb(const robairmain::MotorsCmd& command_msg) {  //CALLBACK FUNCTION
+void Robair::cmdvelCb(const geometry_msgs::Twist& command_msg)
+{
+  if(!aru) {
+    // Compute requested speed
 
-  if(!aru)
-  {
-    cmd_msg_speedL = command_msg.speedL;
-    cmd_msg_speedR = command_msg.speedR;
+    double angular_comp = command_msg.angular.z * (ENTRAX / 2.0);
+    double mps_speedL = command_msg.linear.x - angular_comp,
+           mps_speedR = command_msg.linear.x + angular_comp;
+
+
+    // Convert to percents
+
+    if (mps_speedL > 0)
+      cmd_msg_speedL = mps_speedL * MPS_TO_PERCENT_A + MPS_TO_PERCENT_B;
+    else if (mps_speedL < 0)
+      cmd_msg_speedL = mps_speedL * MPS_TO_PERCENT_A - MPS_TO_PERCENT_B;
+    else
+      cmd_msg_speedL = 0;
+    if (mps_speedR > 0)
+      cmd_msg_speedR = mps_speedR * MPS_TO_PERCENT_A + MPS_TO_PERCENT_B;
+    else if (mps_speedR < 0)
+      cmd_msg_speedR = mps_speedR * MPS_TO_PERCENT_A - MPS_TO_PERCENT_B;
+    else
+      cmd_msg_speedR = 0;
+
+
+    // Clamp values
+
+    if(cmd_msg_speedL < -100)
+      cmd_msg_speedL = -100;
+    else if(cmd_msg_speedL > 100)
+      cmd_msg_speedL = 100;
+
+    if(cmd_msg_speedR < -100)
+      cmd_msg_speedR = -100;
+    else if(cmd_msg_speedR > 100)
+      cmd_msg_speedR = 100;
+
+    last_cmdvel = millis();
   }
 }
 
@@ -51,22 +95,26 @@ void Robair::stop_motors(){
 }
 
 void Robair::speed_control(){
-	if(aru ||
-  (cmd_msg_speedR > 0 && cmd_msg_speedL > 0 && bumperFront) ||
-  (cmd_msg_speedR < 0 && cmd_msg_speedL < 0 && bumperRear) )
-	{
-		cmd_speedL=0;
-		cmd_speedR=0;
-	}
-	else
-	{
-    //low filter for smooth acceleration
-    cmd_speedL =(int)( (float)(cmd_speedL)*coef_smoothness+(1.0-coef_smoothness)*(float)(cmd_msg_speedL));
-    cmd_speedR = (float)(cmd_speedR)*coef_smoothness+(1.0-coef_smoothness)*(float)(cmd_msg_speedR);
+  if(aru ||
+      (cmd_msg_speedR > 0 && cmd_msg_speedL > 0 && bumperFront) ||
+      (cmd_msg_speedR < 0 && cmd_msg_speedL < 0 && bumperRear) ||
+      last_cmdvel + MOVE_TIMEOUT < millis() ) {
+    cmd_speedL=0;
+    cmd_speedR=0;
+  } else {
+    cmd_speedL = cmd_msg_speedL;
+    cmd_speedR = cmd_msg_speedR;
+  }
+  md49.setSpeed1(map(cmd_speedL, -100, 100, -127, 127));
+  md49.setSpeed2(map(cmd_speedR, -100, 100, -127, 127));
 
-	}
-  md49.setSpeed1(map(cmd_speedR, -100, 100, -127, 127));
-  md49.setSpeed2(map(cmd_speedL, -100, 100, -127, 127));
+  int encs[2];
+  motors_msg.speedL = cmd_speedL;
+  motors_msg.speedR = cmd_speedR;
+  md49.getEncoders(encs);
+  motors_msg.countL = encs[0];
+  motors_msg.countR = encs[1];
+  motors_pub.publish(&motors_msg);
 }
 
 
@@ -174,7 +222,6 @@ void Robair::loadParamsCb(const std_msgs::Empty& msgemp){
     nh.getParam("/bumpRTresh", &bumperRTresh);
     nh.getParam("/touchLTresh", &touchLeftTresh);
     nh.getParam("/touchRTresh", &touchRightTresh);
-    nh.getParam("/coefSmoothness", &coef_smoothness);
     nh.getParam("/aruDelay", &ibuff);
     timeoutARUDelay=ibuff;
 
@@ -244,7 +291,8 @@ void Robair::begin()
   papTouchLeft.init(float(analogRead(PIN_TOUCH_LEFT))/ONEK);
   papTouchRight.init(float(analogRead(PIN_TOUCH_RIGHT))/ONEK);
 
-	nh.subscribe(sub_cmdmotor);
+	nh.subscribe(sub_cmdvel);
+	nh.advertise(motors_pub);
 	nh.advertise(log_pub);
 	nh.advertise(battery_pub);
 	nh.advertise(eyes_pub);
@@ -266,7 +314,6 @@ void Robair::begin()
   nh.getParam("/bumpRTresh", &bumperRTresh);
   nh.getParam("/touchLTresh", &touchLeftTresh);
   nh.getParam("/touchRTresh", &touchRightTresh);
-  nh.getParam("/coefSmoothness", &coef_smoothness);
   nh.getParam("/aruDelay", &ibuff);
   timeoutARUDelay=ibuff;
 
