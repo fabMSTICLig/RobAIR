@@ -274,7 +274,8 @@ var analogGamepad = function (dx, dy) {
     }
 
     var linear = Math.sin(theta) * norm * robairros.speed;
-    var angular = -Math.cos(theta) * norm * robairros.speed / robairros.wheel_radius;
+    var angular = -Math.cos(theta) * norm * robairros.speed
+        * robairros.turn_factor / robairros.wheel_radius;
 
     return [linear, angular];
 }

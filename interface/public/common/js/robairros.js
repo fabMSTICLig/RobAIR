@@ -34,7 +34,8 @@ window.onunload = function (e) {
 
 var robairros = {
     speed: 0.5,
-    wheel_radius: 0.2
+    wheel_radius: 0.2,
+    turn_factor: 0.5
 }
 
 
@@ -74,11 +75,13 @@ robairros.backward = function() {
 
 
 robairros.left = function() {
-    robairros.move(0, robairros.speed / robairros.wheel_radius);
+    robairros.move(0, robairros.speed
+            * robairros.turn_factor / robairros.wheel_radius);
 }
 
 robairros.right = function() {
-    robairros.move(0, -robairros.speed / robairros.wheel_radius);
+    robairros.move(0, -robairros.speed
+            * robairros.turn_factor / robairros.wheel_radius);
 }
 
 robairros.stop = function() {
