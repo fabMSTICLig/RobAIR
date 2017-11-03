@@ -7,7 +7,7 @@ body{
   /*  width: 100vw;
     height: 100vh;*/
 }
-#remoteVideos video {
+#remoteVideos video, canvas.video {
     margin: auto;
     width: 70vw;
     height: 52.5vw;
