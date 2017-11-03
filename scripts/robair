@@ -126,7 +126,7 @@ find_ip() {
 
 find_arduino()
 {
-  ROBAIR_ARDUINO="$(ls /dev/serial/by-id/*Arduino* 2>>/dev/null)"
+  ROBAIR_ARDUINO="$(ls --color=never /dev/serial/by-id/*Arduino*Mega* 2>>/dev/null)"
   if [ $? -ne 0 ]; then
     if [ -c "/tmp/simavr-uart0" ]; then
       ROBAIR_ARDUINO="/tmp/simavr-uart0"
@@ -134,6 +134,18 @@ find_arduino()
       return 1;
     fi
   fi
+
+  last_arduino_file="$ROBAIR_HOME/configs/.last_arduino"
+
+  if [ "$(echo "$ROBAIR_ARDUINO" | wc -l)" -gt 1 ]; then
+	  if [ -f "$last_arduino_file" ] && [ -c "$(< "$last_arduino_file")" ]; then
+		  ROBAIR_ARDUINO="$(< "$last_arduino_file")"
+	  else
+		  ROBAIR_ARDUINO="$(echo "$ROBAIR_ARDUINO" | head -n1)"
+	  fi
+  fi
+
+  echo "$ROBAIR_ARDUINO" > "$last_arduino_file"
   export ROBAIR_ARDUINO
 }
 
