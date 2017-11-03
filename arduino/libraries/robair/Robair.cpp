@@ -16,7 +16,7 @@ Robair::Robair(ros::NodeHandle &nh) :
 	battery_pub("battery_level", &battery_msg),
 	log_pub("log", &log_msg),
 	md49(Serial1),
-	sub_cmdvel("cmd_vel", &Robair::cmdmotorsCb, this),
+	sub_cmdvel("cmd_vel", &Robair::cmdvelCb, this),
 	motors_pub("motors_info", &motors_msg),
 	eyes_pub("eyes", &eyes_msg),
 	eyes(PIN_EYES),
