@@ -24,6 +24,7 @@ arduino/*/paths.mk
 arduino/*/build-*/
 
 /configs/robair.service
-/configs/.last_ip
+/data/last_ip
+/data/last_arduino
 
 /*.log

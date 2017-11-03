@@ -95,7 +95,7 @@ find_ip() {
 
   export ROBAIR_IP
 
-  last_ip_file="$ROBAIR_HOME/configs/.last_ip"
+  last_ip_file="$ROBAIR_HOME/data/last_ip"
 
   if [ -f "$last_ip_file" ] &&
     [ "$ROBAIR_IP" = "$(< "$last_ip_file")" ]; then
@@ -135,7 +135,7 @@ find_arduino()
     fi
   fi
 
-  last_arduino_file="$ROBAIR_HOME/configs/.last_arduino"
+  last_arduino_file="$ROBAIR_HOME/data/last_arduino"
 
   if [ "$(echo "$ROBAIR_ARDUINO" | wc -l)" -gt 1 ]; then
 	  if [ -f "$last_arduino_file" ] && [ -c "$(< "$last_arduino_file")" ]; then

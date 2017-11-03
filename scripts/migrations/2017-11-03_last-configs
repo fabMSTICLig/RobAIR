@@ -1,0 +1,5 @@
+#!/bin/bash
+
+[ -e configs/.last_ip ] && mv configs/.last_ip data/last_ip
+[ -e configs/.last_arduino ] && mv configs/.last_arduino data/last_arduino
+exit 0
