@@ -76,7 +76,7 @@ Tout d'abord, robairarduino doit être compilé avec les informations de débug.
 Dans un fichier arduino/robairarduino/paths.mk, ajoutez les lignes suivantes :
 ---------8<--------
 DEBUG = 1
-OPTIMIZATION_LEVEL = 0 -g
+OPTIMIZATION_LEVEL = 0 -gdwarf-4
 --------->8--------
 
 Puis recompilez le programme, dans arduino/robairarduino :
