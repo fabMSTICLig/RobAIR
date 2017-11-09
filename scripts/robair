@@ -223,7 +223,9 @@ update() {
   end_job
 
   start_job "Met à jour les dépendances du dépôt Git"
-  git submodule update --init >>/dev/null 2>&1
+  git submodule init
+  git submodule sync --recursive
+  git submodule update --recursive
   end_job
 
   if ! ./scripts/run-migrations; then
