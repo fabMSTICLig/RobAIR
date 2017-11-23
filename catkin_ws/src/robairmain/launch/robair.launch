@@ -31,11 +31,11 @@
   </include>
 
   <!-- Odometry -->
-  <node pkg="roswifibot" type="wifibot_node" name="wifibot_node">
+  <node pkg="odometry" type="odometry_node" name="odometry_node">
     <param name="entrax" value="0.40" />
     <param name="ticsPerMeter" value="2497.69" />
   </node>
-  <node pkg="roswifibot" type="wifibot_tf_broadcaster" name="tf_broadcaster" />
+  <node pkg="odometry" type="odometry_tf_broadcaster" name="tf_broadcaster" />
   <node pkg="urg_node" type="urg_node" name="lidar">
     <param name="serial_port" value="/dev/serial/by-id/usb-Hokuyo_Data_Flex_for_USB_URG-Series_USB_Driver-if00" />
   </node>
