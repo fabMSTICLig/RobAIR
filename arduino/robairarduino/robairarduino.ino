@@ -7,7 +7,7 @@ Robair robair(nh);
 void setup()
 {
 	while(!Serial);
-	nh.getHardware()->setBaud(57600);
+	nh.getHardware()->setBaud(9600);
 	nh.initNode();
 
 	robair.begin();

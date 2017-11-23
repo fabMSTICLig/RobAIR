@@ -17,8 +17,9 @@
 
   <node pkg="rosserial_python" type="serial_node.py" name="serial_node" unless="$(optenv SKIP_ARDUINO false)">
     <param name="port" value="$(env ROBAIR_ARDUINO)" />
-
+    <param name="baud" value="9600" />
   </node>
+
   <node pkg="robairmain" type="webserver.sh" name="webserver">
   </node>
   <node pkg="robairmain" type="proxy" name="proxy">
