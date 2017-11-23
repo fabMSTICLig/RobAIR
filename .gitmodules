@@ -3,7 +3,7 @@
 	url = https://github.com/sudar/Arduino-Makefile.git
 [submodule "catkin_ws/src/rosserial"]
 	path = catkin_ws/src/rosserial
-	url = https://github.com/ros-drivers/rosserial.git
+	url = https://github.com/Pikrass/rosserial.git
 [submodule "signalmaster"]
 	path = signalmaster
 	url = https://github.com/fabMSTICLig/signalmaster.git
