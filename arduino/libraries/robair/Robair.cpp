@@ -22,6 +22,7 @@ Robair::Robair(ros::NodeHandle &nh) :
 	eyes(PIN_EYES),
 	sub_cmdeyes("cmdeyes", &Robair::cmdEyesCb, this),
 	sub_eyesmat("eyesmat", &Robair::eyesMatCb, this),
+	sub_eyesanim("eyes_anim", &Robair::eyesAnimCb, this),
 	head_pub("head", &head_msg),
 	sub_cmdhead("cmdhead", &Robair::cmdHeadCb, this),
 	sub_reboot("reboot", &Robair::rebootCb, this),
@@ -158,6 +159,11 @@ void Robair::cmdEyesCb(const std_msgs::UInt8 &eyes_msg)
 
 void Robair::eyesMatCb(const robairmain::EyesMat &mat_msg) {
 	eyes.setMatrice(mat_msg.mat);
+}
+
+void Robair::eyesAnimCb(const robairmain::EyesAnim &anim_msg)
+{
+	eyes.setAnimation(anim_msg);
 }
 
 
@@ -319,6 +325,7 @@ void Robair::begin()
 	nh.advertise(eyes_pub);
 	nh.subscribe(sub_cmdeyes);
 	nh.subscribe(sub_eyesmat);
+	nh.subscribe(sub_eyesanim);
 	nh.advertise(head_pub);
 	nh.subscribe(sub_cmdhead);
 	nh.advertise(bumperRear_pub);
@@ -355,4 +362,6 @@ void Robair::spinOnce()
 
 	check_battery(5000);
 	speed_control();
+
+	eyes.animation_step();
 }
