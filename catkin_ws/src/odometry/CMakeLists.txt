@@ -31,6 +31,8 @@ find_package(catkin REQUIRED roscpp rospy message_generation std_msgs nav_msgs g
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
+
+
 catkin_package(
 CATKIN_DEPENDS message_runtime std_msgs nav_msgs geometry_msgs robairmain
 ) #here we can include dependecies like opencv
@@ -39,6 +41,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 #common commands for building c++ executables and libraries
 add_executable(odometry_node src/odometry.cpp src/interface.cpp)
+add_dependencies(odometry_node robairmain_generate_messages_cpp)
 target_link_libraries(odometry_node ${catkin_LIBRARIES})
 
 add_executable(odometry_tf_broadcaster src/odometry_tf_broadcaster.cpp)
