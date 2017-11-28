@@ -28,7 +28,7 @@ public:
 	void begin();
 	int display_void();
 	int display_stop();
-	int setMatrice(uint8_t *mat);
+	int setMatrice(const uint8_t *mat);
 	void setMatrice(uint32_t *mat);
 	int setMatrice(int id);
 
