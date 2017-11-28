@@ -86,7 +86,7 @@ const uint8_t PROGMEM tabeyes[][70] = {
 	}
 };
 
-Eyes::Eyes(int pin) : mode(STILL)
+Eyes::Eyes(int pin) : mode(STILL), anim_dl_cur(0)
 {
 	pixels = new Adafruit_NeoPixel(NUMPIXELS, pin, NEO_GRB + NEO_KHZ800);
 }
@@ -156,13 +156,13 @@ int Eyes::setMatrice(const uint8_t *mat)
 	pixels->show();
 }
 
-void Eyes::setMatrice(uint32_t *mat)
+void Eyes::setMatrice(const uint32_t *mat)
 {
 	mode = STILL;
 	do_setMatrice(mat);
 }
 
-void Eyes::do_setMatrice(uint32_t *mat)
+void Eyes::do_setMatrice(const uint32_t *mat)
 {
 	for (int i = 0 ; i < NUMPIXELS ; ++i) {
 		int id = mat_id_to_pixel_id(i);
@@ -182,12 +182,25 @@ int Eyes::setMatrice(int id)
 
 void Eyes::setAnimation(const robairmain::EyesAnim &anim)
 {
-	if (anim.frames_length == 0)
+	if (anim_dl_cur >= MAX_ANIM_FRAMES) {
+		if (anim.last)
+			anim_dl_cur = 0;
 		return;
+	}
 
-	animation = robairmain::EyesAnim(anim);
+	animation[anim_dl_cur++] = robairmain::EyesAnim(anim);
+
+	if (anim.last) {
+		animation_length = anim_dl_cur;
+		anim_dl_cur = 0;
+		start_animation();
+	}
+}
+
+void Eyes::start_animation()
+{
 	mode = ANIMATION;
-	do_setMatrice(anim.frames[0].mat);
+	do_setMatrice(animation[0].frame.mat);
 	anim_cur_frame = 0;
 	anim_last_change = millis();
 }
@@ -199,13 +212,13 @@ void Eyes::animation_step()
 
 	unsigned long cur_dur = millis() - anim_last_change;
 
-	if (cur_dur >= animation.frames[anim_cur_frame].duration) {
+	if (cur_dur >= animation[anim_cur_frame].duration) {
 		anim_last_change = millis();
 		anim_cur_frame++;
-		if (anim_cur_frame >= animation.frames_length)
+		if (anim_cur_frame >= animation_length)
 			anim_cur_frame = 0;
 
-		do_setMatrice(animation.frames[anim_cur_frame].mat);
+		do_setMatrice(animation[anim_cur_frame].frame.mat);
 	}
 }
 

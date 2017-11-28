@@ -8,6 +8,7 @@
 
 #define NUMPIXELS 70
 #define LINEWIDTH 14
+#define MAX_ANIM_FRAMES 5
 
 #define EYESVIDE          0
 #define EYESSTRAIGHT      1
@@ -29,7 +30,7 @@ public:
 	int display_void();
 	int display_stop();
 	int setMatrice(const uint8_t *mat);
-	void setMatrice(uint32_t *mat);
+	void setMatrice(const uint32_t *mat);
 	int setMatrice(int id);
 
 	void setAnimation(const robairmain::EyesAnim &anim);
@@ -39,13 +40,18 @@ private:
 	Adafruit_NeoPixel * pixels;
 	enum {STILL, ANIMATION} mode;
 
-	robairmain::EyesAnim animation;
+	robairmain::EyesAnim animation[MAX_ANIM_FRAMES];
+	unsigned int animation_length;
+	unsigned int anim_dl_cur;
+
 	unsigned int anim_cur_frame;
 	unsigned long anim_last_change;
 
+	void start_animation(void);
+
 	int mat_id_to_pixel_id(int i);
 	uint32_t scale_color(uint32_t color, int max_power);
-	void do_setMatrice(uint32_t *mat);
+	void do_setMatrice(const uint32_t *mat);
 };
 
 #endif

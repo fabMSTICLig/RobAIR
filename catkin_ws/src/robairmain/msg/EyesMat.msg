@@ -1,2 +1,1 @@
-uint32[] mat
-uint32 duration
+uint32[70] mat
