@@ -8,7 +8,8 @@
 
 #define NUMPIXELS 70
 #define LINEWIDTH 14
-#define MAX_ANIM_FRAMES 5
+#define MAX_ANIM_FRAMES (robairmain::EyesAnim::frame_max)
+#define ANIM_DL_TIMEOUT 5000
 
 #define EYESVIDE          0
 #define EYESSTRAIGHT      1
@@ -41,13 +42,17 @@ private:
 	enum {STILL, ANIMATION} mode;
 
 	robairmain::EyesAnim animation[MAX_ANIM_FRAMES];
-	unsigned int animation_length;
-	unsigned int anim_dl_cur;
+	bool anim_dl;
+	uint8_t anim_dl_id;
+	uint8_t anim_dl_len;
+	unsigned long anim_dl_start;
 
 	unsigned int anim_cur_frame;
 	unsigned long anim_last_change;
 
+	void start_animation_download(const robairmain::EyesAnim &anim);
 	void start_animation(void);
+	void stop_animation(void);
 
 	int mat_id_to_pixel_id(int i);
 	uint32_t scale_color(uint32_t color, int max_power);

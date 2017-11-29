@@ -86,7 +86,7 @@ const uint8_t PROGMEM tabeyes[][70] = {
 	}
 };
 
-Eyes::Eyes(int pin) : mode(STILL), anim_dl_cur(0)
+Eyes::Eyes(int pin) : mode(STILL), anim_dl(false)
 {
 	pixels = new Adafruit_NeoPixel(NUMPIXELS, pin, NEO_GRB + NEO_KHZ800);
 }
@@ -182,19 +182,43 @@ int Eyes::setMatrice(int id)
 
 void Eyes::setAnimation(const robairmain::EyesAnim &anim)
 {
-	if (anim_dl_cur >= MAX_ANIM_FRAMES) {
-		if (anim.last)
-			anim_dl_cur = 0;
+	if (anim.frame_count > MAX_ANIM_FRAMES
+	    || anim.frame_count == 0
+	    || anim.index >= MAX_ANIM_FRAMES)
 		return;
+
+	if (!anim_dl) {
+		start_animation_download(anim);
+	} else if (anim.id != anim_dl_id || anim.frame_count != anim_dl_len) {
+		if (anim_dl_start + ANIM_DL_TIMEOUT < millis())
+			start_animation_download(anim);
+		else
+			return;
 	}
 
-	animation[anim_dl_cur++] = robairmain::EyesAnim(anim);
+	animation[anim.index] = anim;
 
-	if (anim.last) {
-		animation_length = anim_dl_cur;
-		anim_dl_cur = 0;
-		start_animation();
+	for (unsigned int i = 0 ; i < anim_dl_len ; ++i) {
+		if (animation[i].frame_count == 0)
+			return;
 	}
+
+	// All frames were received
+	anim_dl = false;
+	start_animation();
+}
+
+void Eyes::start_animation_download(const robairmain::EyesAnim &anim)
+{
+	stop_animation();
+
+	anim_dl = true;
+	anim_dl_id = anim.id;
+	anim_dl_len = anim.frame_count;
+	anim_dl_start = millis();
+
+	for (unsigned int i = 0 ; i < anim_dl_len ; ++i)
+		animation[i].frame_count = 0;
 }
 
 void Eyes::start_animation()
@@ -203,6 +227,11 @@ void Eyes::start_animation()
 	do_setMatrice(animation[0].frame.mat);
 	anim_cur_frame = 0;
 	anim_last_change = millis();
+}
+
+void Eyes::stop_animation()
+{
+	mode = STILL;
 }
 
 void Eyes::animation_step()
@@ -215,7 +244,7 @@ void Eyes::animation_step()
 	if (cur_dur >= animation[anim_cur_frame].duration) {
 		anim_last_change = millis();
 		anim_cur_frame++;
-		if (anim_cur_frame >= animation_length)
+		if (anim_cur_frame >= animation[anim_cur_frame].frame_count)
 			anim_cur_frame = 0;
 
 		do_setMatrice(animation[anim_cur_frame].frame.mat);
