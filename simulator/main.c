@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "simavr/sim_avr.h"
 #include "simavr/sim_elf.h"
@@ -102,4 +103,6 @@ int main(int argc, char **argv)
 	gui_deinit();
 
 	robair_clean();
+
+	unlink("/tmp/simavr-uart0");
 }
