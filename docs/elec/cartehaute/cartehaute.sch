@@ -146,6 +146,61 @@ Text Label 4300 3700 0    60   ~ 0
 5V
 Text Label 4300 3800 0    60   ~ 0
 GND
+$Comp
+L CONN_01X03 P5
+U 1 1 58CB0AEB
+P 3500 2350
+F 0 "P5" H 3500 2550 50  0000 C CNN
+F 1 "Servo2" V 3600 2350 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm" H 3500 2350 50  0001 C CNN
+F 3 "" H 3500 2350 50  0000 C CNN
+	1    3500 2350
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_01X03 P7
+U 1 1 58CB0F48
+P 5150 3050
+F 0 "P7" H 5150 3250 50  0000 C CNN
+F 1 "data" V 5250 3050 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm" H 5150 3050 50  0001 C CNN
+F 3 "" H 5150 3050 50  0000 C CNN
+	1    5150 3050
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_01X02 P14
+U 1 1 59CBA5A8
+P 5100 3550
+F 0 "P14" H 5100 3700 50  0000 C CNN
+F 1 "19/12V" V 5200 3550 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 5100 3550 50  0001 C CNN
+F 3 "" H 5100 3550 50  0000 C CNN
+	1    5100 3550
+	1    0    0    1   
+$EndComp
+$Comp
+L CONN_01X02 P12
+U 1 1 59CBA6DE
+P 4200 3300
+F 0 "P12" H 4200 3450 50  0000 C CNN
+F 1 "12V" V 4300 3300 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 4200 3300 50  0001 C CNN
+F 3 "" H 4200 3300 50  0000 C CNN
+	1    4200 3300
+	-1   0    0    -1  
+$EndComp
+$Comp
+L CONN_01X02 P13
+U 1 1 59CBA743
+P 4200 3500
+F 0 "P13" H 4200 3650 50  0000 C CNN
+F 1 "19V" V 4300 3500 50  0000 C CNN
+F 2 "robair:Bornier5mm" H 4200 3500 50  0001 C CNN
+F 3 "" H 4200 3500 50  0000 C CNN
+	1    4200 3500
+	-1   0    0    -1  
+$EndComp
 Wire Wire Line
 	3900 2450 3900 4200
 Wire Wire Line
@@ -202,28 +257,6 @@ Wire Wire Line
 	3800 1250 3800 2050
 Wire Wire Line
 	3800 2350 3800 4100
-$Comp
-L CONN_01X03 P5
-U 1 1 58CB0AEB
-P 3500 2350
-F 0 "P5" H 3500 2550 50  0000 C CNN
-F 1 "Servo2" V 3600 2350 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm" H 3500 2350 50  0001 C CNN
-F 3 "" H 3500 2350 50  0000 C CNN
-	1    3500 2350
-	-1   0    0    1   
-$EndComp
-$Comp
-L CONN_01X03 P7
-U 1 1 58CB0F48
-P 5150 3050
-F 0 "P7" H 5150 3250 50  0000 C CNN
-F 1 "data" V 5250 3050 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm" H 5150 3050 50  0001 C CNN
-F 3 "" H 5150 3050 50  0000 C CNN
-	1    5150 3050
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	3700 2350 3800 2350
 Wire Wire Line
@@ -235,4 +268,24 @@ Wire Wire Line
 	4950 2950 4950 2250
 Wire Wire Line
 	4950 2250 3700 2250
+Wire Wire Line
+	4500 3800 4500 3450
+Wire Wire Line
+	4500 3450 4400 3450
+Connection ~ 4500 3800
+Wire Wire Line
+	4550 3800 4550 3250
+Wire Wire Line
+	4550 3250 4400 3250
+Connection ~ 4550 3800
+Wire Wire Line
+	4900 3600 4700 3600
+Wire Wire Line
+	4700 3600 4700 3550
+Wire Wire Line
+	4700 3550 4400 3550
+Wire Wire Line
+	4900 3500 4900 3350
+Wire Wire Line
+	4900 3350 4400 3350
 $EndSCHEMATC
