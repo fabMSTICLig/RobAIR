@@ -156,6 +156,11 @@ var topic_cmdeyes = new ROSLIB.Topic({
     name: '/cmdeyes',
     messageType: 'std_msgs/UInt8'
 });
+var topic_eyesmat = new ROSLIB.Topic({
+    ros: ros,
+    name: '/eyesmat',
+    messageType: 'robairmain/EyesMat'
+});
 var topic_eyes = new ROSLIB.Topic({
     ros: ros,
     name: '/eyes',
@@ -174,6 +179,13 @@ robairros.setEyes = function(id){
     });
     topic_cmdeyes.publish(msg);
 }
+
+robairros.setEyesCustom = function(eyes) {
+    var msg = new ROSLIB.Message({
+        mat: eyes
+    });
+    topic_eyesmat.publish(msg);
+};
 
 ///////////head/////////////
 var topic_cmdhead = new ROSLIB.Topic({

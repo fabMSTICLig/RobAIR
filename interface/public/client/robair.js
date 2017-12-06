@@ -1,3 +1,22 @@
+// Gestion des onglets
+
+$('#ongletCommands').click(function() {
+    document.getElementById('ongletCommands').style.zIndex = 2;
+    document.getElementById('ongletCustomEyes').style.zIndex = 1;
+    document.getElementById('commandsTab').style.display = '';
+    document.getElementById('customEyesTab').style.display = 'none';
+});
+
+$('#ongletCustomEyes').click(function() {
+    document.getElementById('ongletCommands').style.zIndex = 1;
+    document.getElementById('ongletCustomEyes').style.zIndex = 2;
+    document.getElementById('commandsTab').style.display = 'none';
+    document.getElementById('customEyesTab').style.display = '';
+});
+
+
+// Commandes
+
 function setArrowActive(arrow) {
     $("#" + arrow).removeClass("btn-default");
     $("#" + arrow).addClass("active");
@@ -195,7 +214,7 @@ robairros.pongChange = function() {
     /////////////////////////////YEUX//////////////////////////////
 
 robairros.eyesChange = function(id) {
-    Eyes.drawEyes(id);
+    Eyes.set_eyes(id);
 }
 
 var eyesCanvas = $("#eyesCanvas");

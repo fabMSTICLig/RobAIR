@@ -1,164 +1,320 @@
-
-var Eyes = {};
-
-var eyesstraight=[
-    0,0,7,7,7,0,0,0,0,7,7,7,0,0,
-    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
-    0,7,0,2,0,7,0,0,7,0,2,0,7,0,
-    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
-    0,0,7,7,7,0,0,0,0,7,7,7,0,0
+// Modèles d'yeux par défaut
+var eyesstraight = [
+	['#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000','#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#FFFFFF','#000000','#00FF00','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#00FF00','#000000','#FFFFFF','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000','#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000']
 ];
 
-
-var eyesright=[
-    0,0,7,7,7,0,0,0,0,7,7,7,0,0,
-    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
-    0,7,0,0,2,7,0,0,7,0,0,2,7,0,
-    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
-    0,0,7,7,7,0,0,0,0,7,7,7,0,0
+var eyesright = [
+	['#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000','#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#00FF00','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#00FF00','#FFFFFF','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000','#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000']
 ];
 
-var eyesleft=[
-    0,0,7,7,7,0,0,0,0,7,7,7,0,0,
-    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
-    0,7,2,0,0,7,0,0,7,2,0,0,7,0,
-    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
-    0,0,7,7,7,0,0,0,0,7,7,7,0,0
+var eyesleft = [
+	['#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000','#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#FFFFFF','#00FF00','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#00FF00','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000','#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000']
 ];
 
-
-var eyestop=[
-    0,0,7,7,7,0,0,0,0,7,7,7,0,0,
-    0,7,0,2,0,7,0,0,7,0,2,0,7,0,
-    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
-    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
-    0,0,7,7,7,0,0,0,0,7,7,7,0,0
+var eyestop = [
+	['#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000','#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000'],
+	['#000000','#FFFFFF','#000000','#00FF00','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#00FF00','#000000','#FFFFFF','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000','#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000']
 ];
 
-var eyesbottom=[
-    0,0,7,7,7,0,0,0,0,7,7,7,0,0,
-    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
-    0,7,0,0,0,7,0,0,7,0,0,0,7,0,
-    0,7,0,2,0,7,0,0,7,0,2,0,7,0,
-    0,0,7,7,7,0,0,0,0,7,7,7,0,0
+var eyesbottom = [
+	['#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000','#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#000000','#000000','#FFFFFF','#000000'],
+	['#000000','#FFFFFF','#000000','#00FF00','#000000','#FFFFFF','#000000','#000000','#FFFFFF','#000000','#00FF00','#000000','#FFFFFF','#000000'],
+	['#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000','#000000','#000000','#FFFFFF','#FFFFFF','#FFFFFF','#000000','#000000']
 ];
 
-var exclamations=[
-    0,0,1,0,1,0,1,0,1,0,1,0,0,0,
-    0,0,1,0,1,0,1,0,1,0,1,0,0,0,
-    0,0,1,0,1,0,1,0,1,0,1,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,1,0,1,0,1,0,1,0,1,0,0,0
+var eyesexclamations = [
+	['#000000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#000000','#000000'],
+	['#000000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#000000','#000000'],
+	['#000000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#000000','#000000'],
+	['#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000'],
+	['#000000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000','#000000','#000000']
 ];
 
-var interogations=[
-    0,4,4,4,0,4,4,4,0,4,4,4,0,0,
-    0,4,0,4,0,4,0,4,0,4,0,4,0,0,
-    0,0,4,4,0,0,4,4,0,0,4,4,0,0,
-    0,0,4,0,0,0,4,0,0,0,4,0,0,0,
-    0,0,2,0,0,0,2,0,0,0,2,0,0,0
+var eyesinterogations = [
+	['#000000','#0000FF','#0000FF','#0000FF','#000000','#0000FF','#0000FF','#0000FF','#000000','#0000FF','#0000FF','#0000FF','#000000','#000000'],
+	['#000000','#0000FF','#000000','#0000FF','#000000','#0000FF','#000000','#0000FF','#000000','#0000FF','#000000','#0000FF','#000000','#000000'],
+	['#000000','#000000','#0000FF','#0000FF','#000000','#000000','#0000FF','#0000FF','#000000','#000000','#0000FF','#0000FF','#000000','#000000'],
+	['#000000','#000000','#0000FF','#000000','#000000','#000000','#0000FF','#000000','#000000','#000000','#0000FF','#000000','#000000','#000000'],
+	['#000000','#000000','#00FF00','#000000','#000000','#000000','#00FF00','#000000','#000000','#000000','#00FF00','#000000','#000000','#000000']
 ];
 
-var stop=[
-    1,1,1,0,1,1,1,0,1,1,1,0,1,1,
-    1,0,0,0,0,1,0,0,1,0,1,0,1,1,
-    1,1,1,0,0,1,0,0,1,0,1,0,1,0,
-    0,0,1,0,0,1,0,0,1,0,1,0,1,0,
-    1,1,1,0,0,1,0,0,1,1,1,0,1,0
+var eyesstop = [
+	['#FF0000','#FF0000','#FF0000','#000000','#FF0000','#FF0000','#FF0000','#000000','#FF0000','#FF0000','#FF0000','#000000','#FF0000','#FF0000'],
+	['#FF0000','#000000','#000000','#000000','#000000','#FF0000','#000000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#FF0000'],
+	['#FF0000','#FF0000','#FF0000','#000000','#000000','#FF0000','#000000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000'],
+	['#000000','#000000','#FF0000','#000000','#000000','#FF0000','#000000','#000000','#FF0000','#000000','#FF0000','#000000','#FF0000','#000000'],
+	['#FF0000','#FF0000','#FF0000','#000000','#000000','#FF0000','#000000','#000000','#FF0000','#FF0000','#FF0000','#000000','#FF0000','#000000']
 ];
 
-var hello=[
-    7,0,7,0,2,2,0,1,0,1,0,5,5,5,
-    7,0,7,0,2,0,0,1,0,1,0,5,0,5,
-    7,7,7,0,2,2,0,1,0,1,0,5,0,5,
-    7,0,7,0,2,0,0,1,0,1,0,5,0,5,
-    7,0,7,0,2,2,0,1,1,1,1,5,5,5
+var eyeshello = [
+	['#FFFFFF','#000000','#FFFFFF','#000000','#00FF00','#00FF00','#000000','#FF0000','#000000','#FF0000','#000000','#FF00FF','#FF00FF','#FF00FF'],
+	['#FFFFFF','#000000','#FFFFFF','#000000','#00FF00','#000000','#000000','#FF0000','#000000','#FF0000','#000000','#FF00FF','#000000','#FF00FF'],
+	['#FFFFFF','#FFFFFF','#FFFFFF','#000000','#00FF00','#00FF00','#000000','#FF0000','#000000','#FF0000','#000000','#FF00FF','#000000','#FF00FF'],
+	['#FFFFFF','#000000','#FFFFFF','#000000','#00FF00','#000000','#000000','#FF0000','#000000','#FF0000','#000000','#FF00FF','#000000','#FF00FF'],
+	['#FFFFFF','#000000','#FFFFFF','#000000','#00FF00','#00FF00','#000000','#FF0000','#FF0000','#FF0000','#FF0000','#FF00FF','#FF00FF','#FF00FF']
 
 ];
 
-
-var vide=[
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0
+var eyesvide = [
+	['#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000'],
+	['#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000'],
+	['#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000'],
+	['#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000'],
+	['#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000','#000000']
 ];
 
-var error=[
-    1,1,3,3,3,1,1,1,3,3,3,1,1,1,
-    1,0,3,0,3,1,0,1,3,0,3,1,0,1,
-    1,1,3,3,3,1,1,1,3,0,3,1,1,1,
-    1,0,3,3,0,1,1,0,3,0,3,1,1,0,
-    1,1,3,0,3,1,0,1,3,3,3,1,0,1
+var eyeserror = [
+	['#FF0000','#FF0000','#FFFF00','#FFFF00','#FFFF00','#FF0000','#FF0000','#FF0000','#FFFF00','#FFFF00','#FFFF00','#FF0000','#FF0000','#FF0000'],
+	['#FF0000','#000000','#FFFF00','#000000','#FFFF00','#FF0000','#000000','#FF0000','#FFFF00','#000000','#FFFF00','#FF0000','#000000','#FF0000'],
+	['#FF0000','#FF0000','#FFFF00','#FFFF00','#FFFF00','#FF0000','#FF0000','#FF0000','#FFFF00','#000000','#FFFF00','#FF0000','#FF0000','#FF0000'],
+	['#FF0000','#000000','#FFFF00','#FFFF00','#000000','#FF0000','#FF0000','#000000','#FFFF00','#000000','#FFFF00','#FF0000','#FF0000','#000000'],
+	['#FF0000','#FF0000','#FFFF00','#000000','#FFFF00','#FF0000','#000000','#FF0000','#FFFF00','#FFFF00','#FFFF00','#FF0000','#000000','#FF0000']
 ];
 
-Eyes.EYESVIDE=0;
-Eyes.EYESSTRAIGHT=1;
-Eyes.EYESRIGHT=2;
-Eyes.EYESLEFT=3;
-Eyes.EYESTOP=4;
-Eyes.EYESBOTTOM=5;
-Eyes.EYESEXCLAMATIONS=6;
-Eyes.EYESINTEROGATIONS=7;
-Eyes.EYESSTOP=8;
-Eyes.EYESHELLO=9;
-Eyes.EYESERROR=10;
 
-var tabeyes = [
-    vide,
-    eyesstraight,
-    eyesright,
-    eyesleft,
-    eyestop,
-    eyesbottom,
-    exclamations,
-    interogations,
-    stop,
-    hello,
-    error
-]
+var Eyes = {
+	columns: 14,
+	rows: 5,
 
+	led_borders: false,
 
-function valtocolor(val)
-{
-    r=((val&1) == 1)? "FF":"96";
-    g=((val&2) == 2)? "FF":"96";
-    b=((val&4) == 4)? "FF":"96";
-    return "#"+r+g+b;
-}
+	_init: function(canvas) {
+		if (canvas == undefined)
+			this.canvas = document.getElementById('eyesCanvas');
+		else
+			this.canvas = canvas;
+		this.canvas.style.backgroundColor = '#969696';
 
-function drawcircle(ctx,x,y,color)
-{
-    ctx.beginPath();
-    ctx.arc(parseInt(x),parseInt(y),5,0,2*Math.PI);
-    ctx.fillStyle = color;
-    ctx.fill();
-}
+		this.matrix = new Array;
+		for (var y = 0 ; y < this.rows ; ++y) {
+			this.matrix[y] = new Array;
+			for (var x = 0 ; x < this.columns ; ++x) {
+				this.matrix[y][x] = '#000000';
+			}
+		}
 
+		this.redraw();
+	},
 
-var eyesCanvas = document.getElementById("eyesCanvas");
-eyesCanvas.style.backgroundColor = '#969696';
-var eyesctx = eyesCanvas.getContext("2d");
+	set_eyes: function(id) {
+		this.matrix = this.predef_eyes[id];
+		this.redraw();
+	},
 
-Eyes.drawEyes = function(id)
-{
-    var ctx = eyesctx;
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    // Will always clear the right space
-    ctx.clearRect(0, 0, eyesCanvas.width, eyesCanvas.height);
-    ctx.restore();
-    var t=tabeyes[id];
-    for(i=0;i<5;i++)
-    {
-        for(j=0;j<14;j++)
-        {
-            //drawcircle(ctx,10+20*(j),10+15*i,valtocolor(t[i*14+(j)]));
-            drawcircle(ctx,10+20*(13-j),10+15*i,valtocolor(t[i*14+(13-j)]));
-        }
-    }
-}
+	redraw: function() {
+		for (var y = 0 ; y < this.rows ; ++y) {
+			for (var x = 0 ; x < this.columns ; ++x) {
+				this.draw_eye(x, y);
+			}
+		}
+	},
 
+	draw_eye: function(x, y) {
+		// Because of anti-aliasing, drawing multiple times on the same
+		// coordinates darkens the stroke. Clear the area to prevent that.
+		var ctx = this.canvas.getContext('2d');
+		ctx.clearRect(
+			20 * x + 3,
+			15 * y + 3,
+			14,
+			14);
 
-Eyes.drawEyes(1);
+		this.draw_circle(
+			ctx,
+			20 * x + 10,
+			15 * y + 10,
+			this.matrix[y][x],
+			this.led_borders);
+	},
+
+	draw_circle: function(ctx, x, y, color, with_stroke) {
+		ctx.beginPath();
+
+		if (with_stroke) {
+			ctx.arc(x, y, 6, 0, 2 * Math.PI);
+			ctx.strokeStyle = "#505050";
+			ctx.stroke();
+		} else {
+			ctx.arc(x, y, 5, 0, 2 * Math.PI);
+		}
+
+		if (color == '#000000')
+			ctx.fillStyle = '#969696';
+		else
+			ctx.fillStyle = color;
+
+		ctx.fill();
+	},
+
+	EYESVIDE: 0,
+	EYESSTRAIGHT: 1,
+	EYESRIGHT: 2,
+	EYESLEFT: 3,
+	EYESTOP: 4,
+	EYESBOTTOM: 5,
+	EYESEXCLAMATIONS: 6,
+	EYESINTEROGATIONS: 7,
+	EYESSTOP: 8,
+	EYESHELLO: 9,
+	EYESERROR: 10,
+
+	predef_eyes: [
+		eyesvide,
+		eyesstraight,
+		eyesright,
+		eyesleft,
+		eyestop,
+		eyesbottom,
+		eyesexclamations,
+		eyesinterogations,
+		eyesstop,
+		eyeshello,
+		eyeserror
+	]
+};
+
+var EyesEditor = Object.create(Eyes);
+Object.assign(EyesEditor, {
+	led_borders: true,
+
+	_init: function() {
+		Eyes._init.call(this, document.getElementById('eyesGrid'));
+
+		this.canvas.addEventListener(
+			'mousedown', this.on_mouse.bind(this), false);
+		this.canvas.addEventListener(
+			'mousemove', this.on_mouse.bind(this), false);
+
+		for (var i in this.tools) {
+			var t = this.tools[i];
+			document.getElementById(t + 'Tool').addEventListener(
+				'click', this.set_tool.bind(this, t), false);
+		}
+
+		document.getElementById('colorPicker').addEventListener(
+			'input', this.select_color.bind(this), false);
+		document.getElementById('colorSpectrum').addEventListener(
+			'click', this.on_spectrum.bind(this), false);
+
+		document.getElementById('btn_sendEyes').addEventListener(
+			'click', this.send.bind(this), false);
+	},
+
+	flatten: function() {
+		return this.matrix.reduce(function(a, b) { return a.concat(b); });
+	},
+
+	send: function() {
+		var flat = this.flatten();
+
+		flat = flat.map(function(color) {
+			var r = parseInt(color.substr(1, 2), 16);
+			var g = parseInt(color.substr(3, 2), 16);
+			var b = parseInt(color.substr(5, 2), 16);
+			return r << 16 | g << 8 | b;
+		});
+
+		robairros.setEyesCustom(flat);
+	},
+
+	tools: ['eraser', 'paint', 'picker'],
+	current_tool: '',
+	paint_color: '#ffffff',
+
+	set_tool: function(tool) {
+		this.current_tool = tool;
+
+		for (var i in this.tools) {
+			var t = this.tools[i];
+			document.getElementById(t + 'Tool').style.border = null;
+		}
+
+		document.getElementById(tool + 'Tool').style.border = '2px solid #666';
+	},
+
+	on_mouse: function(e) {
+		if ((e.buttons & 1) == 0)
+			return;
+
+		var rect = this.canvas.getBoundingClientRect();
+		var pixel_w = rect.width / this.columns;
+		var pixel_h = rect.height / this.rows;
+
+		var x = Math.floor(e.offsetX / pixel_w);
+		var y = Math.floor(e.offsetY / pixel_h);
+
+		switch (this.current_tool) {
+		case 'eraser':
+			this.matrix[y][x] = '#000000';
+			this.draw_eye(x, y);
+			break;
+		case 'paint':
+			this.matrix[y][x] = this.paint_color;
+			this.draw_eye(x, y);
+			break;
+		case 'picker':
+			this.paint_color = this.matrix[y][x];
+			document.getElementById('paintTool').style.backgroundColor =
+					this.paint_color;
+			break;
+		}
+	},
+
+	on_spectrum: function(e) {
+		document.getElementById('colorPicker').value = Math.floor(e.offsetX);
+		this.select_color({target: document.getElementById('colorPicker')});
+	},
+
+	select_color: function(e) {
+		var value = parseInt(e.target.value);
+		var minColor = 9; // the first few values mean "white"
+		var maxValue = e.target.max;
+		var colorBlocSize = (maxValue - minColor) / 6;
+
+		var res = Math.floor(
+			((value - minColor) % colorBlocSize) * 256 / colorBlocSize
+		);
+
+		var color;
+
+		if (value < minColor)
+			color = '#ffffff';
+		else if (value < colorBlocSize + minColor)
+			color = '#ff00' + res.toString(16);
+		else if (value < 2 * colorBlocSize + minColor)
+			color = '#' + (255 - res).toString(16) + '00ff';
+		else if (value < 3 * colorBlocSize + minColor)
+			color = '#00' + res.toString(16) + 'ff';
+		else if (value < 4 * colorBlocSize + minColor)
+			color = '#00ff' + (255 - res).toString(16);
+		else if (value < 5 * colorBlocSize + minColor)
+			color = '#' + res.toString(16) + 'ff00';
+		else
+			color = '#ff' + (255 - res).toString(16) + '00';
+
+		document.getElementById('paintTool').style.backgroundColor = color;
+		this.paint_color = color;
+		this.set_tool('paint');
+	}
+});
+
+window.addEventListener('load', Eyes._init.bind(Eyes, undefined), false);
+window.addEventListener('load', EyesEditor._init.bind(EyesEditor), false);
+window.addEventListener('load', Eyes.set_eyes.bind(Eyes, Eyes.EYESSTRAIGHT), false);
