@@ -127,22 +127,28 @@ find_ip() {
 find_arduino()
 {
   ROBAIR_ARDUINO="$(ls --color=never /dev/serial/by-id/*Arduino*Mega* 2>>/dev/null)"
-  if [ $? -ne 0 ]; then
-    if [ -c "/tmp/simavr-uart0" ]; then
-      ROBAIR_ARDUINO="/tmp/simavr-uart0"
-    else
-      return 1;
-    fi
+  if [ $? -ne 0 ] && [ -c "/tmp/simavr-uart0" ]; then
+    ROBAIR_ARDUINO="/tmp/simavr-uart0"
   fi
 
   last_arduino_file="$ROBAIR_HOME/data/last_arduino"
 
   if [ "$(echo "$ROBAIR_ARDUINO" | wc -l)" -gt 1 ]; then
 	  if [ -f "$last_arduino_file" ] && [ -c "$(< "$last_arduino_file")" ]; then
+		  # In case there are multiple Arduino Megas, take the last one used
 		  ROBAIR_ARDUINO="$(< "$last_arduino_file")"
 	  else
+		  # Fallback using the first Arduino listed
 		  ROBAIR_ARDUINO="$(echo "$ROBAIR_ARDUINO" | head -n1)"
 	  fi
+  elif [ -z "$ROBAIR_ARDUINO" ] && [ "$1" != "no-fallback" ]; then
+	  if [ -f "$last_arduino_file" ]; then
+		  ROBAIR_ARDUINO="$(< "$last_arduino_file")"
+	  fi
+  fi
+
+  if [ -z "$ROBAIR_ARDUINO" ]; then
+      return 1
   fi
 
   echo "$ROBAIR_ARDUINO" > "$last_arduino_file"
@@ -159,7 +165,7 @@ do_reload() {
   rosrun rosserial_arduino make_libraries.py arduino/libraries
   end_job
 
-  if ! find_arduino; then
+  if ! find_arduino no-fallback; then
     echo "Aucune carte Arduino trouvée" 1>&2
     start_job "Recompile le code Arduino"
     (cd arduino/robairarduino && make clean && make)
