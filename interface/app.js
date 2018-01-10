@@ -14,7 +14,7 @@ var config = JSON.parse(data);
 var ifs = require('os').networkInterfaces();
 localAddressTab = Object.keys(ifs).map(x => ifs[x].filter(x => x.family === 'IPv4' && !x.internal)[0]).filter(x => x);
 var localAddress='localhost';
-if (localAddress.length > 0)
+if (localAddressTab.length > 0)
 {
 	localAddress=localAddressTab[0].address;
 }
