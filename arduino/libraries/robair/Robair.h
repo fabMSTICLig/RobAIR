@@ -152,6 +152,12 @@ private:
 	ros::Subscriber<std_msgs::Empty,Robair> sub_loadParams;
 	void loadParamsCb(const std_msgs::Empty&);
 
+	
+	
+
+	// ========================  SERIE DEBUG  ========================
+	
+	void loopDebug();
 
 public:
 	Robair(ros::NodeHandle &nh);
