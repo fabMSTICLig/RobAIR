@@ -172,6 +172,11 @@ topic_eyes.subscribe(function(message) {
     robairros.eyesChange(parseInt(message.data));
 });
 
+robairros.on_eyesmat = function(val) { };
+topic_eyesmat.subscribe(function(message) {
+    robairros.on_eyesmat(message.mat);
+});
+
 robairros.setEyes = function(id){
 
     var msg = new ROSLIB.Message({

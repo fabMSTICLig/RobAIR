@@ -22,6 +22,8 @@
 #define EYESSTOP          8
 #define EYESHELLO         9
 #define EYESERROR         10
+#define EYESCUSTOM        254 // Only for acknowledging
+#define EYESANIM          255 // Only for acknowledging
 
 class Eyes {
 public:
@@ -34,7 +36,7 @@ public:
 	void setMatrice(const uint32_t *mat);
 	int setMatrice(int id);
 
-	void setAnimation(const robairmain::EyesAnim &anim);
+	bool setAnimation(const robairmain::EyesAnim &anim);
 	void animation_step(void);
 
 private:

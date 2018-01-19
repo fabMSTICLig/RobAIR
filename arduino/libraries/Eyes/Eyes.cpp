@@ -180,12 +180,12 @@ int Eyes::setMatrice(int id)
 	return id;
 }
 
-void Eyes::setAnimation(const robairmain::EyesAnim &anim)
+bool Eyes::setAnimation(const robairmain::EyesAnim &anim)
 {
 	if (anim.frame_count > MAX_ANIM_FRAMES
 	    || anim.frame_count == 0
 	    || anim.index >= MAX_ANIM_FRAMES)
-		return;
+		return false;
 
 	if (!anim_dl) {
 		start_animation_download(anim);
@@ -193,19 +193,20 @@ void Eyes::setAnimation(const robairmain::EyesAnim &anim)
 		if (anim_dl_start + ANIM_DL_TIMEOUT < millis())
 			start_animation_download(anim);
 		else
-			return;
+			return false;
 	}
 
 	animation[anim.index] = anim;
 
 	for (unsigned int i = 0 ; i < anim_dl_len ; ++i) {
 		if (animation[i].frame_count == 0)
-			return;
+			return false;
 	}
 
 	// All frames were received
 	anim_dl = false;
 	start_animation();
+	return true;
 }
 
 void Eyes::start_animation_download(const robairmain::EyesAnim &anim)

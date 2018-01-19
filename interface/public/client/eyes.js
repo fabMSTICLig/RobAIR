@@ -113,8 +113,11 @@ var Eyes = {
 		this.redraw();
 	},
 
-	set_eyes: function(id) {
-		this.matrix = this.predef_eyes[id];
+	set_eyes: function(id_or_mat) {
+		if (id_or_mat instanceof Array)
+			this.matrix = this.deserialize_matrix(id_or_mat);
+		else
+			this.matrix = this.predef_eyes[id_or_mat];
 		this.redraw();
 	},
 
@@ -163,6 +166,35 @@ var Eyes = {
 		ctx.fill();
 	},
 
+	unflatten: function(mat) {
+		var new_mat = new Array;
+		var y = 0;
+
+		while (mat.length > 0) {
+			new_mat.push(new Array);
+
+			for (var i = 0 ; i < this.columns ; ++i)
+				new_mat[y].push(mat.shift());
+
+			y++;
+		}
+
+		return new_mat;
+	},
+
+	deserialize_matrix: function(mat) {
+		mat = mat.map(function(num) {
+			var r = (num & 0xff0000) >> 16;
+			var g = (num & 0x00ff00) >> 8;
+			var b = (num & 0x0000ff);
+			return '#'
+				+ r.toString(16).padStart(2, '0')
+				+ g.toString(16).padStart(2, '0')
+				+ b.toString(16).padStart(2, '0');
+		});
+		return this.unflatten(mat);
+	},
+
 	EYESVIDE: 0,
 	EYESSTRAIGHT: 1,
 	EYESRIGHT: 2,
@@ -174,6 +206,7 @@ var Eyes = {
 	EYESSTOP: 8,
 	EYESHELLO: 9,
 	EYESERROR: 10,
+	EYESCUSTOM: 254,
 
 	predef_eyes: [
 		eyesvide,

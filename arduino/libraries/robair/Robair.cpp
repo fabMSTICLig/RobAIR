@@ -159,11 +159,16 @@ void Robair::cmdEyesCb(const std_msgs::UInt8 &eyes_msg)
 
 void Robair::eyesMatCb(const robairmain::EyesMat &mat_msg) {
 	eyes.setMatrice(mat_msg.mat);
+	eyes_msg.data = EYESCUSTOM;
+	eyes_pub.publish(&eyes_msg);
 }
 
 void Robair::eyesAnimCb(const robairmain::EyesAnim &anim_msg)
 {
-	eyes.setAnimation(anim_msg);
+	if (eyes.setAnimation(anim_msg)) {
+		eyes_msg.data = EYESANIM;
+		eyes_pub.publish(&eyes_msg);
+	}
 }
 
 

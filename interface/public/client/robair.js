@@ -213,9 +213,18 @@ robairros.pongChange = function() {
 }
     /////////////////////////////YEUX//////////////////////////////
 
+var last_eyesmat;
+
+robairros.on_eyesmat = function(mat) {
+    last_eyesmat = mat;
+};
+
 robairros.eyesChange = function(id) {
-    Eyes.set_eyes(id);
-}
+    if (id == Eyes.EYESCUSTOM)
+        Eyes.set_eyes(last_eyesmat);
+    else
+        Eyes.set_eyes(id);
+};
 
 var eyesCanvas = $("#eyesCanvas");
 eyesCanvas.on("click", function(e) {
