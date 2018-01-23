@@ -20,7 +20,8 @@ Odometry::Odometry(const ros::NodeHandle& nh)
     _frameBase = "base_link";
   else
     _frameBase = frameBase;
-  
+  _frameBase = "base_link";
+
   // get entrax parameter
   double entrax, ticsPerMeter;
   if (!pn.getParam("entrax", entrax))
@@ -47,12 +48,12 @@ Odometry::Odometry(const ros::NodeHandle& nh)
   _pubOdometry = _nh.advertise<nav_msgs::Odometry>("odom", 10);
   _change_odometry = _nh.subscribe("change_odometry", 1, &Odometry::change_odometryCallback, this);
 
-  ros::Rate r(100);
+  ros::Rate r(20);
   
   _timeCurrent = ros::Time::now();
   _timeLast = ros::Time::now();
 
-  while (ros::ok())
+while (ros::ok())
     {
       ros::spinOnce();
       update();
@@ -118,7 +119,7 @@ void Odometry::update()
   
   //TRANSFORM we'll publish the transform over tf
   _odomTf.header.stamp = _timeCurrent;
-  _odomTf.header.frame_id = "laser";
+  _odomTf.header.frame_id = "/odom";
   _odomTf.child_frame_id = _frameBase;
   
   _odomTf.transform.translation.x = _position.x;
