@@ -50,7 +50,6 @@ void Robair::powerMD49(bool on)
 
 void Robair::cmdvelCb(const geometry_msgs::Twist& command_msg)
 {
-	
 	if (!aru) {
 		// Compute requested speed
 
@@ -289,10 +288,9 @@ void Robair::begin()
 	pinMode(PIN_RMD49, OUTPUT);
 	digitalWrite(PIN_RMD49, HIGH);
 
-	//Serial debug
+	// Serial debug
 	Serial3.begin(9600);
-	Serial3.println("Start");
-	
+
 	eyes.begin();
 
 	pinMode(PIN_RMD49, OUTPUT);
@@ -349,36 +347,30 @@ String debugbuffer;
 geometry_msgs::Twist command_msg_debug;
 
 char bufferFloat[10];
-void Robair::loopDebug(){
-	
-	while (Serial3.available()) {
-    if (Serial3.available() >0) {
-      char c = Serial3.read();  //gets one byte from serial buffer
-      debugbuffer += c; //makes the string readString
-    } 
-  }
-  int idnl= debugbuffer.indexOf('\n');
-  while( idnl !=-1)
-  {
-	  String line = debugbuffer.substring(0, idnl);
-	  Serial3.println(line);
-	  line.trim();
-	  int idp=line.indexOf('P');
-	  int idspace = line.indexOf(' ');
-	  if(idp!=-1 && idspace!=-1 )
-	  {	
-		  line.substring(idspace+1).toCharArray(bufferFloat, 10);
-		  command_msg_debug.angular.z=atof(bufferFloat);
-		  line.substring(idp+1,idspace).toCharArray(bufferFloat, 10);
-		  command_msg_debug.linear.x = atof(bufferFloat);
-		  //Serial3.println(command_msg_debug.angular.z);
-		  //Serial3.println(command_msg_debug.linear.x);
-		  cmdvelCb(command_msg_debug);
-	  }
-	  debugbuffer = debugbuffer.substring(idnl+1);
-	  idnl= debugbuffer.indexOf('\n');
-  }
+void Robair::loopDebug()
+{
+	while (Serial3.available())
+		debugbuffer += Serial3.read();
+
+	int idnl = debugbuffer.indexOf('\n');
+	while (idnl != -1) {
+		String line = debugbuffer.substring(0, idnl);
+		Serial3.println(line);
+		line.trim();
+		int idp = line.indexOf('P');
+		int idspace = line.indexOf(' ');
+		if (idp != -1 && idspace != -1) {
+			line.substring(idspace+1).toCharArray(bufferFloat, 10);
+			command_msg_debug.angular.z=atof(bufferFloat);
+			line.substring(idp+1,idspace).toCharArray(bufferFloat, 10);
+			command_msg_debug.linear.x = atof(bufferFloat);
+			cmdvelCb(command_msg_debug);
+		}
+		debugbuffer = debugbuffer.substring(idnl + 1);
+		idnl = debugbuffer.indexOf('\n');
+	}
 }
+
 // =========================  LOOP  =========================
 
 void Robair::spinOnce()
