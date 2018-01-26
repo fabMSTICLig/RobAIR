@@ -346,28 +346,32 @@ void Robair::begin()
 String debugbuffer;
 geometry_msgs::Twist command_msg_debug;
 
-char bufferFloat[10];
-void Robair::loopDebug()
+void Robair::remote_control()
 {
-	while (Serial3.available())
-		debugbuffer += Serial3.read();
+	static int bytes_read = 0;
+	static union { uint8_t i[4]; float f; } linear, angular;
 
-	int idnl = debugbuffer.indexOf('\n');
-	while (idnl != -1) {
-		String line = debugbuffer.substring(0, idnl);
-		Serial3.println(line);
-		line.trim();
-		int idp = line.indexOf('P');
-		int idspace = line.indexOf(' ');
-		if (idp != -1 && idspace != -1) {
-			line.substring(idspace+1).toCharArray(bufferFloat, 10);
-			command_msg_debug.angular.z=atof(bufferFloat);
-			line.substring(idp+1,idspace).toCharArray(bufferFloat, 10);
-			command_msg_debug.linear.x = atof(bufferFloat);
-			cmdvelCb(command_msg_debug);
+	while (Serial3.available()) {
+		if (bytes_read < 4) {
+			if (Serial3.read() == 0xff)
+				bytes_read++;
+			else
+				bytes_read = 0;
+		} else if (bytes_read < 8) {
+			linear.i[bytes_read-4] = (uint8_t)Serial3.read();
+			bytes_read++;
+		} else if (bytes_read < 12) {
+			angular.i[bytes_read-8] = (uint8_t)Serial3.read();
+			bytes_read++;
+		} else {
+			geometry_msgs::Twist msg;
+			if (!isnan(linear.f) && !isnan(angular.f)) {
+				msg.linear.x = linear.f;
+				msg.angular.z = angular.f;
+				cmdvelCb(msg);
+			}
+			bytes_read = 0;
 		}
-		debugbuffer = debugbuffer.substring(idnl + 1);
-		idnl = debugbuffer.indexOf('\n');
 	}
 }
 
@@ -385,6 +389,6 @@ void Robair::spinOnce()
 	setHead(cmd_head + val);
 
 	check_battery(5000);
-	loopDebug();
+	remote_control();
 	speed_control();
 }

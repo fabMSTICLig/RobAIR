@@ -13,9 +13,9 @@ void setup()
 	rest_dy = 512 - analogRead(PIN_Y);
 }
 
-void analogGamepad(double dx, double dy, double *linear, double *angular)
+void analogGamepad(float dx, float dy, float *linear, float *angular)
 {
-	double norm = sqrt(dx * dx + dy * dy);
+	float norm = sqrt(dx * dx + dy * dy);
 
 	if (norm < 0.01) {
 		*linear = 0.0;
@@ -29,7 +29,7 @@ void analogGamepad(double dx, double dy, double *linear, double *angular)
 		norm = 1;
 	}
 
-	double theta = atan(dy / dx);
+	float theta = atan(dy / dx);
 	if (dx < 0)
 		theta = theta + PI;
 	else if (dy < 0)
@@ -41,16 +41,15 @@ void analogGamepad(double dx, double dy, double *linear, double *angular)
 
 void loop()
 {
-	double dx = map(analogRead(PIN_X) + rest_dx, 0, 1023, -100, 100) / 100.0,
+	float dx = map(analogRead(PIN_X) + rest_dx, 0, 1023, -100, 100) / 100.0,
 	       dy = map(analogRead(PIN_Y) + rest_dy, 0, 1023, -100, 100) / 100.0;
 
-	double linear, angular;
+	union { uint8_t i[4]; float f; } linear, angular;
 
-	analogGamepad(dx, dy, &linear, &angular);
+	analogGamepad(dx, dy, &linear.f, &angular.f);
 
-	Serial.print("P");
-	Serial.print(linear);
-	Serial.print(" ");
-	Serial.println(angular);
+	Serial.write("\xff\xff\xff\xff");
+	Serial.write(linear.i, 4);
+	Serial.write(angular.i, 4);
 	delay(100);
 }

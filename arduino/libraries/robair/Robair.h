@@ -157,7 +157,7 @@ private:
 
 	// ========================  SERIE DEBUG  ========================
 	
-	void loopDebug();
+	void remote_control();
 
 public:
 	Robair(ros::NodeHandle &nh);
