@@ -288,6 +288,9 @@ void Robair::begin()
 	pinMode(PIN_RMD49, OUTPUT);
 	digitalWrite(PIN_RMD49, HIGH);
 
+	// Serial debug
+	Serial3.begin(9600);
+
 	eyes.begin();
 
 	pinMode(PIN_RMD49, OUTPUT);
@@ -340,6 +343,37 @@ void Robair::begin()
 	timeoutARUDelay = ibuff;
 }
 
+String debugbuffer;
+geometry_msgs::Twist command_msg_debug;
+
+void Robair::remote_control()
+{
+	static int bytes_read = 0;
+	static union { uint8_t i[4]; float f; } linear, angular;
+
+	while (Serial3.available()) {
+		if (bytes_read < 4) {
+			if (Serial3.read() == 0xff)
+				bytes_read++;
+			else
+				bytes_read = 0;
+		} else if (bytes_read < 8) {
+			linear.i[bytes_read-4] = (uint8_t)Serial3.read();
+			bytes_read++;
+		} else if (bytes_read < 12) {
+			angular.i[bytes_read-8] = (uint8_t)Serial3.read();
+			bytes_read++;
+		} else {
+			geometry_msgs::Twist msg;
+			if (!isnan(linear.f) && !isnan(angular.f)) {
+				msg.linear.x = linear.f;
+				msg.angular.z = angular.f;
+				cmdvelCb(msg);
+			}
+			bytes_read = 0;
+		}
+	}
+}
 
 // =========================  LOOP  =========================
 
@@ -355,5 +389,6 @@ void Robair::spinOnce()
 	setHead(cmd_head + val);
 
 	check_battery(5000);
+	remote_control();
 	speed_control();
 }
