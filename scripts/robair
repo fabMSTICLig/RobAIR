@@ -88,7 +88,10 @@ restart() {
 }
 
 find_ip() {
-  ROBAIR_IP=$(ip route get 8.8.8.8 2>>/dev/null | perl -n -e '/src ([0-9a-f.:]+)/ && print $1')
+  if [ "x$ROBAIR_IP" = 'x' ]; then
+    ROBAIR_IP=$(ip route get 8.8.8.8 2>>/dev/null | perl -n -e '/src ([0-9a-f.:]+)/ && print $1')
+  fi
+
   if [ "x$ROBAIR_IP" = 'x' ]; then
     ROBAIR_IP=localhost
   fi
