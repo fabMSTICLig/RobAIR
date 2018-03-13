@@ -239,8 +239,9 @@ function setHeadTheta(val) {
         "-webkit-transform-origin": "50% 100%",
         "transform-origin": "50% 100%"
     });
-
+    VideoOverlay.set_head(val);
 }
+
 var turnheadright = function() {
 
   robairros.setEyes(Eyes.EYESLEFT);

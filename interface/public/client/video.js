@@ -92,5 +92,69 @@ var save_correction_val = function() {
 	robairros.set_fisheye_correction(val);
 };
 
+var VideoOverlay = {
+	_init: function() {
+		this._ctx = document.getElementById('overlay-canvas').getContext('2d');
+		this._w = document.getElementById('overlay-canvas').width;
+		this._h = document.getElementById('overlay-canvas').height;
+
+		this._head_angle = 0;
+
+		this._update();
+	},
+
+	set_head: function(angle) {
+		this._head_angle = angle;
+		this._update();
+	},
+
+	_update: function() {
+		this._ctx.clearRect(0, 0, this._w, this._h);
+
+		if (this._head_angle <= -5 || this._head_angle >= 5)
+			this._draw_heading();
+	},
+
+
+	_HDG_BASE_MULT: 1 / 110,
+	_HDG_HORIZON_POINT: {x: 0.5, y: 2},
+	_HDG_BASE_HALF_WIDTH: 0.01,
+	_HDG_TOP_HALF_WIDTH: 0.003,
+	_HDG_LENGTH: 0.20,
+
+	_draw_heading: function() {
+		var base_middle_x = -1 * this._head_angle * this._HDG_BASE_MULT + 0.5;
+		var base_left_x = base_middle_x - this._HDG_BASE_HALF_WIDTH;
+		var base_right_x = base_middle_x + this._HDG_BASE_HALF_WIDTH;
+
+		var vect = {
+			x: this._HDG_HORIZON_POINT.x - base_middle_x,
+			y: this._HDG_HORIZON_POINT.y
+		};
+
+		var norm_squared = vect.x * vect.x + vect.y * vect.y;
+		var factor = Math.sqrt(this._HDG_LENGTH * this._HDG_LENGTH / norm_squared);
+		var vect_correct_len = {
+			x: vect.x * factor,
+			y: vect.y * factor
+		};
+
+		var top_x = base_middle_x + vect_correct_len.x;
+		var top_left_x = top_x - this._HDG_TOP_HALF_WIDTH;
+		var top_right_x = top_x + this._HDG_TOP_HALF_WIDTH;
+		var top_y = vect_correct_len.y;
+
+		this._ctx.fillStyle = '#00ff0044';
+		this._ctx.beginPath();
+		this._ctx.moveTo(base_left_x * this._w, this._h);
+		this._ctx.lineTo(base_right_x * this._w, this._h);
+		this._ctx.lineTo(top_right_x * this._w, (1 - top_y) * this._h);
+		this._ctx.lineTo(top_left_x * this._w, (1 - top_y) * this._h);
+		this._ctx.closePath();
+		this._ctx.fill();
+	}
+};
+
 window.addEventListener('load', init_video_funcs, false);
 window.addEventListener('load', fetch_fisheye_params, false);
+window.addEventListener('load', VideoOverlay._init.bind(VideoOverlay), false);
