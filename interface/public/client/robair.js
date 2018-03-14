@@ -133,10 +133,10 @@ $(document).keyup(function(e) {
 });
 
 
-$('#left').mousedown(left).mouseup(stop);
-$('#right').mousedown(right).mouseup(stop);
-$('#foward').mousedown(foward).mouseup(stop);
-$('#backward').mousedown(backward).mouseup(stop);
+$('#left').on('mousedown touchstart', left).on('mouseup touchend', stop);
+$('#right').on('mousedown touchstart', right).on('mouseup touchend', stop);
+$('#foward').on('mousedown touchstart', foward).on('mouseup touchend', stop);
+$('#backward').on('mousedown touchstart', backward).on('mouseup touchend', stop);
 $('#refresh').click(function()
 {
   robairros.reboot();
