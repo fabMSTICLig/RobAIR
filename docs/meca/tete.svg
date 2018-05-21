@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.565"
-     inkscape:cx="-314.00638"
-     inkscape:cy="348.06107"
+     inkscape:zoom="0.39951533"
+     inkscape:cx="-28.610844"
+     inkscape:cy="830.6223"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -316,6 +316,22 @@
          x="-633.05054"
          y="869.32336"
          style="font-size:35.00000381px;fill:none;fill-opacity:1;stroke:#00ff00;stroke-width:0.9375px;stroke-opacity:1">TP2</tspan></text>
+    <path
+       style="opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:18.89763832;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 456.63672 849.95312 L 456.63672 1114.5195 L 494.43164 1114.5195 L 494.43164 1076.7246 L 570.02344 1076.7246 L 570.02344 1114.5195 L 607.81836 1114.5195 L 607.81836 849.95312 L 570.02344 849.95312 L 570.02344 887.74805 L 494.43164 887.74805 L 494.43164 849.95312 L 456.63672 849.95312 z "
+       transform="scale(0.9375)"
+       id="rect4528" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:70.00000763px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="465.35526"
+       y="934.50098"
+       id="text5147-7"><tspan
+         sodipodi:role="line"
+         id="tspan5145-3"
+         x="465.35526"
+         y="934.50098"
+         style="font-size:50.00000381px;line-height:86.00000143%;fill:none;stroke:#00ff00;stroke-width:0.9375px;stroke-opacity:1">T4</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
