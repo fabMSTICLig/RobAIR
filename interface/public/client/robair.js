@@ -22,24 +22,28 @@ var left = function() {
     stop();
     setArrowActive("left");
     robairros.left();
+    console.log("Debug client side left");
 }
 
 var right = function() {
     stop();
     setArrowActive("right");
     robairros.right();
+    console.log("Debug client side right");
 }
 
 var foward = function() {
     stop();
     setArrowActive("foward");
     robairros.foward();
+    console.log("Debug client side forward");
 }
 
 var backward = function() {
     stop();
     setArrowActive("backward");
     robairros.backward();
+    console.log("Debug client side backward");
 }
 
 var stop = function() {
@@ -47,6 +51,7 @@ var stop = function() {
     $(".active").addClass("btn-default");
     $(".active").removeClass("active");
     robairros.stop();
+    console.log("Debug client side stop"); 
 }
 
 
@@ -54,6 +59,7 @@ var stop = function() {
 var setSpeed = function(speed) {
     robairros.setSpeed(speed);
     $('#speed').val(robairros.speed);
+    console.log("Debug client side set speed",speed);
 }
 $('#speed').val(robairros.speed);
 
@@ -296,26 +302,50 @@ headCanvas.on("mouseup touchend mouseleave", function(e) {
 headCanvas.on("mousedown touchstart", function(e) {
 
         headMouseDown = true;
-        var posX = (e.pageX - $(this).offset().left) / headCanvas.width(),
-            posY = (e.pageY - $(this).offset().top) / headCanvas.height();
-            posX = posX * 2 - 1;
-            posY = (posY * 2 - 1)*-1;
 
+ 	var posX = -1;
+        var posY = -1;
+        var leftOffset = $(this).offset().left;
+        var topOffset  = $(this).offset().top;
+
+        if(e.type == 'mousedown'){
+           posX = (e.pageX - leftOffset) / headCanvas.width();
+           posY = (e.pageY - topOffset)  / headCanvas.height();
+        }
+        else if(e.type == 'touchstart'){
+           posX = (e.originalEvent.touches[0].pageX - leftOffset) / headCanvas.width();
+           posY = (e.originalEvent.touches[0].pageY - topOffset) / headCanvas.height();
+        }
+
+        posX = posX * 2 - 1;
+        posY = (posY * 2 - 1)*-1;
         var speeds = analogGamepad(posX, posY);
         robairros.move(speeds[0], speeds[1]);
+	e.preventDefault();
 });
 headCanvas.on("mousemove touchmove", function(e) {
     if (headMouseDown) {
-        var posX = (e.pageX - $(this).offset().left) / headCanvas.width(),
-            posY = (e.pageY - $(this).offset().top) / headCanvas.height();
-            posX = posX * 2 - 1;
-            posY = (posY * 2 - 1)*-1;
+	var posX = -1;
+	var posY = -1;
+	var leftOffset = $(this).offset().left;
+        var topOffset  = $(this).offset().top;
+	
+	if(e.type == 'mousemove'){
+	   posX = (e.pageX - leftOffset) / headCanvas.width();
+           posY = (e.pageY - topOffset)  / headCanvas.height();
+	}
+	else if(e.type == 'touchmove'){
+	   posX = (e.originalEvent.touches[0].pageX - leftOffset) / headCanvas.width();
+           posY = (e.originalEvent.touches[0].pageY - topOffset) / headCanvas.height();
+	}
 
+        posX = posX * 2 - 1;
+        posY = (posY * 2 - 1)*-1;
         var speeds = analogGamepad(posX, posY);
         robairros.move(speeds[0], speeds[1]);
     }
     e.preventDefault();
-    e.stopPropagation();
+    //e.stopPropagation();
 });
 //////////////////////////////Bumper ///////////////////////
 
