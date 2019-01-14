@@ -150,12 +150,18 @@ Eyes.drawEyes = function(id)
     ctx.clearRect(0, 0, eyesCanvas.width, eyesCanvas.height);
     ctx.restore();
     var t=tabeyes[id];
-    for(i=0;i<5;i++)
+    /*for(i=0;i<5;i++)
     {
         for(j=0;j<14;j++)
         {
             //drawcircle(ctx,10+20*(j),10+15*i,valtocolor(t[i*14+(j)]));
-            drawcircle(ctx,10+20*(13-j),10+15*i,valtocolor(t[i*14+(13-j)]));
+        }
+    }*/
+    for(i=0;i<5;i++)
+    {
+        for(j=0;j<14;j++)
+        {
+            drawcircle(ctx,45+15*(13-j),5+11*i,valtocolor(t[i*14+(13-j)]));
         }
     }
 }
