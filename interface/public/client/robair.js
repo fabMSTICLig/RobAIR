@@ -143,6 +143,7 @@ $('#left').on('mousedown touchstart', left).on('mouseup touchend', stop);
 $('#right').on('mousedown touchstart', right).on('mouseup touchend', stop);
 $('#foward').on('mousedown touchstart', foward).on('mouseup touchend', stop);
 $('#backward').on('mousedown touchstart', backward).on('mouseup touchend', stop);
+
 $('#refresh').click(function()
 {
   robairros.reboot();
@@ -205,10 +206,22 @@ robairros.eyesChange = function(id) {
 }
 
 var eyesCanvas = $("#eyesCanvas");
-eyesCanvas.on("click", function(e) {
-    var posX = (e.pageX - $(this).offset().left) / $(this).width(),
-        posY = (e.pageY - $(this).offset().top) / $(this).height();
+eyesCanvas.on("mousedown touchstart", function(e) {
+    //var posX = (e.pageX - $(this).offset().left) / $(this).width(),
+    //    posY = (e.pageY - $(this).offset().top) / $(this).height();
+    var posX = -1;
+    var posY = -1;
+    var leftOffset = $(this).offset().left;
+    var topOffset  = $(this).offset().top;
 
+    if(e.type == 'mousedown'){
+       posX = (e.pageX - leftOffset) / eyesCanvas.width();
+       posY = (e.pageY - topOffset)  / eyesCanvas.height();
+    }
+    else if(e.type == 'touchstart'){
+       posX = (e.originalEvent.touches[0].pageX - leftOffset) / eyesCanvas.width();
+       posY = (e.originalEvent.touches[0].pageY - topOffset) / eyesCanvas.height();
+    }
     if (posX < 0.25) {
         //Eyes.drawEyes(Eyes.EYESLEFT);
         robairros.setEyes(Eyes.EYESLEFT);
@@ -225,6 +238,7 @@ eyesCanvas.on("click", function(e) {
         //Eyes.drawEyes(Eyes.EYESSTRAIGHT);
         robairros.setEyes(Eyes.EYESSTRAIGHT);
     }
+    e.preventDefault();
 });
 
 
@@ -250,17 +264,25 @@ function setHeadTheta(val) {
 var turnheadright = function() {
 
   robairros.setEyes(Eyes.EYESLEFT);
-    robairros.setHead(90);
+  robairros.setHead(90);
+  console.log("debug head right");
 }
 var turnheadleft = function() {
 
   robairros.setEyes(Eyes.EYESRIGHT);
   robairros.setHead(-90);
+  console.log("debug head left");
 }
 var turnheadstop = function() {
   robairros.setHead(headcur);
   robairros.setEyes(Eyes.EYESSTRAIGHT);
+  console.log("debug stop");
 }
+
+$('#headorigin').on('mousedown touchstart', turnheadstop);
+$('#headleft').on('mousedown touchstart', turnheadleft).on('mouseup touchend', turnheadstop);
+$('#headright').on('mousedown touchstart', turnheadright).on('mouseup touchend', turnheadstop);
+
 
 var analogGamepad = function (dx, dy) {
     var norm = Math.sqrt(dx*dx + dy*dy);
