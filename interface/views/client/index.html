@@ -17,7 +17,7 @@
         <video class="img-responsive" id="localVideo"></video>
         <div class="commands container">
             <div class="panel panel-default">
-                <div class="panel-heading">Status</div>
+                <div class="panel-heading" id="status">Status</div>
                 <div class="panel-body">
                     <table class="table table-bordered text-center status">
                         <tbody>
@@ -30,14 +30,14 @@
                                 </td>
                             </tr>
                             <tr>
-                              <td colspan="2">
-                                  <canvas id="eyesCanvas" width="280" height="80" style="border:1px solid #000000;"></canvas>
+                              <td colspan="3">
+                                  <canvas id="eyesCanvas" width="280" height="54" style="border:1px solid #000000;"></canvas>
                               </td>
                             </tr>
-                            <tr>
-                              <td colspan="2">
-                                  <span class="fa fa-hand-paper-o" id="touchRight"></span>
-                                  <svg id="headCanvas" width="100" height="100" viewBox="0 0 200 200">
+                           <tr>
+                              <td colspan="3">
+                           <!--       <span class="fa fa-hand-paper-o" id="touchRight"></span> -->
+                                  <svg id="headCanvas" width="80" height="80" viewBox="0 0 200 200">
                                     <circle cx="100" cy="100" r="90" stroke="black" stroke-width="3"  fill-opacity="0.0"/>
                                     <circle cx="100" cy="100" r="40" stroke="black" stroke-width="3" fill-opacity="0.0"/>
                                     <path id="head" d="M 60,100 A 40 40 0 0 1 140,100" stroke="green" fill-opacity="0.0" stroke-width="10"/>
@@ -47,8 +47,25 @@
                                     <rect x="5" y="70" height="60" width="10" rx="10" ry="10" stroke="black" stroke-width="3" fill="white"/>
                                     <rect x="185" y="70" height="60" width="10" rx="10" ry="10" stroke="black" stroke-width="3" fill="white"/>
                                   </svg>
-                                  <span class="fa fa-hand-paper-o" id="touchLeft"></span>
+                            <!--      <span class="fa fa-hand-paper-o" id="touchLeft"></span> -->
                               </td>
+                            </tr>
+			    <tr>
+                                <td>
+                                    <button type="button" class="btn btn-default" id="headleft">
+                                        <span class="glyphicon glyphicon glyphicon-arrow-left"></span>
+                                    </button>
+                                </td>
+				 <td>
+                                    <button type="button" class="btn btn-default" id="headorigin">
+                                        <span class="glyphicon glyphicon glyphicon glyphicon-arrow-up"></span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-default" id="headright">
+                                        <span class="glyphicon glyphicon glyphicon-arrow-right"></span>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
