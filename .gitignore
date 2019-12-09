@@ -9,6 +9,9 @@ ssl/*.csr
 *.sw[op]
 #*#
 *~
+**/rescue-backup
+**/*cache.lib
+sym-lib-table
 
 catkin_ws/install
 catkin_ws/build
