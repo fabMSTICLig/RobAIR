@@ -87,52 +87,6 @@ private:
 	void cmdHeadCb(const std_msgs::Int8 &head_msg);
 
 
-	// ========================  BUMPERS  =======================
-	const uint8_t PIN_BUMPER_FRONT = A0;
-	const uint8_t PIN_BUMPER_REAR = A1;
-
-	std_msgs::Bool bumperFront_msg;
-	ros::Publisher bumperFront_pub;
-	std_msgs::Bool bumperRear_msg;
-	ros::Publisher bumperRear_pub;
-
-	Papierlogik papBumperFront;
-	Papierlogik papBumperRear;
-
-	float bumperFTresh = 0.06;
-	float bumperRTresh = 0.400;
-
-	boolean bumperFront;
-	boolean bumperRear;
-
-	void checkStop(void);
-
-
-	// =========================  TOUCH  ========================
-	const uint8_t PIN_TOUCH_LEFT = A3;
-	const uint8_t PIN_TOUCH_RIGHT = A2;
-
-	std_msgs::Bool touchLeft_msg;
-	ros::Publisher touchLeft_pub;
-	std_msgs::Bool touchRight_msg;
-	ros::Publisher touchRight_pub;
-
-	Papierlogik papTouchLeft;
-	Papierlogik papTouchRight;
-
-	float touchLeftTresh = 0.250;
-	float touchRightTresh = 0.250;
-
-	boolean touchLeft;
-	boolean touchRight;
-
-
-	unsigned long last_timestamp_touch = 0;
-	unsigned long touchDelay = 100;
-
-	void checkTouch(void);
-
-
 	// ========================  REBOOT  ========================
 	ros::Subscriber<std_msgs::UInt8,Robair> sub_reboot;
 	void rebootCb(const std_msgs::UInt8 &reboot_msg);
@@ -147,11 +101,7 @@ private:
 
 	boolean aru = false;
 
-
-	// ========================  PARAMS  ========================
-	ros::Subscriber<std_msgs::Empty,Robair> sub_loadParams;
-	void loadParamsCb(const std_msgs::Empty&);
-
+	void checkStop(void);
 	
 	
 

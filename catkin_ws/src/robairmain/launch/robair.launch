@@ -1,10 +1,5 @@
 <launch>
 
-  <param name="touchRTresh" value="0.80" />
-  <param name="touchLTresh" value="0.50" />
-  <param name="bumpFTresh" value="0.15" />
-  <param name="bumpRTresh" value="0.15" />
-  <param name="aruDelay" value="5000" />
   <param name="coefSmoothness" value="0.90" />
 
   <param name="mongodb_host" value="localhost" />
