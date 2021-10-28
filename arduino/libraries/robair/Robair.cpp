@@ -133,11 +133,20 @@ void Robair::speed_control()
 void Robair::check_battery(unsigned int delay_check)
 {
 	if (millis() > last_timestamp_battery) {
+		uint16_t val=0;
+		for(int i=0;i<10;i++)
+		{
+			val+=analogRead(PIN_SENSE);
+		}
+		if(val/10<SENSE_MIN) digitalWrite(PIN_OFF, HIGH);
+
 		battery_msg.data = md49.getVolt();
+		//battery_msg.data = analogRead(PIN_SENSE);
 		battery_pub.publish(&battery_msg);
 
 		last_timestamp_battery = millis() + delay_check;
 	}
+
 }
 
 
@@ -226,6 +235,18 @@ void Robair::log(String str)
 
 void Robair::begin()
 {
+	pinMode(PIN_OFF, OUTPUT);
+	digitalWrite(PIN_OFF, LOW);
+	
+	delay(500);
+
+	uint16_t val=0;
+	for(int i=0;i<10;i++)
+	{
+		val+=analogRead(PIN_SENSE);
+	}
+	if(val/10<SENSE_MIN) digitalWrite(PIN_OFF, HIGH);
+	
 	pinMode(PIN_RMD49, OUTPUT);
 	digitalWrite(PIN_RMD49, HIGH);
 
@@ -234,7 +255,6 @@ void Robair::begin()
 
 	eyes.begin();
 
-	pinMode(PIN_RMD49, OUTPUT);
 	md49.init(9600);
 	powerMD49(true);
 

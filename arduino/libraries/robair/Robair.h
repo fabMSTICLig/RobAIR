@@ -20,7 +20,6 @@
 #include <Adafruit_NeoPixel.h>
 #include <Eyes.h>
 #include <md49.h>
-#include <Papierlogik.h>
 
 
 class Robair {
@@ -31,6 +30,7 @@ private:
 	ros::Publisher log_pub;
 
 
+	const uint8_t PIN_OFF = 7;
 	// ========================  MOTORS  ========================
 	const uint8_t PIN_RMD49 = 5;
 	int cmd_speedL = 0;  //current_speed used by motors
@@ -53,6 +53,8 @@ private:
 
 
 	// ========================  BATTERY  =======================
+	const uint16_t SENSE_MIN = 870;
+	const uint8_t PIN_SENSE = A0;
 	std_msgs::Int32 battery_msg;
 	ros::Publisher battery_pub;
 	unsigned long last_timestamp_battery = 0;
