@@ -89,12 +89,6 @@ export http_proxy
 export https_proxy
 
 
-# Autorité de certification
-
-do_authority=y
-ask_yn do_authority "Faut-il générer une autorité de certification ? [O/n] "
-
-
 # Lancement au démarrage par systemd
 
 do_enable_systemd_unit=n
@@ -151,8 +145,8 @@ fi
 
 # Installation des paquets
 start_job "Ajoute les dépôts ROS"
-sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-sudo -E apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116
+sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/ros.gpg] http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo sh -c 'curl https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | gpg --dearmor > /usr/share/keyrings/ros.gpg'
 end_job
 
 start_job "Met à jour les listes de paquets"
@@ -161,9 +155,11 @@ end_job
 
 
 start_job "Installe les paquets nécessaires"
-sudo -E apt-get -y install coturn nodejs-legacy npm chromium-browser arduino \
-	ros-kinetic-ros-base ros-kinetic-rosbridge-suite ros-kinetic-urg-node \
-	ros-kinetic-tf mongodb python-pymongo scons
+sudo -E apt-get -y install arduino-core \
+	ros-noetic-ros-base ros-noetic-urg-node \
+	ros-noetic-tf
+sudo -E apt-get -y install python3-rosdep python3-rosinstall \
+       	python3-rosinstall-generator python3-wstool build-essential
 end_job
 
 start_job "Met à jour les dépendances ROS"
@@ -171,20 +167,6 @@ source /opt/ros/kinetic/setup.bash
 sudo -E rosdep init
 rosdep update
 end_job
-
-
-# Autorité de certification
-if [ "$do_authority" = 'y' ]; then
-	start_job "Génère l'autorité de certification"
-	./scripts/createRootCA.bash
-	end_job
-fi
-
-
-start_job "Génère le certificat SSL"
-./scripts/createDeviceCRT.bash
-end_job
-
 
 # Récupère les sous-modules
 start_job "Récupère les dépendances du dépôt Git"
@@ -197,16 +179,6 @@ start_job "Compile les paquets ROS locaux"
 end_job
 
 source "$ROBAIR_HOME/catkin_ws/devel/setup.bash"
-
-# Récupère les dépendances pour l'interface web
-start_job "Récupère les dépendances pour l'interface web"
-(cd $ROBAIR_HOME/interface && npm install)
-end_job
-
-# Configure signalmaster
-start_job "Récupère les dépendances pour signalmaster"
-(cd "$ROBAIR_HOME/signalmaster" && npm install)
-end_job
 
 # Génère la ros_lib
 start_job "Génère la bibliothèque ros_lib pour Arduino"

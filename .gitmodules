@@ -4,10 +4,6 @@
 [submodule "catkin_ws/src/rosserial"]
 	path = catkin_ws/src/rosserial
 	url = https://github.com/ros-drivers/rosserial.git
-[submodule "signalmaster"]
-	path = signalmaster
-	url = https://github.com/fabMSTICLig/signalmaster.git
-	branch = robair
 [submodule "arduino/libraries/Adafruit_TiCoServo"]
 	path = arduino/libraries/Adafruit_TiCoServo
 	url = https://github.com/adafruit/Adafruit_TiCoServo.git
@@ -17,9 +13,3 @@
 [submodule "simulator/simavr"]
 	path = simulator/simavr
 	url = https://github.com/buserror/simavr.git
-[submodule "interface/public/common/libs/fisheye"]
-	path = interface/public/common/libs/fisheye
-	url = https://github.com/ericleong/fisheye.js.git
-[submodule "catkin_ws/src/mongodb_store"]
-	path = catkin_ws/src/mongodb_store
-	url = https://github.com/strands-project/mongodb_store.git
