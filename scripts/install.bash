@@ -163,7 +163,7 @@ sudo -E apt-get -y install python3-rosdep python3-rosinstall \
 end_job
 
 start_job "Met à jour les dépendances ROS"
-source /opt/ros/kinetic/setup.bash
+source /opt/ros/noetic/setup.bash
 sudo -E rosdep init
 rosdep update
 end_job
