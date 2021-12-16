@@ -1,0 +1,12 @@
+[Unit]
+Description= read raspberry button and switch RobAIR mode ('follow_me' | 'normal')
+After=follow_me_robair.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/sudo /usr/bin/python3 <ROBAIR_HOME>/scripts/switch_robair_mode.py
+#RemainAfterExit=yes
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,9 @@
+# /etc/systemd/network/10-netplan-eth0.network
+[Match]
+Name=eth0
+MACAddress=<ETH_MAC_ADDR>
+[Network]
+Address=192.168.0.175/24
+ConfigureWithoutCarrier=true
+LinkLocalAddressing=no
+IPv6AcceptRA=no

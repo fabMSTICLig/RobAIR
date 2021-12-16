@@ -1,0 +1,13 @@
+network:
+  version: 2
+  renderer: NetworkManager
+  wifis:
+    wlan0:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+      addresses: [10.0.0.42/24]
+      access-points:
+        "RobAIR_hotspot_<MACADDR>":
+          password: "robairRobair42"
+          mode: ap

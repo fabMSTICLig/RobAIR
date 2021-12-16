@@ -1,0 +1,3 @@
+compenser l'ego mouvement avec odom
+des qu'on tracke, rajouter toutes les jambes et les tracker à part
+tracking : 0.5 a 1 avec 0.1

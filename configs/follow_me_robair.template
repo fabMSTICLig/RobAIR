@@ -1,0 +1,11 @@
+[Unit]
+Description=Mode 'follow_me' on RobAIR
+
+[Service]
+Type=simple
+ExecStart=<ROBAIR_HOME>/scripts/follow_me_1laser.sh
+ExecStop=<ROBAIR_HOME>/scripts/stop_follow_me.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
