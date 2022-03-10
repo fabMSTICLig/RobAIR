@@ -6,12 +6,14 @@ if [ "`which pip3`" == "" ] ; then
 	sudo apt install -y python3-pip 
 	if [ $? -ne 0 ]; then 
 		echo -e "unable to locate or install pip3\nAbort.."
+    exit 1
 	fi
 fi
 if [ "`pip3 list | grep 'RPi\.GPIO'`" == "" ] ; then 
 	sudo apt install -y python3-dev python3-rpi.gpio python3-gpiozero
 	if [ $? -ne 0 ]; then 
 		echo -e "unable to locate or install python3 module: RPi.GPIO\nAbort.."
+    exit 1
 	fi
 fi
 python3 -c "import gpiozero" 2>/dev/null

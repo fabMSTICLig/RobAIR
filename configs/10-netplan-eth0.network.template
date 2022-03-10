@@ -3,7 +3,7 @@
 Name=eth0
 MACAddress=<ETH_MAC_ADDR>
 [Network]
-Address=192.168.0.175/24
+Address=<IP_ETH>/<MASK_ETH>
 ConfigureWithoutCarrier=true
 LinkLocalAddressing=no
 IPv6AcceptRA=no

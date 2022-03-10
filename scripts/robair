@@ -84,12 +84,13 @@ restart() {
 }
 
 find_ip() {
+
   if [ "x$ROBAIR_IP" = 'x' ]; then
-    ROBAIR_IP=$(ip route get 8.8.8.8 2>>/dev/null | perl -n -e '/src ([0-9a-f.:]+)/ && print $1')
+    ROBAIR_IP="`ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`"
   fi
 
   if [ "x$ROBAIR_IP" = 'x' ]; then
-    ROBAIR_IP=localhost
+    ROBAIR_IP=192.168.0.175
   fi
 
   export ROBAIR_IP
@@ -100,7 +101,6 @@ find_ip() {
     [ "$ROBAIR_IP" = "$(< "$last_ip_file")" ]; then
     return 0
   fi
-
 
   # The address changed since last time
   echo "$ROBAIR_IP" > "$last_ip_file"
