@@ -41,7 +41,7 @@ eth_net_file="/etc/systemd/network/10-netplan-eth0.network"
 
 MACADDR_ETH="`ip addr show eth0 | grep ether | awk -F ' ' '{print $2}'`"
 
-sed "s#<ETH_MAC_ADDR>#${MACADDR_ETH}#;s#<IP_ETH>#${IP_ETH}#;s#<MASK_ETH>#${MASK_ETH}#" "${template_eth_net_file}"  | sudo tee "${eth_net_file}"
+sed "s#<IP_ETH>#${IP_ETH}#;s#<MASK_ETH>#${MASK_ETH}#" "${template_eth_net_file}"  | sudo tee "${eth_net_file}"
 
 sudo systemctl restart systemd-networkd
 

@@ -1,7 +1,6 @@
 # /etc/systemd/network/10-netplan-eth0.network
 [Match]
 Name=eth0
-MACAddress=<ETH_MAC_ADDR>
 [Network]
 Address=<IP_ETH>/<MASK_ETH>
 ConfigureWithoutCarrier=true

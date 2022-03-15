@@ -18,9 +18,25 @@ if [ "`pip3 list | grep 'RPi\.GPIO'`" == "" ] ; then
 fi
 python3 -c "import gpiozero" 2>/dev/null
 if [ $? -ne 0 ] ; then
-	pip3 install gpiozero rpi_ws281x adafruit-circuitpython-neopixel
+	sudo pip3 install gpiozero
 	if [ $? -ne 0 ] ; then
-		echo -e "unable to locate or install python3 packages for GPIO\nAbort.."
+		echo -e "unable to locate or install python3 package: gpiozero\nAbort.."
+		exit 1
+	fi
+fi
+python3 -c "import rpi_ws281x" 2>/dev/null
+if [ $? -ne 0 ] ; then
+	sudo pip3 install rpi_ws281x
+	if [ $? -ne 0 ] ; then
+		echo -e "unable to locate or install python3 package: rpi_ws281x\nAbort.."
+		exit 1
+	fi
+fi
+python3 -c "import adafruit-circuitpython-neopixel" 2>/dev/null
+if [ $? -ne 0 ] ; then
+	sudo pip3 install adafruit-circuitpython-neopixel
+	if [ $? -ne 0 ] ; then
+		echo -e "unable to locate or install python3 package: adafruit-circuitpython-neopixel\nAbort.."
 		exit 1
 	fi
 fi
@@ -61,5 +77,6 @@ done
 
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
 sudo echo "[Service]
+ExecStart=
 ExecStart=-/sbin/agetty --noissue --autologin $USER %I \$TERM
 Type=idle" | sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf
