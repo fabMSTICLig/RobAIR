@@ -2,7 +2,7 @@
 
 ### Check et installation des packages necessaires pour GPIO
 
-if [ "`which pip3`" == "" ] ; then 
+if [ "$(which pip3)" == "" ] ; then 
 	sudo apt install -y python3-pip 
 	if [ $? -ne 0 ]; then 
 		echo -e "unable to locate or install pip3\nAbort.."
@@ -47,6 +47,7 @@ services='follow_me_robair switch_robair_mode'
 
 if [ -z $ROBAIR_HOME ]; then
 	echo -e "\033[31mROBAIR_HOME not define\033[0\ntry to:\n\texport ROBAIR_HOME=/home/${USER}/RobAIR\nAbort..."
+  exit 1
 fi
 
 for service in $services; do
