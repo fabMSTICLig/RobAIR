@@ -5,7 +5,7 @@
 #  setup crontab to autoexec:
 #  echo "@reboot    $USER    ${ROBAIR_HOME}/scripts/rm_old_log_ros.sh" | sudo tee --append /etc/crontab
 
-LOG_PATH="$HOME/.ros/log"i
+LOG_PATH="$HOME/.ros/log"
 
 for elem in  `ls -d ${LOG_PATH}/*/`
 do 
