@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-if [ -z $ROBAIR_HOME ]; then
+if [ -z "$ROBAIR_HOME" ]; then
   export ROBAIR_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
   source "$ROBAIR_HOME/scripts/env.bash"
 fi
