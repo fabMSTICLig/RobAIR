@@ -12,27 +12,28 @@ Avec le soutien financier de ![la région Auvergne-Rhône-Alpes](https://www.auv
 
 ### Pré-requis
 
-- Ubuntu 16.04 LTS
+- Ubuntu 20.04 LTS
 - Git
+
 - L'utilisateur courant doit avoir les droits root via `sudo`
 
 ### Procédure
 
 - Téléchargez le dépôt
 ```bash
-$ git clone https://github.com/FabmsticLig/RobAIR.git
+git clone https://github.com/FabmsticLig/RobAIR.git
 ```
 - Lancez le script d'installation
 ```bash
-$ cd RobAIR
-$ ./scripts/install.bash
+cd RobAIR
+./scripts/install.bash
 ```
 - Si l'utilisateur courant n'était préalablement pas dans le groupe `dialout`
 (autrement dit, si le script d'installation a affiché "donne à l'utilisateur
 l'accès aux ports série"), redémarrez votre session
 - Avec la carte Arduino branchée, lancez le chargement des programmes
 ```bash
-$ robair reload
+robair reload
 ```
 
 Le script d'installation récupérera des dépôts les paquets nécessaires et
@@ -68,9 +69,9 @@ La partie logicielle de RobAIR peut être contrôlée depuis la tablette via le
 programme `robair`. Utilisez les commandes suivantes pour respectivement lancer,
 arrêter ou redémarrer le logiciel.
 ```bash
-$ robair start
-$ robair stop
-$ robair restart
+robair start
+robair stop
+robair restart
 ```
 
 Si `systemd` est installé (par défaut sous Ubuntu), ces commandes pilotent
@@ -100,7 +101,7 @@ L'interface est servie par un serveur `nodejs` résidant dans `interface`.
 Si vous souhaitez tester des modifications locales, vous pouvez recompiler les
 programmes et recharger la carte Arduino via cette commande
 ```bash
-$ robair reload
+robair reload
 ```
 
  [1]: http://www.ros.org/
